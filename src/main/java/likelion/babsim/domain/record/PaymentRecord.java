@@ -1,7 +1,7 @@
 package likelion.babsim.domain.record;
 
 import jakarta.persistence.*;
-import likelion.babsim.domain.order.Order;
+import likelion.babsim.domain.order.Orders;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -24,6 +24,6 @@ public class PaymentRecord {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="order_id")
-    private Order order;
+    private Orders orders;
 
 }

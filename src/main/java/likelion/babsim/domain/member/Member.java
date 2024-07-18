@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import likelion.babsim.domain.allergy.MemberAllergy;
 import likelion.babsim.domain.cart.Cart;
 import likelion.babsim.domain.likes.Likes;
-import likelion.babsim.domain.order.Order;
+import likelion.babsim.domain.order.Orders;
 import likelion.babsim.domain.review.ProductReview;
 import likelion.babsim.domain.review.RecipeReview;
 import lombok.NoArgsConstructor;
@@ -44,7 +44,7 @@ public class Member {
 
     @OneToMany(mappedBy = "member")
     @ToString.Exclude
-    private List<Order> orders;
+    private List<Orders> orders;
 
     @OneToMany(mappedBy = "member")
     @ToString.Exclude

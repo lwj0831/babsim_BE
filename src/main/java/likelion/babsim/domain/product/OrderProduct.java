@@ -1,7 +1,7 @@
 package likelion.babsim.domain.product;
 
 import jakarta.persistence.*;
-import likelion.babsim.domain.order.Order;
+import likelion.babsim.domain.order.Orders;
 import likelion.babsim.domain.review.ProductReview;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -21,7 +21,7 @@ public class OrderProduct {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="order_id")
-    private Order order;
+    private Orders orders;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="product_id")

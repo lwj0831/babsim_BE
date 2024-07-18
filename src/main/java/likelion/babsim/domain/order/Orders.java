@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Order {
+public class Orders {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "order_id")
@@ -27,7 +27,7 @@ public class Order {
     @JoinColumn(name="member_id")
     private Member member;
 
-    @OneToOne(mappedBy = "order",cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "orders",cascade = CascadeType.ALL)
     @ToString.Exclude
     private PaymentRecord paymentRecord;
 }
