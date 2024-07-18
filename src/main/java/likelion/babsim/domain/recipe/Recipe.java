@@ -8,12 +8,14 @@ import likelion.babsim.domain.nft.Nft;
 import likelion.babsim.domain.review.RecipeReview;
 import likelion.babsim.domain.tag.Tag;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.util.List;
 
 @Entity
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Recipe {
     @Id

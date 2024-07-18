@@ -3,11 +3,13 @@ package likelion.babsim.domain.review;
 import jakarta.persistence.*;
 import likelion.babsim.domain.member.Member;
 import likelion.babsim.domain.recipe.Recipe;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Getter
 @NoArgsConstructor
 public class RecipeReview {
 
