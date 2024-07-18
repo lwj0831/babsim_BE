@@ -1,7 +1,7 @@
 package likelion.babsim.domain.order;
 
 import jakarta.persistence.*;
-import likelion.babsim.domain.record.PaymentRecord;
+import likelion.babsim.domain.payment.Payment;
 import likelion.babsim.domain.member.Member;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -29,5 +29,5 @@ public class Orders {
 
     @OneToOne(mappedBy = "orders",cascade = CascadeType.ALL)
     @ToString.Exclude
-    private PaymentRecord paymentRecord;
+    private Payment payment;
 }
