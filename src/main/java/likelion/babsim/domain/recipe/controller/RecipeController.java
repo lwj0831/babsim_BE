@@ -21,4 +21,9 @@ public class RecipeController {
     public List<RecipeInfoResDTO> getRecipesByRecipeName(@RequestParam String keyword){
         return recipeService.findRecipesByKeyword(keyword);
     }
+
+    @GetMapping("/api/recipes/week")
+    public List<RecipeInfoResDTO> getTop10RecipesByCookedCount(){
+        return recipeService.findTop10RecipesByCookedCount();
+    }
 }

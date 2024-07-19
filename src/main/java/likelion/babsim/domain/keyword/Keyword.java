@@ -1,10 +1,7 @@
 package likelion.babsim.domain.keyword;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Getter
@@ -17,11 +14,9 @@ public class Keyword {
     private String keyword;
     private Long count;
 
-    public void setKeyword(String keyword) {
+    @Builder
+    public Keyword(String keyword, Long count) {
         this.keyword = keyword;
-    }
-
-    public void setCount(Long count) {
         this.count = count;
     }
 }

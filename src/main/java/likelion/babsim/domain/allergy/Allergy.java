@@ -1,10 +1,7 @@
 package likelion.babsim.domain.allergy;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.List;
 
@@ -21,9 +18,14 @@ public class Allergy {
 
     @OneToMany(mappedBy = "allergy",cascade = CascadeType.ALL)
     @ToString.Exclude
-    private List<MemberAllergy> memberAllergys;
+    private List<MemberAllergy> memberAllergies;
 
     @OneToMany(mappedBy = "allergy",cascade = CascadeType.ALL)
     @ToString.Exclude
-    private List<RecipeAllergy> recipeAllergys;
+    private List<RecipeAllergy> recipeAllergies;
+
+    @Builder
+    public Allergy(String allergyName) {
+        this.allergyName = allergyName;
+    }
 }

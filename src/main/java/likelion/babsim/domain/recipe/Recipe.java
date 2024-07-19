@@ -3,20 +3,18 @@ package likelion.babsim.domain.recipe;
 import jakarta.persistence.*;
 import likelion.babsim.domain.allergy.RecipeAllergy;
 import likelion.babsim.domain.category.Category;
+import likelion.babsim.domain.cookedRecord.CookedRecord;
 import likelion.babsim.domain.likes.Likes;
 import likelion.babsim.domain.nft.Nft;
 import likelion.babsim.domain.review.RecipeReview;
 import likelion.babsim.domain.tag.Tag;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.List;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
 public class Recipe {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -60,5 +58,14 @@ public class Recipe {
     @ToString.Exclude
     private Nft nft;
 
+    @OneToOne(mappedBy = "recipe", cascade = CascadeType.ALL)
+    @ToString.Exclude
+    private CookedRecord cookedRecord;
 
+    @Builder
+    public Recipe(String recipeName, String recipeImg, int cookingTime) {
+        this.recipeName = recipeName;
+        this.recipeImg = recipeImg;
+        this.cookingTime = cookingTime;
+    }
 }

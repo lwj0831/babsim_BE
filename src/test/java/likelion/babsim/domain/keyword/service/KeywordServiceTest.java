@@ -26,9 +26,10 @@ class KeywordServiceTest {
     @Transactional
     void findRelatedKeywordsByKeyword() {
         for (int i = 1; i <= 15; i++) {
-            Keyword keyword = new Keyword();
-            keyword.setKeyword("keyword_" + i);
-            keyword.setCount((long) (i*10));
+            Keyword keyword = Keyword.builder()
+                    .keyword("keyword_"+i)
+                    .count((long)(i*10))
+                    .build();
             entityManager.persist(keyword);
         }
         List<Keyword> result = keywordRepository.findByKeywordContaining("keyword");
@@ -41,9 +42,10 @@ class KeywordServiceTest {
     @Transactional
     void findPopularKeywords() {
         for (int i = 1; i <= 15; i++) {
-            Keyword keyword = new Keyword();
-            keyword.setKeyword("keyword_" + i);
-            keyword.setCount((long) (i*10));
+            Keyword keyword = Keyword.builder()
+                    .keyword("keyword_"+i)
+                    .count((long)(i*10))
+                    .build();
             entityManager.persist(keyword);
         }
         List<Keyword> topKeywords = keywordRepository.findTop10ByOrderByCountDesc();

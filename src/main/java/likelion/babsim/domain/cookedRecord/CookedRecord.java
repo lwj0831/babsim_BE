@@ -1,7 +1,6 @@
-package likelion.babsim.domain.allergy;
+package likelion.babsim.domain.cookedRecord;
 
 import jakarta.persistence.*;
-import likelion.babsim.domain.member.Member;
 import likelion.babsim.domain.recipe.Recipe;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -11,23 +10,21 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class RecipeAllergy {
+public class CookedRecord {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="recipe_allergy_id")
+    @Column(name="cooked_record_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    private Long cookedCount;
+
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="recipe_id")
     private Recipe recipe;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="allergy_id")
-    private Allergy allergy;
-
     @Builder
-    public RecipeAllergy(Recipe recipe, Allergy allergy) {
+    public CookedRecord(Long cookedCount, Recipe recipe) {
+        this.cookedCount = cookedCount;
         this.recipe = recipe;
-        this.allergy = allergy;
     }
 }

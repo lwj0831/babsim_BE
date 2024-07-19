@@ -3,6 +3,7 @@ package likelion.babsim.domain.review;
 import jakarta.persistence.*;
 import likelion.babsim.domain.member.Member;
 import likelion.babsim.domain.recipe.Recipe;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -33,4 +34,9 @@ public class RecipeReview {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @Builder
+    public RecipeReview(Recipe recipe, int rating) {
+        this.recipe = recipe;
+        this.rating = rating;
+    }
 }

@@ -3,9 +3,11 @@ package likelion.babsim.domain.allergy;
 import jakarta.persistence.*;
 import likelion.babsim.domain.member.Member;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MemberAllergy {
     @Id

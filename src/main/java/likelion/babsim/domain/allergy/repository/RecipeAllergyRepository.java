@@ -1,5 +1,6 @@
 package likelion.babsim.domain.allergy.repository;
 
+import likelion.babsim.domain.allergy.Allergy;
 import likelion.babsim.domain.allergy.RecipeAllergy;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

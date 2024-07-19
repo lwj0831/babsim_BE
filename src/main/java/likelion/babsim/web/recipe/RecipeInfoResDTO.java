@@ -2,9 +2,11 @@ package likelion.babsim.web.recipe;
 
 import likelion.babsim.domain.recipe.Difficulty;
 import lombok.Builder;
+import lombok.Getter;
 
 import java.util.List;
 
+@Getter
 public class RecipeInfoResDTO {
 
     private Long id;
