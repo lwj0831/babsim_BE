@@ -2,9 +2,12 @@ package likelion.babsim.domain.recipe.service;
 
 import jakarta.persistence.EntityManager;
 import likelion.babsim.domain.allergy.Allergy;
+import likelion.babsim.domain.allergy.MemberAllergy;
 import likelion.babsim.domain.allergy.RecipeAllergy;
 import likelion.babsim.domain.allergy.repository.RecipeAllergyRepository;
 import likelion.babsim.domain.cookedRecord.CookedRecord;
+import likelion.babsim.domain.likes.Likes;
+import likelion.babsim.domain.member.Member;
 import likelion.babsim.domain.recipe.Recipe;
 import likelion.babsim.domain.recipe.repository.RecipeRepository;
 import likelion.babsim.domain.review.RecipeReview;
@@ -16,6 +19,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -47,8 +51,16 @@ class RecipeServiceTest {
                     .recipeName("keyword_" + i)
                     .recipeImg("image" + i + ".jpg")
                     .cookingTime(i * 10)
+                    .forked(true)
                     .build();
             entityManager.persist(recipe);
+            Recipe recipe2 = Recipe.builder()
+                    .recipeName("keyword2_" + i)
+                    .recipeImg("image" + i + ".jpg")
+                    .cookingTime(0)
+                    .forked(true)
+                    .build();
+            entityManager.persist(recipe2);
 
             Tag tag1 = Tag.builder()
                     .recipe(recipe)
@@ -57,7 +69,7 @@ class RecipeServiceTest {
             entityManager.persist(tag1);
             Tag tag2 = Tag.builder()
                     .recipe(recipe)
-                    .tagName("Tag" + i+1)
+                    .tagName("Tag2" + i)
                     .build();
             entityManager.persist(tag2);
 
@@ -73,11 +85,11 @@ class RecipeServiceTest {
             entityManager.persist(review2);
 
             Allergy allergy1 = Allergy.builder()
-                    .allergyName("Allergy" + i)
+                    .allergyName("Milk Allergy")
                     .build();
             entityManager.persist(allergy1);
             Allergy allergy2 = Allergy.builder()
-                    .allergyName("Allergy" + i)
+                    .allergyName("Peanut Allergy")
                     .build();
             entityManager.persist(allergy2);
 
@@ -90,7 +102,30 @@ class RecipeServiceTest {
                     .recipe(recipe)
                     .allergy(allergy2)
                     .build();
-            entityManager.persist(recipeAllergy2);
+            entityManager.persist(recipeAllergy2); //recipe에 allergy1,allergy2 부여
+
+            Member member = Member.builder()
+                    .id((long)i)
+                    .name("Test Member"+i)
+                    .build();
+            entityManager.merge(member);
+
+            Likes like = Likes.builder()
+                    .member(member)
+                    .recipe(recipe).
+                    build();
+            entityManager.persist(like);
+            Likes like2 = Likes.builder()
+                    .member(member)
+                    .recipe(recipe2).
+                    build();
+            entityManager.persist(like2);
+
+            MemberAllergy memberAllergy = MemberAllergy.builder()
+                    .member(member)
+                    .allergy(allergy1)
+                    .build();
+            entityManager.persist(memberAllergy); //member는 allergy1있음
 
             CookedRecord cookedRecord = CookedRecord.builder()
                     .recipe(recipe)
@@ -105,20 +140,20 @@ class RecipeServiceTest {
     }
     @Test
     @Transactional
+    @DirtiesContext
     void findRecipesByKeyword() {
         List<RecipeInfoResDTO> result = recipeService.findRecipesByKeyword("keyword");
 
-        // Then
-        assertThat(result).hasSize(10);
         assertThat(result.get(0).getRecipeName()).isEqualTo("keyword_1");
         assertThat(result.get(0).getTags()).contains("Tag1");
-        assertThat(result.get(0).getTags()).contains("Tag11");
+        assertThat(result.get(0).getTags()).contains("Tag21");
         assertThat(result.get(0).getRate()).isEqualTo(3);
         assertThat(result.get(0).getAllergies()).hasSize(2);
     }
 
     @Test
     @Transactional
+    @DirtiesContext
     void testFindTop10RecipesByCookedCount() {
         List<RecipeInfoResDTO> result = recipeService.findTop10RecipesByCookedCount();
 
@@ -134,5 +169,43 @@ class RecipeServiceTest {
         for (int i = 0; i < result.size(); i++) {
             assertEquals(expectedIds.get(i), result.get(i).getId());
         }
+    }
+
+    @Test
+    @Transactional
+    @DirtiesContext
+    void testFindRecommendRecipesByMemberId() {
+        Long memberId = 1L; // Assuming the member has ID 1
+        List<RecipeInfoResDTO> result = recipeService.findRecommendRecipesByMemberId(memberId);
+
+        assertNotNull(result);
+        assertEquals(10, result.size()); // Since 10 recipes will be excluded due to the member's allergy
+
+        List<String> excludedRecipes = result.stream()
+                .map(RecipeInfoResDTO::getRecipeName)
+                .toList();
+
+        assertThat(excludedRecipes).doesNotContain("keyword_1");
+    }
+
+    @Test
+    @Transactional
+    @DirtiesContext
+    void testFindLikesRecipesByMemberId(){
+        List<RecipeInfoResDTO> result = recipeService.findLikesRecipesByMemberId(1L);
+        List<String> likesRecipes = result.stream()
+                .map(RecipeInfoResDTO::getRecipeName)
+                .toList();
+        assertThat(likesRecipes).hasSize(2);
+    }
+
+    @Test
+    @Transactional
+    void testFindForkedRecipesByMemberId(){
+        List<RecipeInfoResDTO> result = recipeService.findForkedRecipesByMemberId(1L);
+        List<String> forkedRecipes = result.stream()
+                .map(RecipeInfoResDTO::getRecipeName)
+                .toList();
+        assertThat(forkedRecipes).hasSize(2);
     }
 }

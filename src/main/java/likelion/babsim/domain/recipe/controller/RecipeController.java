@@ -22,8 +22,23 @@ public class RecipeController {
         return recipeService.findRecipesByKeyword(keyword);
     }
 
-    @GetMapping("/api/recipes/week")
+    @GetMapping("/week")
     public List<RecipeInfoResDTO> getTop10RecipesByCookedCount(){
         return recipeService.findTop10RecipesByCookedCount();
+    }
+
+    @GetMapping("/recommend")
+    public List<RecipeInfoResDTO> getRecommendRecipesByMemberId(@RequestParam Long memberId){
+        return recipeService.findRecommendRecipesByMemberId(memberId);
+    }
+
+    @GetMapping("/likes")
+    public List<RecipeInfoResDTO> getLikesRecipesByMemberId(@RequestParam Long memberId){
+        return recipeService.findLikesRecipesByMemberId(memberId);
+    }
+
+    @GetMapping("/forked")
+    public List<RecipeInfoResDTO> getForkedRecipesByMemberId(@RequestParam Long memberId){
+        return recipeService.findForkedRecipesByMemberId(memberId);
     }
 }

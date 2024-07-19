@@ -5,8 +5,10 @@ import likelion.babsim.domain.allergy.MemberAllergy;
 import likelion.babsim.domain.cart.Cart;
 import likelion.babsim.domain.likes.Likes;
 import likelion.babsim.domain.order.Orders;
+import likelion.babsim.domain.recipe.Recipe;
 import likelion.babsim.domain.review.ProductReview;
 import likelion.babsim.domain.review.RecipeReview;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
@@ -32,6 +34,10 @@ public class Member {
 
     @OneToMany(mappedBy = "member")
     @ToString.Exclude
+    private List<Recipe> recipes;
+
+    @OneToMany(mappedBy = "member")
+    @ToString.Exclude
     private List<RecipeReview> recipeReviews;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
@@ -53,4 +59,10 @@ public class Member {
     @OneToOne(mappedBy = "member", cascade = CascadeType.ALL)
     @ToString.Exclude
     private Cart cart;
+
+    @Builder
+    public Member(Long id,String name) {
+        this.id = id;
+        this.name = name;
+    }
 }

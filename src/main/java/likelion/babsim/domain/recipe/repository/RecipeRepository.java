@@ -12,6 +12,9 @@ import java.util.List;
 @Repository
 public interface RecipeRepository extends JpaRepository<Recipe,Long> {
     List<Recipe> findAllByRecipeNameContaining(String keyword, Pageable pageable);
-    @Query("SELECT r FROM Recipe r WHERE r.id NOT IN (" + "SELECT ra.recipe.id FROM RecipeAllergy ra WHERE ra.allergy.id IN :allergyIds)")
+    @Query("SELECT r FROM Recipe r WHERE r.id NOT IN (SELECT ra.recipe.id FROM RecipeAllergy ra WHERE ra.allergy.id IN :allergyIds)")
     List<Recipe> findRecipesExcludingAllergies(@Param("allergyIds") List<Long> allergyIds, Pageable pageable);
+
+    List<Recipe> findAllByMemberIdAndForked(Long memberId,boolean forked);
+
 }

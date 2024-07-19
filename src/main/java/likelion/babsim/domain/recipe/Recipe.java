@@ -5,6 +5,7 @@ import likelion.babsim.domain.allergy.RecipeAllergy;
 import likelion.babsim.domain.category.Category;
 import likelion.babsim.domain.cookedRecord.CookedRecord;
 import likelion.babsim.domain.likes.Likes;
+import likelion.babsim.domain.member.Member;
 import likelion.babsim.domain.nft.Nft;
 import likelion.babsim.domain.review.RecipeReview;
 import likelion.babsim.domain.tag.Tag;
@@ -31,8 +32,12 @@ public class Recipe {
     private String recipeDetailImg;
     private String recipeContent;
     private String timers;
-    private boolean isForked;
+    private boolean forked;
     private Long cookedCount;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="member_id")
+    private Member member;
 
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
     @ToString.Exclude
@@ -63,9 +68,10 @@ public class Recipe {
     private CookedRecord cookedRecord;
 
     @Builder
-    public Recipe(String recipeName, String recipeImg, int cookingTime) {
+    public Recipe(String recipeName, String recipeImg, int cookingTime,boolean forked) {
         this.recipeName = recipeName;
         this.recipeImg = recipeImg;
         this.cookingTime = cookingTime;
+        this.forked = forked;
     }
 }

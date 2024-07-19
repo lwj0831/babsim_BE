@@ -1,19 +1,13 @@
 package likelion.babsim.domain.recipe.service;
 
-import likelion.babsim.domain.allergy.Allergy;
-import likelion.babsim.domain.allergy.repository.RecipeAllergyRepository;
-import likelion.babsim.domain.allergy.service.MemberAllergyService;
-import likelion.babsim.domain.allergy.service.RecipeAllergyService;
+import likelion.babsim.domain.allergy.service.AllergyService;
 import likelion.babsim.domain.cookedRecord.CookedRecord;
-import likelion.babsim.domain.cookedRecord.repository.CookedRecordRepository;
 import likelion.babsim.domain.cookedRecord.service.CookedRecordService;
+import likelion.babsim.domain.likes.Likes;
+import likelion.babsim.domain.likes.service.LikesService;
 import likelion.babsim.domain.recipe.Recipe;
 import likelion.babsim.domain.recipe.repository.RecipeRepository;
-import likelion.babsim.domain.review.RecipeReview;
-import likelion.babsim.domain.review.repository.RecipeReviewRepository;
 import likelion.babsim.domain.review.service.RecipeReviewService;
-import likelion.babsim.domain.tag.repository.TagRepository;
-import likelion.babsim.domain.tag.Tag;
 import likelion.babsim.domain.tag.service.TagService;
 import likelion.babsim.web.recipe.RecipeInfoResDTO;
 import lombok.RequiredArgsConstructor;
@@ -33,9 +27,9 @@ public class RecipeService {
     private final RecipeRepository recipeRepository;
     private final TagService tagService;
     private final RecipeReviewService recipeReviewService;
-    private final RecipeAllergyService recipeAllergyService;
+    private final AllergyService allergyService;
     private final CookedRecordService cookedRecordService;
-    private final MemberAllergyService memberAllergyService;
+    private final LikesService likesService;
 
     public List<RecipeInfoResDTO> findRecipesByKeyword(String keyword){
         Pageable pageable = PageRequest.of(0, 50);
@@ -44,14 +38,28 @@ public class RecipeService {
     }
 
     public List<RecipeInfoResDTO> findTop10RecipesByCookedCount(){
-        List<Recipe> recipes = cookedRecordService.findTop10Recipes();
+        List<Recipe> recipes = cookedRecordService.findTop10CookedRecords().stream()
+                .map(CookedRecord::getRecipe)
+                .toList();
         return recipesToRecipeInfoResDTOList(recipes);
     }
 
-    public List<RecipeInfoResDTO> findRecommendRecipes(Long memberId){
+    public List<RecipeInfoResDTO> findRecommendRecipesByMemberId(Long memberId){
         Pageable pageable = PageRequest.of(0, 10);
-        List<Long> allergies = memberAllergyService.findAllergiesByMemberId(memberId);
+        List<Long> allergies = allergyService.findAllergiesByMemberId(memberId);
         List<Recipe> recipes = recipeRepository.findRecipesExcludingAllergies(allergies,pageable);
+        return recipesToRecipeInfoResDTOList(recipes);
+    }
+
+    public List<RecipeInfoResDTO> findLikesRecipesByMemberId(Long memberId){
+        List<Recipe> recipes = likesService.findLikesByMemberId(memberId).stream()
+                .map(Likes::getRecipe)
+                .toList();
+        return recipesToRecipeInfoResDTOList(recipes);
+    }
+
+    public List<RecipeInfoResDTO> findForkedRecipesByMemberId(Long memberId){
+        List<Recipe> recipes = recipeRepository.findAllByMemberIdAndForked(memberId,true);
         return recipesToRecipeInfoResDTOList(recipes);
     }
 
@@ -65,7 +73,7 @@ public class RecipeService {
                     .cookingTime(recipe.getCookingTime())
                     .tags(tagService.findTagNamesByRecipeId(recipe.getId()))
                     .rate(recipeReviewService.findRatingByRecipeId(recipe.getId()))
-                    .allergies(recipeAllergyService.findAllergiesByRecipeId(recipe.getId()))
+                    .allergies(allergyService.findAllergiesByRecipeId(recipe.getId()))
                     .build();
             result.add(dto);
         }
