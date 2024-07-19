@@ -2,11 +2,11 @@ package likelion.babsim.domain.tag;
 
 import jakarta.persistence.*;
 import likelion.babsim.domain.recipe.Recipe;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
 public class Tag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,5 +18,11 @@ public class Tag {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="recipe_id")
     private Recipe recipe;
+
+    @Builder
+    public Tag(Recipe recipe, String tagName) {
+        this.recipe = recipe;
+        this.tagName = tagName;
+    }
 
 }
