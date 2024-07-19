@@ -15,9 +15,7 @@ import java.util.List;
 public class CookedRecordService {
     private final CookedRecordRepository cookedRecordRepository;
 
-    public List<Recipe> findTop10Recipes(){
-        return cookedRecordRepository.findTop10ByOrderByCookedCountDesc().stream()
-                .map(CookedRecord::getRecipe)
-                .toList();
+    public List<CookedRecord> findTop10CookedRecords(){
+        return cookedRecordRepository.findTop10ByOrderByCookedCountDesc();
     }
 }
