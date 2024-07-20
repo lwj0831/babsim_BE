@@ -17,7 +17,7 @@ public class LikesService {
     public List<Likes> findLikesByMemberId(String memberId){
         return likesRepository.findAllByMemberId(memberId);
     }
-    public boolean checkLikesByMemberIdAndRecipeId(Long memberId,Long recipeId){
+    public boolean checkLikesByMemberIdAndRecipeId(String memberId,Long recipeId){
         return likesRepository.existsByMemberIdAndRecipeId(memberId,recipeId);
     }
 }

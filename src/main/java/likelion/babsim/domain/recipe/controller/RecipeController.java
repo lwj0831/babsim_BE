@@ -40,7 +40,7 @@ public class RecipeController {
     }
 
     @GetMapping("/{memberId}")
-    public List<RecipeInfoResDTO> getMyRecipesByOwnerId(@PathVariable Long memberId){
+    public List<RecipeInfoResDTO> getMyRecipesByOwnerId(@PathVariable String memberId){
         return recipeService.findMyRecipesByOwnerId(memberId);
     }
 }

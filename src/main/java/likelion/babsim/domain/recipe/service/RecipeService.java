@@ -59,16 +59,16 @@ public class RecipeService {
         return recipesToRecipeInfoResDTOList(recipes);
     }
 
-    public List<RecipeInfoResDTO> findForkedRecipesByMemberId(Long memberId){
+    public List<RecipeInfoResDTO> findForkedRecipesByMemberId(String memberId){
         List<Recipe> recipes = recipeRepository.findAllByMemberIdAndCreatorIdNot(memberId,memberId);
         return recipesToRecipeInfoResDTOList(recipes);
     }
 
-    public List<RecipeInfoResDTO> findMyRecipesByCreatorId(Long memberId){
+    public List<RecipeInfoResDTO> findMyRecipesByCreatorId(String memberId){
         List<Recipe> recipes = recipeRepository.findAllByCreatorId(memberId);
         return recipesToRecipeInfoResDTOList(recipes);
     }
-    public List<RecipeInfoResDTO> findMyRecipesByOwnerId(Long memberId){
+    public List<RecipeInfoResDTO> findMyRecipesByOwnerId(String memberId){
         List<Recipe> recipes = recipeRepository.findAllByOwnerId(memberId);
         return recipesToRecipeInfoResDTOList(recipes);
     }
@@ -89,7 +89,7 @@ public class RecipeService {
         }
         return result;
     }
-    private List<RecipeDetailResDTO> recipesToRecipeDetailResDTOList(List<Recipe> recipes, Long memberId){
+    private List<RecipeDetailResDTO> recipesToRecipeDetailResDTOList(List<Recipe> recipes, String memberId){
         List<RecipeDetailResDTO> result = new ArrayList<>();
         for (Recipe recipe : recipes) {
             RecipeDetailResDTO dto = RecipeDetailResDTO.builder()
