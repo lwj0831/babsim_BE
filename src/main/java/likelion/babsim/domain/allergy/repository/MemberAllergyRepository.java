@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface MemberAllergyRepository extends JpaRepository<MemberAllergy,Long> {
-    List<MemberAllergy> findAllByMemberId(Long memberId);
+    List<MemberAllergy> findAllByMemberId(String memberId);
 }

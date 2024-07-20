@@ -4,16 +4,12 @@ import jakarta.persistence.EntityManager;
 import likelion.babsim.domain.allergy.Allergy;
 import likelion.babsim.domain.allergy.MemberAllergy;
 import likelion.babsim.domain.allergy.RecipeAllergy;
-import likelion.babsim.domain.allergy.repository.RecipeAllergyRepository;
 import likelion.babsim.domain.cookedRecord.CookedRecord;
 import likelion.babsim.domain.likes.Likes;
 import likelion.babsim.domain.member.Member;
 import likelion.babsim.domain.recipe.Recipe;
-import likelion.babsim.domain.recipe.repository.RecipeRepository;
 import likelion.babsim.domain.review.RecipeReview;
-import likelion.babsim.domain.review.repository.RecipeReviewRepository;
 import likelion.babsim.domain.tag.Tag;
-import likelion.babsim.domain.tag.repository.TagRepository;
 import likelion.babsim.web.recipe.RecipeInfoResDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -105,7 +100,7 @@ class RecipeServiceTest {
             entityManager.persist(recipeAllergy2); //recipe에 allergy1,allergy2 부여
 
             Member member = Member.builder()
-                    .id((long)i)
+                    .id(i + "")
                     .name("Test Member"+i)
                     .build();
             entityManager.merge(member);
@@ -175,7 +170,7 @@ class RecipeServiceTest {
     @Transactional
     @DirtiesContext
     void testFindRecommendRecipesByMemberId() {
-        Long memberId = 1L; // Assuming the member has ID 1
+        String memberId = "1L"; // Assuming the member has ID 1
         List<RecipeInfoResDTO> result = recipeService.findRecommendRecipesByMemberId(memberId);
 
         assertNotNull(result);
@@ -192,7 +187,7 @@ class RecipeServiceTest {
     @Transactional
     @DirtiesContext
     void testFindLikesRecipesByMemberId(){
-        List<RecipeInfoResDTO> result = recipeService.findLikesRecipesByMemberId(1L);
+        List<RecipeInfoResDTO> result = recipeService.findLikesRecipesByMemberId("1L");
         List<String> likesRecipes = result.stream()
                 .map(RecipeInfoResDTO::getRecipeName)
                 .toList();
@@ -202,7 +197,7 @@ class RecipeServiceTest {
     @Test
     @Transactional
     void testFindForkedRecipesByMemberId(){
-        List<RecipeInfoResDTO> result = recipeService.findForkedRecipesByMemberId(1L);
+        List<RecipeInfoResDTO> result = recipeService.findForkedRecipesByMemberId("1L");
         List<String> forkedRecipes = result.stream()
                 .map(RecipeInfoResDTO::getRecipeName)
                 .toList();
