@@ -16,11 +16,11 @@ public interface RecipeRepository extends JpaRepository<Recipe,Long> {
     @Query("SELECT r FROM Recipe r WHERE r.id NOT IN (SELECT ra.recipe.id FROM RecipeAllergy ra WHERE ra.allergy.id IN :allergyIds)")
     List<Recipe> findRecipesExcludingAllergies(@Param("allergyIds") List<Long> allergyIds, Pageable pageable);
 
-    List<Recipe> findAllByMemberIdAndCreatorIdNot(Long memberId,Long creatorId);
+    List<Recipe> findAllByMemberIdAndCreatorIdNot(String memberId,String creatorId);
     /*@Query("SELECT r FROM Recipe r WHERE r.memberId = :memberId AND r.forked = :forked")
     List<Recipe> findRecipesByMemberIdAndForked(@Param("memberId") Long memberId, @Param("forked") boolean forked);*/
-    List<Recipe> findAllByCreatorId(Long creatorId);
-    List<Recipe> findAllByOwnerId(Long ownerId);
+    List<Recipe> findAllByCreatorId(String creatorId);
+    List<Recipe> findAllByOwnerId(String ownerId);
 
 
 }

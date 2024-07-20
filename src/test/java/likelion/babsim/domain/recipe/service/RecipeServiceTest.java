@@ -50,7 +50,7 @@ class RecipeServiceTest {
 
         for (int i = 1; i <= 10; i++) {
             Member member = Member.builder()
-                    .id((long)i)
+                    .id(Integer.toString(i))
                     .name("Test Member"+i)
                     .build();
             entityManager.merge(member);
@@ -59,8 +59,8 @@ class RecipeServiceTest {
                     .recipeName("keyword_" + i)
                     .recipeImg("image" + i + ".jpg")
                     .cookingTime(i * 10)
-                    .creatorId(1L)
-                    .ownerId(1L)
+                    .creatorId("1")
+                    .ownerId("1")
                     .member(member)
                     .build();
             entityManager.persist(recipe);
@@ -68,9 +68,9 @@ class RecipeServiceTest {
                     .recipeName("keyword2_" + i)
                     .recipeImg("image" + i + ".jpg")
                     .cookingTime(0)
-                    .creatorId(1L)
+                    .creatorId("1")
+                    .ownerId("1")
                     .member(member)
-                    .ownerId(1L)
                     .build();
             entityManager.persist(recipe2);
 
@@ -115,12 +115,6 @@ class RecipeServiceTest {
                     .allergy(allergy2)
                     .build();
             entityManager.persist(recipeAllergy2); //recipe에 allergy1,allergy2 부여
-
-            Member member = Member.builder()
-                    .id(i + "")
-                    .name("Test Member"+i)
-                    .build();
-            entityManager.merge(member);
 
             Likes like = Likes.builder()
                     .member(member)
@@ -187,7 +181,7 @@ class RecipeServiceTest {
     @Transactional
     @DirtiesContext
     void testFindRecommendRecipesByMemberId() {
-        String memberId = "1L"; // Assuming the member has ID 1
+        String memberId = "1"; // Assuming the member has ID 1
         List<RecipeInfoResDTO> result = recipeService.findRecommendRecipesByMemberId(memberId);
 
         assertNotNull(result);
@@ -204,7 +198,7 @@ class RecipeServiceTest {
     @Transactional
     @DirtiesContext
     void testFindLikesRecipesByMemberId(){
-        List<RecipeInfoResDTO> result = recipeService.findLikesRecipesByMemberId("1L");
+        List<RecipeInfoResDTO> result = recipeService.findLikesRecipesByMemberId("1");
         List<String> likesRecipes = result.stream()
                 .map(RecipeInfoResDTO::getRecipeName)
                 .toList();
@@ -215,7 +209,7 @@ class RecipeServiceTest {
     @Transactional
     @DirtiesContext
     void testFindForkedRecipesByMemberId(){
-        List<RecipeInfoResDTO> result = recipeService.findForkedRecipesByMemberId("2L");//Recipe1~20의 creatorId=1L임
+        List<RecipeInfoResDTO> result = recipeService.findForkedRecipesByMemberId("2");//Recipe1~20의 creatorId=1L임
         for (RecipeInfoResDTO recipeInfoResDTO : result) {
             log.info("{}",recipeInfoResDTO.getRecipeName());
         }
@@ -229,7 +223,7 @@ class RecipeServiceTest {
     @Transactional
     @DirtiesContext
     void testFindMyRecipesByOwnerId(){
-        List<RecipeInfoResDTO> result = recipeService.findMyRecipesByOwnerId(1L);
+        List<RecipeInfoResDTO> result = recipeService.findMyRecipesByOwnerId("1");
         List<String> myRecipes = result.stream()
                 .map(RecipeInfoResDTO::getRecipeName)
                 .toList();

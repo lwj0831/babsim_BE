@@ -8,6 +8,6 @@ import java.util.List;
 
 @Repository
 public interface LikesRepository extends JpaRepository<Likes,Long> {
-    List<Likes> findAllByMemberId(Long memberId);
-    boolean existsByMemberIdAndRecipeId(Long memberId,Long recipeId);
+    List<Likes> findAllByMemberId(String memberId);
+    boolean existsByMemberIdAndRecipeId(String memberId,Long recipeId);
 }
