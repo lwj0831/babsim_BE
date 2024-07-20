@@ -115,6 +115,12 @@ class RecipeServiceTest {
                     .build();
             entityManager.persist(recipeAllergy2); //recipe에 allergy1,allergy2 부여
 
+            Member member = Member.builder()
+                    .id(i + "")
+                    .name("Test Member"+i)
+                    .build();
+            entityManager.merge(member);
+
             Likes like = Likes.builder()
                     .member(member)
                     .recipe(recipe).
@@ -180,7 +186,7 @@ class RecipeServiceTest {
     @Transactional
     @DirtiesContext
     void testFindRecommendRecipesByMemberId() {
-        Long memberId = 1L; // Assuming the member has ID 1
+        String memberId = "1L"; // Assuming the member has ID 1
         List<RecipeInfoResDTO> result = recipeService.findRecommendRecipesByMemberId(memberId);
 
         assertNotNull(result);
@@ -197,7 +203,7 @@ class RecipeServiceTest {
     @Transactional
     @DirtiesContext
     void testFindLikesRecipesByMemberId(){
-        List<RecipeInfoResDTO> result = recipeService.findLikesRecipesByMemberId(1L);
+        List<RecipeInfoResDTO> result = recipeService.findLikesRecipesByMemberId("1L");
         List<String> likesRecipes = result.stream()
                 .map(RecipeInfoResDTO::getRecipeName)
                 .toList();
@@ -208,7 +214,7 @@ class RecipeServiceTest {
     @Transactional
     @DirtiesContext
     void testFindForkedRecipesByMemberId(){
-        List<RecipeInfoResDTO> result = recipeService.findForkedRecipesByMemberId(2L);//Recipe1~20의 creatorId=1L임
+        List<RecipeInfoResDTO> result = recipeService.findForkedRecipesByMemberId("2L");//Recipe1~20의 creatorId=1L임
         for (RecipeInfoResDTO recipeInfoResDTO : result) {
             log.info("{}",recipeInfoResDTO.getRecipeName());
         }

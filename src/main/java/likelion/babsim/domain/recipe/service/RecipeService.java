@@ -45,14 +45,14 @@ public class RecipeService {
         return recipesToRecipeInfoResDTOList(recipes);
     }
 
-    public List<RecipeInfoResDTO> findRecommendRecipesByMemberId(Long memberId){
+    public List<RecipeInfoResDTO> findRecommendRecipesByMemberId(String memberId){
         Pageable pageable = PageRequest.of(0, 10);
         List<Long> allergies = allergyService.findAllergiesByMemberId(memberId);
         List<Recipe> recipes = recipeRepository.findRecipesExcludingAllergies(allergies,pageable);
         return recipesToRecipeInfoResDTOList(recipes);
     }
 
-    public List<RecipeInfoResDTO> findLikesRecipesByMemberId(Long memberId){
+    public List<RecipeInfoResDTO> findLikesRecipesByMemberId(String memberId){
         List<Recipe> recipes = likesService.findLikesByMemberId(memberId).stream()
                 .map(Likes::getRecipe)
                 .toList();

@@ -8,20 +8,19 @@ import likelion.babsim.domain.order.Orders;
 import likelion.babsim.domain.recipe.Recipe;
 import likelion.babsim.domain.review.ProductReview;
 import likelion.babsim.domain.review.RecipeReview;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
+@Getter
+@AllArgsConstructor
 @NoArgsConstructor
 public class Member {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="member_id")
-    private Long id;
+    private String id;
 
     private String name;
     private Integer age;
@@ -46,6 +45,7 @@ public class Member {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     @ToString.Exclude
+    @Setter
     private List<MemberAllergy> memberAllergies;
 
     @OneToMany(mappedBy = "member")
@@ -60,8 +60,18 @@ public class Member {
     @ToString.Exclude
     private Cart cart;
 
+    @Builder(builderMethodName = "dtoBuilder")
+    public Member(String id, String name, Integer age, String email, Job job, LocalDateTime registerDate) {
+        this.id = id;
+        this.name = name;
+        this.age = age;
+        this.email = email;
+        this.job = job;
+        this.registerDate = registerDate;
+    }
+
     @Builder
-    public Member(Long id,String name) {
+    public Member(String id,String name) {
         this.id = id;
         this.name = name;
     }

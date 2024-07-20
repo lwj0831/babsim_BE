@@ -22,4 +22,5 @@ public interface RecipeRepository extends JpaRepository<Recipe,Long> {
     List<Recipe> findAllByCreatorId(Long creatorId);
     List<Recipe> findAllByOwnerId(Long ownerId);
 
+
 }

@@ -14,7 +14,7 @@ import java.util.List;
 public class AllergyService {
     private final MemberAllergyRepository memberAllergyRepository;
     private final RecipeAllergyRepository recipeAllergyRepository;
-    public List<Long> findAllergiesByMemberId(Long memberId){
+    public List<Long> findAllergiesByMemberId(String memberId){
         return memberAllergyRepository.findAllByMemberId(memberId).stream()
                 .map(m->m.getAllergy().getId())
                 .toList();

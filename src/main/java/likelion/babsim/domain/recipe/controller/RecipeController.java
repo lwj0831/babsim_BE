@@ -25,17 +25,17 @@ public class RecipeController {
     }
 
     @GetMapping("/recommend")
-    public List<RecipeInfoResDTO> getRecommendRecipesByMemberId(@RequestParam Long memberId){
+    public List<RecipeInfoResDTO> getRecommendRecipesByMemberId(@RequestParam String memberId){
         return recipeService.findRecommendRecipesByMemberId(memberId);
     }
 
     @GetMapping("/likes")
-    public List<RecipeInfoResDTO> getLikesRecipesByMemberId(@RequestParam Long memberId){
+    public List<RecipeInfoResDTO> getLikesRecipesByMemberId(@RequestParam String memberId){
         return recipeService.findLikesRecipesByMemberId(memberId);
     }
 
     @GetMapping("/forked")
-    public List<RecipeInfoResDTO> getForkedRecipesByMemberId(@RequestParam Long memberId){
+    public List<RecipeInfoResDTO> getForkedRecipesByMemberId(@RequestParam String memberId){
         return recipeService.findForkedRecipesByMemberId(memberId);
     }
 
