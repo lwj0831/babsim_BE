@@ -4,17 +4,14 @@ import jakarta.persistence.EntityManager;
 import likelion.babsim.domain.allergy.Allergy;
 import likelion.babsim.domain.allergy.MemberAllergy;
 import likelion.babsim.domain.allergy.RecipeAllergy;
-import likelion.babsim.domain.allergy.repository.RecipeAllergyRepository;
 import likelion.babsim.domain.cookedRecord.CookedRecord;
 import likelion.babsim.domain.likes.Likes;
 import likelion.babsim.domain.member.Member;
 import likelion.babsim.domain.recipe.Recipe;
-import likelion.babsim.domain.recipe.repository.RecipeRepository;
 import likelion.babsim.domain.review.RecipeReview;
-import likelion.babsim.domain.review.repository.RecipeReviewRepository;
 import likelion.babsim.domain.tag.Tag;
-import likelion.babsim.domain.tag.repository.TagRepository;
 import likelion.babsim.web.recipe.RecipeInfoResDTO;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +21,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
+@Slf4j
 @SpringBootTest
 class RecipeServiceTest {
 
@@ -45,20 +42,34 @@ class RecipeServiceTest {
         entityManager.createQuery("DELETE FROM Tag").executeUpdate();
         entityManager.createQuery("DELETE FROM RecipeReview").executeUpdate();
         entityManager.createQuery("DELETE FROM RecipeAllergy").executeUpdate();
+        entityManager.createQuery("DELETE FROM Member").executeUpdate();
+        entityManager.createQuery("DELETE FROM Likes").executeUpdate();
+        entityManager.createQuery("DELETE FROM MemberAllergy").executeUpdate();
+        entityManager.createQuery("DELETE FROM CookedRecord").executeUpdate();
 
         for (int i = 1; i <= 10; i++) {
+            Member member = Member.builder()
+                    .id((long)i)
+                    .name("Test Member"+i)
+                    .build();
+            entityManager.merge(member);
+
             Recipe recipe = Recipe.builder()
                     .recipeName("keyword_" + i)
                     .recipeImg("image" + i + ".jpg")
                     .cookingTime(i * 10)
-                    .forked(true)
+                    .creatorId(1L)
+                    .ownerId(1L)
+                    .member(member)
                     .build();
             entityManager.persist(recipe);
             Recipe recipe2 = Recipe.builder()
                     .recipeName("keyword2_" + i)
                     .recipeImg("image" + i + ".jpg")
                     .cookingTime(0)
-                    .forked(true)
+                    .creatorId(1L)
+                    .member(member)
+                    .ownerId(1L)
                     .build();
             entityManager.persist(recipe2);
 
@@ -103,12 +114,6 @@ class RecipeServiceTest {
                     .allergy(allergy2)
                     .build();
             entityManager.persist(recipeAllergy2); //recipe에 allergy1,allergy2 부여
-
-            Member member = Member.builder()
-                    .id((long)i)
-                    .name("Test Member"+i)
-                    .build();
-            entityManager.merge(member);
 
             Likes like = Likes.builder()
                     .member(member)
@@ -201,11 +206,26 @@ class RecipeServiceTest {
 
     @Test
     @Transactional
+    @DirtiesContext
     void testFindForkedRecipesByMemberId(){
-        List<RecipeInfoResDTO> result = recipeService.findForkedRecipesByMemberId(1L);
+        List<RecipeInfoResDTO> result = recipeService.findForkedRecipesByMemberId(2L);//Recipe1~20의 creatorId=1L임
+        for (RecipeInfoResDTO recipeInfoResDTO : result) {
+            log.info("{}",recipeInfoResDTO.getRecipeName());
+        }
         List<String> forkedRecipes = result.stream()
                 .map(RecipeInfoResDTO::getRecipeName)
                 .toList();
-        assertThat(forkedRecipes).hasSize(2);
+        assertThat(forkedRecipes).hasSize(2);//member(id=2L)과 연관되어 있는 레시피 중(Recipe3,4)에 creatorId가 memberId와 다른거
+    }
+
+    @Test
+    @Transactional
+    @DirtiesContext
+    void testFindMyRecipesByOwnerId(){
+        List<RecipeInfoResDTO> result = recipeService.findMyRecipesByOwnerId(1L);
+        List<String> myRecipes = result.stream()
+                .map(RecipeInfoResDTO::getRecipeName)
+                .toList();
+        assertThat(myRecipes).hasSize(20);
     }
 }

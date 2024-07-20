@@ -9,6 +9,7 @@ import likelion.babsim.domain.recipe.Recipe;
 import likelion.babsim.domain.recipe.repository.RecipeRepository;
 import likelion.babsim.domain.review.service.RecipeReviewService;
 import likelion.babsim.domain.tag.service.TagService;
+import likelion.babsim.web.recipe.RecipeDetailResDTO;
 import likelion.babsim.web.recipe.RecipeInfoResDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -59,7 +60,16 @@ public class RecipeService {
     }
 
     public List<RecipeInfoResDTO> findForkedRecipesByMemberId(Long memberId){
-        List<Recipe> recipes = recipeRepository.findAllByMemberIdAndForked(memberId,true);
+        List<Recipe> recipes = recipeRepository.findAllByMemberIdAndCreatorIdNot(memberId,memberId);
+        return recipesToRecipeInfoResDTOList(recipes);
+    }
+
+    public List<RecipeInfoResDTO> findMyRecipesByCreatorId(Long memberId){
+        List<Recipe> recipes = recipeRepository.findAllByCreatorId(memberId);
+        return recipesToRecipeInfoResDTOList(recipes);
+    }
+    public List<RecipeInfoResDTO> findMyRecipesByOwnerId(Long memberId){
+        List<Recipe> recipes = recipeRepository.findAllByOwnerId(memberId);
         return recipesToRecipeInfoResDTOList(recipes);
     }
 
@@ -74,6 +84,23 @@ public class RecipeService {
                     .tags(tagService.findTagNamesByRecipeId(recipe.getId()))
                     .rate(recipeReviewService.findRatingByRecipeId(recipe.getId()))
                     .allergies(allergyService.findAllergiesByRecipeId(recipe.getId()))
+                    .build();
+            result.add(dto);
+        }
+        return result;
+    }
+    private List<RecipeDetailResDTO> recipesToRecipeDetailResDTOList(List<Recipe> recipes, Long memberId){
+        List<RecipeDetailResDTO> result = new ArrayList<>();
+        for (Recipe recipe : recipes) {
+            RecipeDetailResDTO dto = RecipeDetailResDTO.builder()
+                    .id(recipe.getId())
+                    .recipeImg(recipe.getRecipeImg())
+                    .recipeName(recipe.getRecipeName())
+                    .cookingTime(recipe.getCookingTime())
+                    .tags(tagService.findTagNamesByRecipeId(recipe.getId()))
+                    .rate(recipeReviewService.findRatingByRecipeId(recipe.getId()))
+                    .allergies(allergyService.findAllergiesByRecipeId(recipe.getId()))
+                    .liked(likesService.checkLikesByMemberIdAndRecipeId(memberId,recipe.getId()))
                     .build();
             result.add(dto);
         }

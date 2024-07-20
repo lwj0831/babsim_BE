@@ -4,10 +4,7 @@ import likelion.babsim.domain.recipe.Recipe;
 import likelion.babsim.domain.recipe.service.RecipeService;
 import likelion.babsim.web.recipe.RecipeInfoResDTO;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -40,5 +37,10 @@ public class RecipeController {
     @GetMapping("/forked")
     public List<RecipeInfoResDTO> getForkedRecipesByMemberId(@RequestParam Long memberId){
         return recipeService.findForkedRecipesByMemberId(memberId);
+    }
+
+    @GetMapping("/{memberId}")
+    public List<RecipeInfoResDTO> getMyRecipesByOwnerId(@PathVariable Long memberId){
+        return recipeService.findMyRecipesByOwnerId(memberId);
     }
 }

@@ -21,7 +21,7 @@ public class Recipe {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name ="recipe_id")
     private Long id;
-    private String creatorId;
+    private Long creatorId;
     private String recipeImg;
     private String recipeName;
     private String recipeDescription;
@@ -32,8 +32,8 @@ public class Recipe {
     private String recipeDetailImg;
     private String recipeContent;
     private String timers;
-    private boolean forked;
     private Long cookedCount;
+    private Long ownerId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="member_id")
@@ -68,10 +68,12 @@ public class Recipe {
     private CookedRecord cookedRecord;
 
     @Builder
-    public Recipe(String recipeName, String recipeImg, int cookingTime,boolean forked) {
+    public Recipe(String recipeName, String recipeImg, int cookingTime,Member member,Long creatorId,Long ownerId) {
         this.recipeName = recipeName;
         this.recipeImg = recipeImg;
         this.cookingTime = cookingTime;
-        this.forked = forked;
+        this.member = member;
+        this.creatorId = creatorId;
+        this.ownerId = ownerId;
     }
 }
