@@ -18,7 +18,7 @@ public class MemberController {
     }
 
     @GetMapping("/{memberId}")
-    public MemberResDTO getMember(@PathVariable Long memberId) {
+    public MemberResDTO getMember(@PathVariable String memberId) {
         return memberService.findMemberById(memberId);
     }
 }

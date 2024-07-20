@@ -26,6 +26,7 @@ public class MemberService {
     private final AllergyRepository allergyRepository;
 
     public MemberResDTO createMember(MemberReqDTO memberRequestDTO) {
+        String id = memberRequestDTO.getId();
         String name = memberRequestDTO.getName();
         Integer age = memberRequestDTO.getAge();
         String email = memberRequestDTO.getEmail();
@@ -33,6 +34,7 @@ public class MemberService {
         LocalDateTime registerDate = LocalDateTime.now();
 
         Member member = Member.dtoBuilder()
+                .id(id)
                 .name(name)
                 .age(age)
                 .email(email)
@@ -65,7 +67,7 @@ public class MemberService {
                 .build();
     }
 
-    public MemberResDTO findMemberById(Long memberId) {
+    public MemberResDTO findMemberById(String memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow();
         List<MemberAllergy> allergies = memberAllergyRepository.findAllByMemberId(memberId);
         List<Long> allergyIds = new ArrayList<>();

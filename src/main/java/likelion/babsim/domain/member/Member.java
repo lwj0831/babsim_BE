@@ -19,9 +19,8 @@ import java.util.List;
 @NoArgsConstructor
 public class Member {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="member_id")
-    private Long id;
+    private String id;
 
     private String name;
     private Integer age;
@@ -62,7 +61,8 @@ public class Member {
     private Cart cart;
 
     @Builder(builderMethodName = "dtoBuilder")
-    public Member(String name, Integer age, String email, Job job, LocalDateTime registerDate) {
+    public Member(String id, String name, Integer age, String email, Job job, LocalDateTime registerDate) {
+        this.id = id;
         this.name = name;
         this.age = age;
         this.email = email;
@@ -71,7 +71,7 @@ public class Member {
     }
 
     @Builder
-    public Member(Long id,String name) {
+    public Member(String id,String name) {
         this.id = id;
         this.name = name;
     }

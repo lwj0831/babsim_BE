@@ -14,7 +14,7 @@ import java.util.List;
 public class LikesService {
     private final LikesRepository likesRepository;
 
-    public List<Likes> findLikesByMemberId(Long memberId){
+    public List<Likes> findLikesByMemberId(String memberId){
         return likesRepository.findAllByMemberId(memberId);
     }
 }

@@ -7,7 +7,7 @@ import java.util.List;
 
 @Getter
 public class MemberResDTO {
-    private Long id;
+    private String id;
     private String name;
     private String img;
     private String email;
@@ -16,7 +16,7 @@ public class MemberResDTO {
     private List<Long> allergies;
 
     @Builder
-    public MemberResDTO(Long id, String name, String img, String email, Integer age, Integer job, List<Long> allergies) {
+    public MemberResDTO(String id, String name, String img, String email, Integer age, Integer job, List<Long> allergies) {
         this.id = id;
         this.name = name;
         this.img = img;

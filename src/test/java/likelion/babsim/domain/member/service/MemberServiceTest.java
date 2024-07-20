@@ -65,6 +65,7 @@ class MemberServiceTest {
         allergyRepository.save(allergy2);
 
         MemberReqDTO memberReqDTO = new MemberReqDTO();
+        memberReqDTO.setId("member1");
         memberReqDTO.setName("Member1");
         memberReqDTO.setAge(10);
         memberReqDTO.setEmail("member1@gmail.com");
@@ -80,7 +81,7 @@ class MemberServiceTest {
         assertEquals(0, createdMember.getJob().intValue());
         assertFalse(createdMember.getAllergies().isEmpty()); // Check if allergies are set correctly
 
-        Long createdMemberId = createdMember.getId();
+        String createdMemberId = createdMember.getId();
         MemberResDTO foundMember = memberService.findMemberById(createdMemberId);
 
         assertEquals(createdMemberId, foundMember.getId());
