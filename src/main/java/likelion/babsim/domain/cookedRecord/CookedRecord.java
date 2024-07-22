@@ -27,4 +27,8 @@ public class CookedRecord {
         this.cookedCount = cookedCount;
         this.recipe = recipe;
     }
+
+    public void setCookedCount(Long cookedCount) {
+        this.cookedCount = cookedCount;
+    }
 }

@@ -19,8 +19,7 @@ public class RecipeReview {
     @Column(name="recipe_review_id")
     private Long id;
 
-    private String title;
-    private int rating;
+    private Integer rating;
     private String comment;
     private LocalDateTime registerDate;
 
@@ -35,8 +34,12 @@ public class RecipeReview {
     private Member member;
 
     @Builder
-    public RecipeReview(Recipe recipe, int rating) {
-        this.recipe = recipe;
+    public RecipeReview(Integer rating, String comment, LocalDateTime registerDate, Long forkedRecipeId, Recipe recipe, Member member) {
         this.rating = rating;
+        this.comment = comment;
+        this.registerDate = registerDate;
+        this.forkedRecipeId = forkedRecipeId;
+        this.recipe = recipe;
+        this.member = member;
     }
 }

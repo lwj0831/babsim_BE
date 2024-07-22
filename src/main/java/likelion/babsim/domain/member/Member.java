@@ -30,6 +30,7 @@ public class Member {
     private Membership membership;
     private Long point;
     private LocalDateTime registerDate;
+    private String memberImg;
 
     @OneToMany(mappedBy = "member")
     @ToString.Exclude
@@ -71,8 +72,9 @@ public class Member {
     }
 
     @Builder
-    public Member(String id,String name) {
+    public Member(String id,String name,String memberImg) {
         this.id = id;
         this.name = name;
+        this.memberImg = memberImg;
     }
 }

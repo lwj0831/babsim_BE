@@ -4,20 +4,20 @@ import jakarta.persistence.EntityManager;
 import likelion.babsim.domain.allergy.Allergy;
 import likelion.babsim.domain.allergy.MemberAllergy;
 import likelion.babsim.domain.allergy.RecipeAllergy;
+import likelion.babsim.domain.category.Category;
 import likelion.babsim.domain.cookedRecord.CookedRecord;
 import likelion.babsim.domain.likes.Likes;
 import likelion.babsim.domain.member.Member;
 import likelion.babsim.domain.recipe.Recipe;
 import likelion.babsim.domain.review.RecipeReview;
 import likelion.babsim.domain.tag.Tag;
-import likelion.babsim.web.recipe.RecipeInfoResDTO;
+import likelion.babsim.web.recipe.RecipeInfoResDto;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -57,7 +57,7 @@ class RecipeServiceTest {
 
             Recipe recipe = Recipe.builder()
                     .recipeName("keyword_" + i)
-                    .recipeImg("image" + i + ".jpg")
+                    .recipeImgs("image" + i + ".jpg")
                     .cookingTime(i * 10)
                     .creatorId("1")
                     .ownerId("1")
@@ -66,13 +66,26 @@ class RecipeServiceTest {
             entityManager.persist(recipe);
             Recipe recipe2 = Recipe.builder()
                     .recipeName("keyword2_" + i)
-                    .recipeImg("image" + i + ".jpg")
+                    .recipeImgs("image" + i + ".jpg")
                     .cookingTime(0)
                     .creatorId("1")
                     .ownerId("1")
                     .member(member)
                     .build();
             entityManager.persist(recipe2);
+
+            Category category = Category.builder()
+                    .id(1L)
+                    .categoryName("메인요리")
+                    .recipe(recipe)
+                    .build();
+            entityManager.merge(category); //반복문 돌면 이미 존재해서 마지막 recipe와 연결됨
+            Category category2 = Category.builder()
+                    .id(2L)
+                    .categoryName("밑반찬")
+                    .recipe(recipe)
+                    .build();
+            entityManager.merge(category2); //Recipe홀수에 메인요리, 밑반판 카테고리 부여
 
             Tag tag1 = Tag.builder()
                     .recipe(recipe)
@@ -148,7 +161,7 @@ class RecipeServiceTest {
     @Transactional
     @DirtiesContext
     void findRecipesByKeyword() {
-        List<RecipeInfoResDTO> result = recipeService.findRecipesByKeyword("keyword");
+        List<RecipeInfoResDto> result = recipeService.findRecipesByKeyword("keyword");
 
         assertThat(result.get(0).getRecipeName()).isEqualTo("keyword_1");
         assertThat(result.get(0).getTags()).contains("Tag1");
@@ -161,7 +174,7 @@ class RecipeServiceTest {
     @Transactional
     @DirtiesContext
     void testFindTop10RecipesByCookedCount() {
-        List<RecipeInfoResDTO> result = recipeService.findTop10RecipesByCookedCount();
+        List<RecipeInfoResDto> result = recipeService.findTop10RecipesByCookedCount();
 
         assertNotNull(result);
         assertEquals(10, result.size()); // Verify we get 10 results
@@ -182,13 +195,13 @@ class RecipeServiceTest {
     @DirtiesContext
     void testFindRecommendRecipesByMemberId() {
         String memberId = "1"; // Assuming the member has ID 1
-        List<RecipeInfoResDTO> result = recipeService.findRecommendRecipesByMemberId(memberId);
+        List<RecipeInfoResDto> result = recipeService.findRecommendRecipesByMemberId(memberId);
 
         assertNotNull(result);
         assertEquals(10, result.size()); // Since 10 recipes will be excluded due to the member's allergy
 
         List<String> excludedRecipes = result.stream()
-                .map(RecipeInfoResDTO::getRecipeName)
+                .map(RecipeInfoResDto::getRecipeName)
                 .toList();
 
         assertThat(excludedRecipes).doesNotContain("keyword_1");
@@ -198,9 +211,9 @@ class RecipeServiceTest {
     @Transactional
     @DirtiesContext
     void testFindLikesRecipesByMemberId(){
-        List<RecipeInfoResDTO> result = recipeService.findLikesRecipesByMemberId("1");
+        List<RecipeInfoResDto> result = recipeService.findLikesRecipesByMemberId("1");
         List<String> likesRecipes = result.stream()
-                .map(RecipeInfoResDTO::getRecipeName)
+                .map(RecipeInfoResDto::getRecipeName)
                 .toList();
         assertThat(likesRecipes).hasSize(2);
     }
@@ -209,12 +222,12 @@ class RecipeServiceTest {
     @Transactional
     @DirtiesContext
     void testFindForkedRecipesByMemberId(){
-        List<RecipeInfoResDTO> result = recipeService.findForkedRecipesByMemberId("2");//Recipe1~20의 creatorId=1L임
-        for (RecipeInfoResDTO recipeInfoResDTO : result) {
+        List<RecipeInfoResDto> result = recipeService.findForkedRecipesByMemberId("2");//Recipe1~20의 creatorId=1L임
+        for (RecipeInfoResDto recipeInfoResDTO : result) {
             log.info("{}",recipeInfoResDTO.getRecipeName());
         }
         List<String> forkedRecipes = result.stream()
-                .map(RecipeInfoResDTO::getRecipeName)
+                .map(RecipeInfoResDto::getRecipeName)
                 .toList();
         assertThat(forkedRecipes).hasSize(2);//member(id=2L)과 연관되어 있는 레시피 중(Recipe3,4)에 creatorId가 memberId와 다른거
     }
@@ -223,10 +236,20 @@ class RecipeServiceTest {
     @Transactional
     @DirtiesContext
     void testFindMyRecipesByOwnerId(){
-        List<RecipeInfoResDTO> result = recipeService.findMyRecipesByOwnerId("1");
+        List<RecipeInfoResDto> result = recipeService.findMyRecipesByOwnerId("1");
         List<String> myRecipes = result.stream()
-                .map(RecipeInfoResDTO::getRecipeName)
+                .map(RecipeInfoResDto::getRecipeName)
                 .toList();
         assertThat(myRecipes).hasSize(20);
+    }
+    @Test
+    @Transactional
+    @DirtiesContext
+    void testFindRecipesByCategoryId(){
+        List<RecipeInfoResDto> result = recipeService.findRecipesByCategoryId(1L);
+        List<String> recipes = result.stream()
+                .map(RecipeInfoResDto::getRecipeName)
+                .toList();
+        assertThat(recipes).hasSize(1);
     }
 }

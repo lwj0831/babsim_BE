@@ -10,4 +10,5 @@ import java.util.List;
 public interface LikesRepository extends JpaRepository<Likes,Long> {
     List<Likes> findAllByMemberId(String memberId);
     boolean existsByMemberIdAndRecipeId(String memberId,Long recipeId);
+    Likes findByMemberIdAndRecipeId(String memberId,Long recipeId);
 }
