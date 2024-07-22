@@ -23,7 +23,7 @@ public class Member {
     private String id;
 
     private String name;
-    private Integer age;
+    private String memberImg;
     private String email;
     private Job job;
     private String address;
@@ -61,10 +61,10 @@ public class Member {
     private Cart cart;
 
     @Builder(builderMethodName = "dtoBuilder")
-    public Member(String id, String name, Integer age, String email, Job job, LocalDateTime registerDate) {
+    public Member(String id, String name, String memberImg, String email, Job job, LocalDateTime registerDate) {
         this.id = id;
         this.name = name;
-        this.age = age;
+        this.memberImg = memberImg;
         this.email = email;
         this.job = job;
         this.registerDate = registerDate;

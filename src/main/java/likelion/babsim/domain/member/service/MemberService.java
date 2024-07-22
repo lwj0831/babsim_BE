@@ -25,10 +25,11 @@ public class MemberService {
     private final MemberAllergyRepository memberAllergyRepository;
     private final AllergyRepository allergyRepository;
 
+    @Transactional(readOnly = false)
     public MemberResDTO createMember(MemberReqDTO memberRequestDTO) {
         String id = memberRequestDTO.getId();
         String name = memberRequestDTO.getName();
-        Integer age = memberRequestDTO.getAge();
+        String memberImg = memberRequestDTO.getImg();
         String email = memberRequestDTO.getEmail();
         Job job = Job.values()[memberRequestDTO.getJob()];
         LocalDateTime registerDate = LocalDateTime.now();
@@ -36,7 +37,7 @@ public class MemberService {
         Member member = Member.dtoBuilder()
                 .id(id)
                 .name(name)
-                .age(age)
+                .memberImg(memberImg)
                 .email(email)
                 .job(job)
                 .registerDate(registerDate)
@@ -60,8 +61,8 @@ public class MemberService {
         return MemberResDTO.builder()
                 .id(member.getId())
                 .name(member.getName())
+                .img(member.getMemberImg())
                 .email(member.getEmail())
-                .age(member.getAge())
                 .job(member.getJob().ordinal())
                 .allergies(allergyIds)
                 .build();
@@ -79,7 +80,6 @@ public class MemberService {
                 .name(member.getName())
                 .img("")  // TODO get member img from firebase
                 .email(member.getEmail())
-                .age(member.getAge())
                 .job(member.getJob().ordinal())
                 .allergies(allergyIds)
                 .build();

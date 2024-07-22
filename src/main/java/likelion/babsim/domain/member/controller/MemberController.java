@@ -39,7 +39,7 @@ public class MemberController {
     }
 
     @GetMapping("/{memberId}")
-    public MemberResDTO getMember(@PathVariable String memberId) {
+    public MemberResDTO getMember(@PathVariable("memberId") String memberId) {
         return memberService.findMemberById(memberId);
     }
 
@@ -54,16 +54,14 @@ public class MemberController {
 
         // Get AccessToken
         String accessToken = getUserAssessToken(restTemplate, kakaoLoginTokenReqDTO.getCode());
-
         // Get User Info
         Map<String, String> userInfo = getUserInfo(restTemplate, accessToken);
 
         KakaoLoginResDto kakaoLoginResDto = new KakaoLoginResDto();
-        kakaoLoginResDto.setId(UUID.randomUUID().toString());
+        kakaoLoginResDto.setId(userInfo.get("id"));
         kakaoLoginResDto.setName(userInfo.get("name"));
         kakaoLoginResDto.setEmail(userInfo.get("email"));
         kakaoLoginResDto.setImg(userInfo.get("imgUrl"));
-        kakaoLoginResDto.setStatus(200);
 
         return kakaoLoginResDto;
     }
@@ -108,11 +106,13 @@ public class MemberController {
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(headers);
         ResponseEntity<String> response = restTemplate.exchange(USER_INFO_REQ_URL, HttpMethod.GET, requestEntity, String.class);
 
+        String id = "kakao" + extractValue(response.getBody(), "id");
         String nickname = extractValue(response.getBody(), "kakao_account", "profile", "nickname");
         String profileImageUrl = extractValue(response.getBody(), "kakao_account", "profile", "profile_image_url");
         String email = extractValue(response.getBody(), "kakao_account", "email");
 
         Map<String, String> info = new HashMap<>();
+        info.put("id", id);
         info.put("name", nickname);
         info.put("imgUrl", profileImageUrl);
         info.put("email", email);

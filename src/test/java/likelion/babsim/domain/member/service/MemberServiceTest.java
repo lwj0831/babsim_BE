@@ -67,7 +67,6 @@ class MemberServiceTest {
         MemberReqDTO memberReqDTO = new MemberReqDTO();
         memberReqDTO.setId("member1");
         memberReqDTO.setName("Member1");
-        memberReqDTO.setAge(10);
         memberReqDTO.setEmail("member1@gmail.com");
         memberReqDTO.setJob(0);
         memberReqDTO.setAllergy(List.of(1L));
@@ -77,7 +76,6 @@ class MemberServiceTest {
         assertNotNull(createdMember.getId());
         assertEquals("Member1", createdMember.getName());
         assertEquals("member1@gmail.com", createdMember.getEmail());
-        assertEquals(10, createdMember.getAge());
         assertEquals(0, createdMember.getJob().intValue());
         assertFalse(createdMember.getAllergies().isEmpty()); // Check if allergies are set correctly
 
@@ -87,7 +85,6 @@ class MemberServiceTest {
         assertEquals(createdMemberId, foundMember.getId());
         assertEquals("Member1", foundMember.getName());
         assertEquals("member1@gmail.com", foundMember.getEmail());
-        assertEquals(10, foundMember.getAge());
         assertEquals(0, foundMember.getJob().intValue());
         assertEquals(createdMember.getAllergies(), foundMember.getAllergies());
     }
