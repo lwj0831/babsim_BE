@@ -3,6 +3,7 @@ package likelion.babsim.domain.category;
 import jakarta.persistence.*;
 import likelion.babsim.domain.recipe.Recipe;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -19,5 +20,10 @@ public class Category {
     @JoinColumn(name = "recipe_id")
     private Recipe recipe;
 
-
+    @Builder
+    public Category(Long id, String categoryName, Recipe recipe) {
+        this.id = id;
+        this.categoryName = categoryName;
+        this.recipe = recipe;
+    }
 }

@@ -5,4 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AllergyRepository extends JpaRepository<Allergy,Long> {
     Allergy findAllergyById(Long allergyId);
+    Allergy findByAllergyName(String allergyName);
 }
