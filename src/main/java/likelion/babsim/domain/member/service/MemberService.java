@@ -141,11 +141,13 @@ public class MemberService {
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(headers);
         ResponseEntity<String> response = restTemplate.exchange(USER_INFO_REQ_URL, HttpMethod.GET, requestEntity, String.class);
 
+        String id = "kakao&" + extractValue(response.getBody(), "id");
         String nickname = extractValue(response.getBody(), "kakao_account", "profile", "nickname");
         String profileImageUrl = extractValue(response.getBody(), "kakao_account", "profile", "profile_image_url");
         String email = extractValue(response.getBody(), "kakao_account", "email");
 
         Map<String, String> info = new HashMap<>();
+        info.put("id", id);
         info.put("name", nickname);
         info.put("imgUrl", profileImageUrl);
         info.put("email", email);
