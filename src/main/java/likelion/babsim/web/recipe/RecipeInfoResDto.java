@@ -6,7 +6,7 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
-public class RecipeDetailResDTO {
+public class RecipeInfoResDto {
 
     private Long id;
     private String recipeImg;
@@ -15,10 +15,9 @@ public class RecipeDetailResDTO {
     private Integer cookingTime;
     private Double rate;
     private List<Long> allergies;
-    private boolean liked;
 
     @Builder
-    public RecipeDetailResDTO(Long id, String recipeImg, String recipeName, List<String> tags, Integer cookingTime, Double rate, List<Long> allergies, boolean liked) {
+    public RecipeInfoResDto(Long id, String recipeImg, String recipeName, List<String> tags, Integer cookingTime, Double rate, List<Long> allergies) {
         this.id = id;
         this.recipeImg = recipeImg;
         this.recipeName = recipeName;
@@ -26,6 +25,5 @@ public class RecipeDetailResDTO {
         this.cookingTime = cookingTime;
         this.rate = rate;
         this.allergies = allergies;
-        this.liked = liked;
     }
 }

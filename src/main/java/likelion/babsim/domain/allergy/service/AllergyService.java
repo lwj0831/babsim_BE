@@ -1,5 +1,7 @@
 package likelion.babsim.domain.allergy.service;
 
+import likelion.babsim.domain.allergy.Allergy;
+import likelion.babsim.domain.allergy.repository.AllergyRepository;
 import likelion.babsim.domain.allergy.repository.MemberAllergyRepository;
 import likelion.babsim.domain.allergy.repository.RecipeAllergyRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +16,7 @@ import java.util.List;
 public class AllergyService {
     private final MemberAllergyRepository memberAllergyRepository;
     private final RecipeAllergyRepository recipeAllergyRepository;
+    private final AllergyRepository allergyRepository;
     public List<Long> findAllergiesByMemberId(String memberId){
         return memberAllergyRepository.findAllByMemberId(memberId).stream()
                 .map(m->m.getAllergy().getId())
@@ -25,4 +28,5 @@ public class AllergyService {
                 .map(r -> r.getAllergy().getId())
                 .toList();
     }
+
 }

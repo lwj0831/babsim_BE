@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface CookedRecordRepository extends JpaRepository<CookedRecord,Long> {
     List<CookedRecord> findTop10ByOrderByCookedCountDesc();
+    CookedRecord findByRecipeId(Long recipeId);
 }

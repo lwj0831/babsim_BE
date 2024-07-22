@@ -22,15 +22,14 @@ public class Recipe {
     @Column(name ="recipe_id")
     private Long id;
     private String creatorId;
-    private String recipeImg;
+    private String recipeImgs;
     private String recipeName;
     private String recipeDescription;
     private Difficulty difficulty;
     private Integer cookingTime;
+    private String recipeDetailImgs;
     private String ingredients;
     private String recipeContents;
-    private String recipeDetailImg;
-    private String recipeContent;
     private String timers;
     private Long cookedCount;
     private String ownerId;
@@ -68,12 +67,14 @@ public class Recipe {
     private CookedRecord cookedRecord;
 
     @Builder
-    public Recipe(String recipeName, String recipeImg, int cookingTime,Member member,String creatorId,String ownerId) {
+    public Recipe(Long id, String recipeName, String recipeImgs, int cookingTime,Member member,String creatorId,String ownerId,List<Category> categories) {
+        this.id = id;
         this.recipeName = recipeName;
-        this.recipeImg = recipeImg;
+        this.recipeImgs = recipeImgs;
         this.cookingTime = cookingTime;
         this.member = member;
         this.creatorId = creatorId;
         this.ownerId = ownerId;
+        this.categories = categories;
     }
 }

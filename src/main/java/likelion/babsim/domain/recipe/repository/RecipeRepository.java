@@ -2,6 +2,8 @@ package likelion.babsim.domain.recipe.repository;
 
 import likelion.babsim.domain.member.Member;
 import likelion.babsim.domain.recipe.Recipe;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -21,6 +23,12 @@ public interface RecipeRepository extends JpaRepository<Recipe,Long> {
     List<Recipe> findRecipesByMemberIdAndForked(@Param("memberId") Long memberId, @Param("forked") boolean forked);*/
     List<Recipe> findAllByCreatorId(String creatorId);
     List<Recipe> findAllByOwnerId(String ownerId);
+    List<Recipe> findAllByCategoriesId(Long categoryId);
 
+    default List<Recipe> findRandom50Recipes() {
+        Pageable pageable = PageRequest.of(0, 50);
+        Page<Recipe> page = findAll(pageable);
+        return page.getContent();
+    }
 
 }
