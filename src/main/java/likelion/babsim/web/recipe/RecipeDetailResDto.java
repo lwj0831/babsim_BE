@@ -22,13 +22,14 @@ public class RecipeDetailResDto {
     private List<Long> allergies;
     private List<IngredientForm> ingredients;
     private List<ReviewForm> reviews;
+    private Long reviewsCount;
     private List<String> recipeDetailImgs;
     private List<String> recipeContents;
     private List<Integer> recipeTimers;
     private boolean liked;
 
     @Builder
-    public RecipeDetailResDto(Long id, String creatorId, List<String> recipeImgs, String name, String description, Double rate, Difficulty difficulty, Integer cookingTime, List<String> tags, List<Long> allergies, List<IngredientForm> ingredients, List<ReviewForm> reviews, List<String> recipeDetailImgs, List<String> recipeContents, List<Integer> recipeTimers, boolean liked) {
+    public RecipeDetailResDto(Long id, String creatorId, List<String> recipeImgs, String name, String description, Double rate, Difficulty difficulty, Integer cookingTime, List<String> tags, List<Long> allergies, List<IngredientForm> ingredients, List<ReviewForm> reviews,Long reviewsCount, List<String> recipeDetailImgs, List<String> recipeContents, List<Integer> recipeTimers, boolean liked) {
         this.id = id;
         this.creatorId = creatorId;
         this.recipeImgs = recipeImgs;
@@ -41,6 +42,7 @@ public class RecipeDetailResDto {
         this.allergies = allergies;
         this.ingredients = ingredients;
         this.reviews = reviews;
+        this.reviewsCount = reviewsCount;
         this.recipeDetailImgs = recipeDetailImgs;
         this.recipeContents = recipeContents;
         this.recipeTimers = recipeTimers;

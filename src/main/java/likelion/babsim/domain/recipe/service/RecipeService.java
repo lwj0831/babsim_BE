@@ -119,6 +119,7 @@ public class RecipeService {
                     .allergies(allergyService.findAllergiesByRecipeId(recipe.getId()))
                     .ingredients(IngredientFormatter.parseIngredientFormList(recipe.getRecipeImgs()))
                     .reviews(recipeReviewService.findReviewsByRecipeId(recipeId))
+                    .reviewsCount(recipeReviewService.findReviewsCount(recipeId))
                     .recipeDetailImgs(RecipeDetailImgFormatter.parseRecipeDetailImgList(recipe.getRecipeDetailImgs()))
                     .recipeContents(RecipeContentFormatter.parseRecipeContentList(recipe.getRecipeContents()))
                     .recipeTimers(RecipeTimerFormatter.parseTimerList(recipe.getTimers()))

@@ -10,4 +10,5 @@ import java.util.List;
 @Repository
 public interface RecipeReviewRepository extends JpaRepository<RecipeReview,Long> {
     List<RecipeReview> findAllByRecipeId(Long recipeId);
+    Long countByRecipeId(Long recipeId);
 }
