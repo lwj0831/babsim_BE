@@ -9,10 +9,6 @@ public class IngredientForm {
     private double quantity;
     private String link;
 
-    public IngredientForm(String name, double quantity) {
-        this.name = name;
-        this.quantity = quantity;
-    }
     @Builder
     public IngredientForm(String name, double quantity, String link) {
         this.name = name;

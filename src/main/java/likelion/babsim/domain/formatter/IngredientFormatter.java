@@ -1,15 +1,22 @@
 package likelion.babsim.domain.formatter;
 
+import likelion.babsim.domain.ingredientLink.service.IngredientService;
 import likelion.babsim.web.recipe.IngredientForm;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Component
+@RequiredArgsConstructor
 public class IngredientFormatter {
+    private final IngredientService ingredientService;
 
     //"apple 1,banana 2" -> {{"name":apple,"quantity":1,"link":http://~~~},{"name":banana,"quantity":2,"link":http://~~~}}
-    public static List<IngredientForm> parseIngredientFormList(String ingredientsStr) {
+    public List<IngredientForm> parseIngredientFormList(String ingredientsStr) {
         List<IngredientForm> IngredientFormList = new ArrayList<>();
         String[] items = ingredientsStr.split(",");// 문자열을 쉼표로 분리하여 각 항목을 가져옴
         for (String item : items) {
@@ -22,7 +29,8 @@ public class IngredientFormatter {
                 } catch (NumberFormatException e) {
                     quantity = 0; // 개수가 숫자가 아닌 경우 처리
                 }
-                IngredientForm IngredientForm = new IngredientForm(name, quantity);
+                String link = ingredientService.findLinkByIngredientName(name);
+                IngredientForm IngredientForm = new IngredientForm(name, quantity,link);
                 IngredientFormList.add(IngredientForm);
             }
         }
