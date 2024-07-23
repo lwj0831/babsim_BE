@@ -14,7 +14,6 @@ public class Allergy {
     @Column(name="allergy_id")
     private Long id;
     private String allergyName;
-    private String image;
 
     @OneToMany(mappedBy = "allergy",cascade = CascadeType.ALL)
     @ToString.Exclude
@@ -25,7 +24,8 @@ public class Allergy {
     private List<RecipeAllergy> recipeAllergies;
 
     @Builder
-    public Allergy(String allergyName) {
+    public Allergy(Long id, String allergyName) {
+        this.id = id;
         this.allergyName = allergyName;
     }
 }
