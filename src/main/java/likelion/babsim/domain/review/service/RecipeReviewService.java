@@ -59,4 +59,8 @@ public class RecipeReviewService {
         recipeReviewRepository.save(recipeReview);
         return recipeReview.getId();
     }
+
+    public Long findReviewsCount(Long recipeId){
+        return recipeReviewRepository.countByRecipeId(recipeId);
+    }
 }
