@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
-import java.util.UUID;
 
 
 @RestController
@@ -22,14 +21,13 @@ public class MemberController {
     private static final String CODE_REQ_URL_2 = "&redirect_uri=";
 
 
-
     @PostMapping
     public MemberResDTO createMember(@RequestBody MemberReqDTO memberRequestDTO) {
         return memberService.createMember(memberRequestDTO);
     }
 
     @GetMapping("/{memberId}")
-    public MemberResDTO getMember(@PathVariable String memberId) {
+    public MemberResDTO getMember(@PathVariable("memberId") String memberId) {
         return memberService.findMemberById(memberId);
     }
 
@@ -44,16 +42,14 @@ public class MemberController {
 
         // Get AccessToken
         String accessToken = memberService.getUserAssessToken(restTemplate, kakaoLoginTokenReqDTO.getCode());
-
         // Get User Info
         Map<String, String> userInfo = memberService.getUserInfo(restTemplate, accessToken);
 
         KakaoLoginResDto kakaoLoginResDto = new KakaoLoginResDto();
-        kakaoLoginResDto.setId(UUID.randomUUID().toString());
+        kakaoLoginResDto.setId(userInfo.get("id"));
         kakaoLoginResDto.setName(userInfo.get("name"));
         kakaoLoginResDto.setEmail(userInfo.get("email"));
         kakaoLoginResDto.setImg(userInfo.get("imgUrl"));
-        kakaoLoginResDto.setStatus(200);
 
         return kakaoLoginResDto;
     }

@@ -12,5 +12,4 @@ public class KakaoLoginResDto {
     private String name;
     private String email;
     private String img;
-    private int status;
 }

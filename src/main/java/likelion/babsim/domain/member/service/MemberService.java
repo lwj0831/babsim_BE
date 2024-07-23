@@ -45,7 +45,7 @@ public class MemberService {
     public MemberResDTO createMember(MemberReqDTO memberRequestDTO) {
         String id = memberRequestDTO.getId();
         String name = memberRequestDTO.getName();
-        Integer age = memberRequestDTO.getAge();
+        String memberImg = memberRequestDTO.getImg();
         String email = memberRequestDTO.getEmail();
         Job job = Job.values()[memberRequestDTO.getJob()];
         LocalDateTime registerDate = LocalDateTime.now();
@@ -53,7 +53,7 @@ public class MemberService {
         Member member = Member.dtoBuilder()
                 .id(id)
                 .name(name)
-                .age(age)
+                .memberImg(memberImg)
                 .email(email)
                 .job(job)
                 .registerDate(registerDate)
@@ -77,8 +77,8 @@ public class MemberService {
         return MemberResDTO.builder()
                 .id(member.getId())
                 .name(member.getName())
+                .img(member.getMemberImg())
                 .email(member.getEmail())
-                .age(member.getAge())
                 .job(member.getJob().ordinal())
                 .allergies(allergyIds)
                 .build();
@@ -96,7 +96,6 @@ public class MemberService {
                 .name(member.getName())
                 .img("")  // TODO get member img from firebase
                 .email(member.getEmail())
-                .age(member.getAge())
                 .job(member.getJob().ordinal())
                 .allergies(allergyIds)
                 .build();
@@ -142,11 +141,13 @@ public class MemberService {
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(headers);
         ResponseEntity<String> response = restTemplate.exchange(USER_INFO_REQ_URL, HttpMethod.GET, requestEntity, String.class);
 
+        String id = "kakao&" + extractValue(response.getBody(), "id");
         String nickname = extractValue(response.getBody(), "kakao_account", "profile", "nickname");
         String profileImageUrl = extractValue(response.getBody(), "kakao_account", "profile", "profile_image_url");
         String email = extractValue(response.getBody(), "kakao_account", "email");
 
         Map<String, String> info = new HashMap<>();
+        info.put("id", id);
         info.put("name", nickname);
         info.put("imgUrl", profileImageUrl);
         info.put("email", email);

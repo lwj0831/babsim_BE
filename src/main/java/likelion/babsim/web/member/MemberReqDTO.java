@@ -12,7 +12,7 @@ import java.util.List;
 public class MemberReqDTO {
     private String id;
     private String name;
-    private Integer age;
+    private String img;
     private String email;
     private Integer job;
     private List<Long> allergy;
