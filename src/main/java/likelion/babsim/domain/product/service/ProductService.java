@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static likelion.babsim.domain.formatter.RecipeImgFormatter.parseImageUrlList;
+
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -47,7 +49,16 @@ public class ProductService {
 
     public ProductDetailResDTO getProductDetailById(Long productId) {
         Product product = productRepository.findById(productId).orElseThrow();
-        return null;
+        ProductDetailResDTO productDetailResDTO = new ProductDetailResDTO();
+        productDetailResDTO.setId(product.getId());
+        productDetailResDTO.setImg(parseImageUrlList(product.getProductDetailImg()));
+        productDetailResDTO.setName(product.getProductName());
+        productDetailResDTO.setDesc(product.getProductDescription());
+        productDetailResDTO.setPrice(product.getPrice());
+        productDetailResDTO.setRate(getRateById(product.getId()));
+        productDetailResDTO.setStock(product.getStock());
+
+        return productDetailResDTO;
     }
 
     public Double getRateById(Long productId) {

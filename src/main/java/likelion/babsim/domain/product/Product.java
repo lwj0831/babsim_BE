@@ -23,7 +23,7 @@ public class Product {
     private String productName;
     private Long price;
     private String productDescription;
-    private Long stock;
+    private Integer stock;
     private Integer discountRate;
     private String productDetailImg;
     private LocalDateTime registerDate;
