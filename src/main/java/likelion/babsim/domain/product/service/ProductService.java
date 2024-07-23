@@ -30,6 +30,15 @@ public class ProductService {
 
     public List<ProductInfoResDTO> getMarketProductRecommendation() {
         List<Product> products = getRandomProducts(10);
+        return getProductInfoResDTOS(products);
+    }
+
+    public List<ProductInfoResDTO> getMarketProductHot() {
+        List<Product> products = getRandomProducts(30);
+        return getProductInfoResDTOS(products);
+    }
+
+    private List<ProductInfoResDTO> getProductInfoResDTOS(List<Product> products) {
         List<ProductInfoResDTO> productInfoResDTOList = new ArrayList<>();
         for (Product product : products) {
             ProductInfoResDTO productInfoResDTO = new ProductInfoResDTO();
@@ -75,4 +84,5 @@ public class ProductService {
 
         return (sum / cnt);
     }
+
 }

@@ -25,4 +25,9 @@ public class ProductController {
         return productService.getProductDetailById(productId);
     }
 
+    @GetMapping("/hot")
+    public List<ProductInfoResDTO> getHotProducts() {
+        return productService.getMarketProductHot();
+    }
+
 }
