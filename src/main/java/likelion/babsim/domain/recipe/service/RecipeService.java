@@ -7,10 +7,13 @@ import likelion.babsim.domain.category.repository.CategoryRepository;
 import likelion.babsim.domain.cookedRecord.CookedRecord;
 import likelion.babsim.domain.cookedRecord.service.CookedRecordService;
 import likelion.babsim.domain.formatter.*;
+import likelion.babsim.domain.keyword.Keyword;
+import likelion.babsim.domain.keyword.repository.KeywordRepository;
 import likelion.babsim.domain.likes.Likes;
 import likelion.babsim.domain.likes.service.LikesService;
 import likelion.babsim.domain.member.repository.MemberRepository;
 import likelion.babsim.domain.recipe.*;
+import likelion.babsim.domain.recipe.repository.MemberRecipeRepository;
 import likelion.babsim.domain.recipe.repository.RecipeRepository;
 import likelion.babsim.domain.review.service.RecipeReviewService;
 import likelion.babsim.domain.tag.Tag;
@@ -25,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,6 +45,9 @@ public class RecipeService {
     private final LikesService likesService;
     private final IngredientFormatter ingredientFormatter;
     private final CategoryRepository categoryRepository;
+    private final MemberRepository memberRepository;
+    private final MemberRecipeRepository memberRecipeRepository;
+    private final KeywordRepository keywordRepository;
 
     public List<RecipeInfoResDto> findRecipesByKeyword(String keyword){
         Pageable pageable = PageRequest.of(0, 50);
@@ -114,7 +121,7 @@ public class RecipeService {
         return recipesToRecipeDetailResDTO(recipe,recipeId,memberId);
     }
     @Transactional
-    public Recipe createRecipe(RecipeCreateReqDto dto, String creatorId, String memberId) {
+    public Recipe createRecipe(RecipeCreateReqDto dto, String creatorId) {
         Recipe recipe = Recipe.builder()
                 .creatorId(creatorId)
                 .recipeImgs(String.join(",", dto.getRecipeImgs()))
@@ -127,6 +134,7 @@ public class RecipeService {
                 .recipeContents(String.join(",",dto.getRecipeContents()))
                 .timers(dto.getTimers().stream().map(String::valueOf).collect(Collectors.joining(",")))
                 .category(categoryRepository.findById(dto.getCategoryId()).orElseThrow())
+                .ownerId(creatorId)
                 .build();
         //tag
         List<String> tagsStr = dto.getTags();
@@ -136,14 +144,39 @@ public class RecipeService {
                     .recipe(recipe).
                     build();
             tagService.saveTag(tag);
-        }/*
+        }
         //recipeAllergy
-        RecipeAllergy recipeAllergy = RecipeAllergy.builder()
+        /* RecipeAllergy recipeAllergy = RecipeAllergy.builder()
                 .allergy()
-                .recipe()
-                .build();
-        //nft*/
+                .recipe(recipe)
+                .build();*/
+        //nft
+
+        //creator와 recipe연결
+        MemberRecipe memberRecipe = MemberRecipe.builder()
+                .recipe(recipe)
+                .member(memberRepository.findById(creatorId).orElseThrow()).build();
+        memberRecipeRepository.save(memberRecipe);
+
+        //키워드 추출해서 Keyword에 넣기
+        List<String> keywords = Arrays.stream(dto.getName().split(" ")).toList();
+        Keyword k;
+        for (String keyword : keywords) {
+            if((k=keywordRepository.findByKeyword(keyword))==null){ //해당 키워드 처음
+                k = Keyword.builder()
+                        .count(0L)
+                        .keyword(keyword)
+                        .build();
+                keywordRepository.save(k);
+            }
+            else{ //해당 키워드 이미 존재 시 count 1증가
+                k.increaseCount();
+                keywordRepository.save(k);
+            }
+        }
+
         return recipeRepository.save(recipe);
+
     }
     private RecipeDetailResDto recipesToRecipeDetailResDTO(Recipe recipe, Long recipeId, String memberId) {
         return RecipeDetailResDto.builder()
