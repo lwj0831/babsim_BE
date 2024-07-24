@@ -5,6 +5,7 @@ import likelion.babsim.domain.allergy.MemberAllergy;
 import likelion.babsim.domain.cart.Cart;
 import likelion.babsim.domain.likes.Likes;
 import likelion.babsim.domain.order.Orders;
+import likelion.babsim.domain.recipe.MemberRecipe;
 import likelion.babsim.domain.recipe.Recipe;
 import likelion.babsim.domain.review.ProductReview;
 import likelion.babsim.domain.review.RecipeReview;
@@ -33,7 +34,7 @@ public class Member {
 
     @OneToMany(mappedBy = "member")
     @ToString.Exclude
-    private List<Recipe> recipes;
+    private List<MemberRecipe> memberRecipes;
 
     @OneToMany(mappedBy = "member")
     @ToString.Exclude

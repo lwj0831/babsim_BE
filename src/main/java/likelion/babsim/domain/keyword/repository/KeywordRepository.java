@@ -10,4 +10,5 @@ import java.util.List;
 public interface KeywordRepository extends JpaRepository<Keyword, Long> {
     List<Keyword> findByKeywordContaining(String keyword);
     List<Keyword> findTop10ByOrderByCountDesc();
+    Keyword findByKeyword(String keyword);
 }

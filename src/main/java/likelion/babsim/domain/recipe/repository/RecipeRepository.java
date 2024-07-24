@@ -17,13 +17,14 @@ public interface RecipeRepository extends JpaRepository<Recipe,Long> {
     List<Recipe> findAllByRecipeNameContaining(String keyword, Pageable pageable);
     @Query("SELECT r FROM Recipe r WHERE r.id NOT IN (SELECT ra.recipe.id FROM RecipeAllergy ra WHERE ra.allergy.id IN :allergyIds)")
     List<Recipe> findRecipesExcludingAllergies(@Param("allergyIds") List<Long> allergyIds, Pageable pageable);
+    @Query("SELECT r FROM Recipe r WHERE r.creatorId <> :memberId AND EXISTS (SELECT mr FROM MemberRecipe mr WHERE mr.recipe = r AND mr.member.id = :memberId)")
+    List<Recipe> findByCreatorIdNotAndMemberId(@Param("memberId") String memberId);
+    @Query("SELECT r FROM Recipe r WHERE r.creatorId <> :memberId AND r.id = :recipeId AND EXISTS (SELECT mr FROM MemberRecipe mr WHERE mr.recipe = r AND mr.member.id = :memberId)")
+    List<Recipe> findByCreatorIdNotAndMemberIdAndRecipeId(@Param("memberId") String memberId, @Param("recipeId") Long recipeId);
 
-    List<Recipe> findAllByMemberIdAndCreatorIdNot(String memberId,String creatorId);
-    /*@Query("SELECT r FROM Recipe r WHERE r.memberId = :memberId AND r.forked = :forked")
-    List<Recipe> findRecipesByMemberIdAndForked(@Param("memberId") Long memberId, @Param("forked") boolean forked);*/
     List<Recipe> findAllByCreatorId(String creatorId);
     List<Recipe> findAllByOwnerId(String ownerId);
-    List<Recipe> findAllByCategoriesId(Long categoryId);
+    List<Recipe> findAllByCategoryId(Long categoryId);
 
     default List<Recipe> findRandom50Recipes() {
         Pageable pageable = PageRequest.of(0, 50);

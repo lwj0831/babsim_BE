@@ -15,7 +15,4 @@ public class RecipeImgFormatter {
         }
         return urlList;
     }
-    public static String formatImageUrlList(List<String> imageUrlList) {
-        return String.join(",", imageUrlList);
-    }
 }

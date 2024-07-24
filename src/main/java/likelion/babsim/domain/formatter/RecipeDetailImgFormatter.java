@@ -15,7 +15,4 @@ public class RecipeDetailImgFormatter {
         }
         return urlList;
     }
-    public static String formatRecipeDetailList(List<String> recipeDetailList) {
-        return String.join(",", recipeDetailList);
-    }
 }

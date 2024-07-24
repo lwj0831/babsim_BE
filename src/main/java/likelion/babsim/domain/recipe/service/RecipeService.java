@@ -1,15 +1,24 @@
 package likelion.babsim.domain.recipe.service;
 
+import likelion.babsim.domain.allergy.RecipeAllergy;
 import likelion.babsim.domain.allergy.service.AllergyService;
+import likelion.babsim.domain.category.Category;
+import likelion.babsim.domain.category.repository.CategoryRepository;
 import likelion.babsim.domain.cookedRecord.CookedRecord;
 import likelion.babsim.domain.cookedRecord.service.CookedRecordService;
 import likelion.babsim.domain.formatter.*;
+import likelion.babsim.domain.keyword.Keyword;
+import likelion.babsim.domain.keyword.repository.KeywordRepository;
 import likelion.babsim.domain.likes.Likes;
 import likelion.babsim.domain.likes.service.LikesService;
+import likelion.babsim.domain.member.repository.MemberRepository;
 import likelion.babsim.domain.recipe.*;
+import likelion.babsim.domain.recipe.repository.MemberRecipeRepository;
 import likelion.babsim.domain.recipe.repository.RecipeRepository;
 import likelion.babsim.domain.review.service.RecipeReviewService;
+import likelion.babsim.domain.tag.Tag;
 import likelion.babsim.domain.tag.service.TagService;
+import likelion.babsim.web.recipe.RecipeCreateReqDto;
 import likelion.babsim.web.recipe.RecipeDetailResDto;
 import likelion.babsim.web.recipe.RecipeInfoResDto;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +28,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -32,6 +43,11 @@ public class RecipeService {
     private final AllergyService allergyService;
     private final CookedRecordService cookedRecordService;
     private final LikesService likesService;
+    private final IngredientFormatter ingredientFormatter;
+    private final CategoryRepository categoryRepository;
+    private final MemberRepository memberRepository;
+    private final MemberRecipeRepository memberRecipeRepository;
+    private final KeywordRepository keywordRepository;
 
     public List<RecipeInfoResDto> findRecipesByKeyword(String keyword){
         Pageable pageable = PageRequest.of(0, 50);
@@ -61,7 +77,11 @@ public class RecipeService {
     }
 
     public List<RecipeInfoResDto> findForkedRecipesByMemberId(String memberId){
-        List<Recipe> recipes = recipeRepository.findAllByMemberIdAndCreatorIdNot(memberId,memberId);
+        List<Recipe> recipes = recipeRepository.findByCreatorIdNotAndMemberId(memberId);
+        return recipesToRecipeInfoResDTOList(recipes);
+    }
+    public List<RecipeInfoResDto> findSpecificForkedRecipesByMemberIdAndRecipeId(String memberId, Long recipeId){
+        List<Recipe> recipes = recipeRepository.findByCreatorIdNotAndMemberIdAndRecipeId(memberId,recipeId);
         return recipesToRecipeInfoResDTOList(recipes);
     }
 
@@ -79,15 +99,10 @@ public class RecipeService {
             recipes = recipeRepository.findRandom50Recipes();
         }
         else {
-            recipes = recipeRepository.findAllByCategoriesId(categoryId);
+            recipes = recipeRepository.findAllByCategoryId(categoryId);
         }
         return recipesToRecipeInfoResDTOList(recipes);
     }
-    public List<RecipeDetailResDto> findRecipeDetailByRecipeIdAndMemberId(Long recipeId, String memberId){
-        List<Recipe> recipes = recipeRepository.findById(recipeId).stream().toList();
-        return recipesToRecipeDetailResDTOList(recipes,recipeId,memberId);
-    }
-
     private List<RecipeInfoResDto> recipesToRecipeInfoResDTOList(List<Recipe> recipes){
         List<RecipeInfoResDto> result = new ArrayList<>();
         for (Recipe recipe : recipes) {
@@ -104,29 +119,88 @@ public class RecipeService {
         }
         return result;
     }
-    private List<RecipeDetailResDto> recipesToRecipeDetailResDTOList(List<Recipe> recipes, Long recipeId, String memberId){
-        List<RecipeDetailResDto> result = new ArrayList<>();
-        for (Recipe recipe : recipes) {
-            RecipeDetailResDto dto = RecipeDetailResDto.builder()
-                    .id(recipe.getId())
-                    .creatorId(recipe.getCreatorId())
-                    .recipeImgs(RecipeImgFormatter.parseImageUrlList(recipe.getRecipeImgs()))
-                    .name(recipe.getRecipeName())
-                    .description(recipe.getRecipeDescription())
-                    .rate(recipeReviewService.findRatingByRecipeId(recipe.getId()))
-                    .difficulty(recipe.getDifficulty())
-                    .cookingTime(recipe.getCookingTime())
-                    .allergies(allergyService.findAllergiesByRecipeId(recipe.getId()))
-                    .ingredients(IngredientFormatter.parseIngredientFormList(recipe.getRecipeImgs()))
-                    .reviews(recipeReviewService.findReviewsByRecipeId(recipeId))
-                    .reviewsCount(recipeReviewService.findReviewsCount(recipeId))
-                    .recipeDetailImgs(RecipeDetailImgFormatter.parseRecipeDetailImgList(recipe.getRecipeDetailImgs()))
-                    .recipeContents(RecipeContentFormatter.parseRecipeContentList(recipe.getRecipeContents()))
-                    .recipeTimers(RecipeTimerFormatter.parseTimerList(recipe.getTimers()))
-                    .liked(likesService.checkLikesByMemberIdAndRecipeId(memberId,recipeId))
-                    .build();
-            result.add(dto);
+
+    public RecipeDetailResDto findRecipeDetailByRecipeIdAndMemberId(Long recipeId, String memberId){
+        Recipe recipe = recipeRepository.findById(recipeId).orElseThrow();
+        return recipesToRecipeDetailResDTO(recipe,recipeId,memberId);
+    }
+    @Transactional
+    public Recipe createRecipe(RecipeCreateReqDto dto, String creatorId) {
+        Recipe recipe = Recipe.builder()
+                .creatorId(creatorId)
+                .recipeImgs(String.join(",", dto.getRecipeImgs()))
+                .recipeName(dto.getName())
+                .recipeDescription(dto.getDescription())
+                .difficulty(dto.getDifficulty())
+                .cookingTime(dto.getCookingTime())
+                .recipeDetailImgs(String.join(",", dto.getRecipeDetailImgs()))
+                .ingredients(String.join(",",dto.getIngredients().stream().map(i->i.getName()+" "+i.getAmount()).toList()))
+                .recipeContents(String.join("/",dto.getRecipeContents()))
+                .timers(dto.getTimers().stream().map(String::valueOf).collect(Collectors.joining(",")))
+                .category(categoryRepository.findById(dto.getCategoryId()).orElseThrow())
+                .ownerId(creatorId)
+                .build();
+        //tag
+        List<String> tagsStr = dto.getTags();
+        for (String tagStr : tagsStr) {
+            Tag tag = Tag.builder()
+                    .tagName(tagStr)
+                    .recipe(recipe).
+                    build();
+            tagService.saveTag(tag);
         }
-        return result;
+        //recipeAllergy
+        /* RecipeAllergy recipeAllergy = RecipeAllergy.builder()
+                .allergy()
+                .recipe(recipe)
+                .build();*/
+        //nft
+
+        //creator와 recipe연결
+        MemberRecipe memberRecipe = MemberRecipe.builder()
+                .recipe(recipe)
+                .member(memberRepository.findById(creatorId).orElseThrow()).build();
+        memberRecipeRepository.save(memberRecipe);
+
+        //키워드 추출해서 Keyword에 넣기
+        List<String> keywords = Arrays.stream(dto.getName().split(" ")).toList();
+        Keyword k;
+        for (String keyword : keywords) {
+            if((k=keywordRepository.findByKeyword(keyword))==null){ //해당 키워드 처음
+                k = Keyword.builder()
+                        .count(0L)
+                        .keyword(keyword)
+                        .build();
+                keywordRepository.save(k);
+            }
+            else{ //해당 키워드 이미 존재 시 count 1증가
+                k.increaseCount();
+                keywordRepository.save(k);
+            }
+        }
+
+        return recipeRepository.save(recipe);
+
+    }
+    private RecipeDetailResDto recipesToRecipeDetailResDTO(Recipe recipe, Long recipeId, String memberId) {
+        return RecipeDetailResDto.builder()
+                .id(recipe.getId())
+                .creatorId(recipe.getCreatorId())
+                .recipeImgs(RecipeImgFormatter.parseImageUrlList(recipe.getRecipeImgs()))//
+                .name(recipe.getRecipeName())
+                .description(recipe.getRecipeDescription())
+                .rate(recipeReviewService.findRatingByRecipeId(recipe.getId()))//
+                .difficulty(recipe.getDifficulty())
+                .cookingTime(recipe.getCookingTime())
+                .allergies(allergyService.findAllergiesByRecipeId(recipe.getId()))//
+                .ingredients(ingredientFormatter.parseIngredientFormList(recipe.getRecipeImgs()))//
+                .reviews(recipeReviewService.findReviewsByRecipeId(recipeId))//
+                .reviewsCount(recipeReviewService.findReviewsCount(recipeId))//
+                .recipeDetailImgs(RecipeDetailImgFormatter.parseRecipeDetailImgList(recipe.getRecipeDetailImgs()))//
+                .recipeContents(RecipeContentFormatter.parseRecipeContentList(recipe.getRecipeContents()))//
+                .recipeTimers(RecipeTimerFormatter.parseTimerList(recipe.getTimers()))//
+                .liked(likesService.checkLikesByMemberIdAndRecipeId(memberId, recipeId))//
+                .categoryName(categoryRepository.findById(recipe.getCategory().getId()).orElseThrow().getCategoryName())
+                .build();
     }
 }

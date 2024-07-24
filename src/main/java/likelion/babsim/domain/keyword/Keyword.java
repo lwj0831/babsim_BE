@@ -19,4 +19,8 @@ public class Keyword {
         this.keyword = keyword;
         this.count = count;
     }
+
+    public void increaseCount(){
+        count++;
+    }
 }

@@ -8,6 +8,7 @@ import likelion.babsim.domain.category.Category;
 import likelion.babsim.domain.cookedRecord.CookedRecord;
 import likelion.babsim.domain.likes.Likes;
 import likelion.babsim.domain.member.Member;
+import likelion.babsim.domain.recipe.MemberRecipe;
 import likelion.babsim.domain.recipe.Recipe;
 import likelion.babsim.domain.review.RecipeReview;
 import likelion.babsim.domain.tag.Tag;
@@ -55,13 +56,24 @@ class RecipeServiceTest {
                     .build();
             entityManager.merge(member);
 
+            Category category = Category.builder()
+                    .id(1L)
+                    .categoryName("메인요리")
+                    .build();
+            entityManager.merge(category); //반복문 돌면 이미 존재해서 마지막 recipe와 연결됨
+            Category category2 = Category.builder()
+                    .id(2L)
+                    .categoryName("밑반찬")
+                    .build();
+            entityManager.merge(category2); //Recipe홀수에 메인요리, 밑반판 카테고리 부여
+
             Recipe recipe = Recipe.builder()
                     .recipeName("keyword_" + i)
                     .recipeImgs("image" + i + ".jpg")
                     .cookingTime(i * 10)
                     .creatorId("1")
                     .ownerId("1")
-                    .member(member)
+                    .category(category)
                     .build();
             entityManager.persist(recipe);
             Recipe recipe2 = Recipe.builder()
@@ -70,22 +82,20 @@ class RecipeServiceTest {
                     .cookingTime(0)
                     .creatorId("1")
                     .ownerId("1")
-                    .member(member)
+                    .category(category2)
                     .build();
             entityManager.persist(recipe2);
 
-            Category category = Category.builder()
-                    .id(1L)
-                    .categoryName("메인요리")
+            MemberRecipe memberRecipe = MemberRecipe.builder()
+                    .member(member)
                     .recipe(recipe)
                     .build();
-            entityManager.merge(category); //반복문 돌면 이미 존재해서 마지막 recipe와 연결됨
-            Category category2 = Category.builder()
-                    .id(2L)
-                    .categoryName("밑반찬")
-                    .recipe(recipe)
+            entityManager.persist(memberRecipe);
+            MemberRecipe memberRecipe2 = MemberRecipe.builder()
+                    .member(member)
+                    .recipe(recipe2)
                     .build();
-            entityManager.merge(category2); //Recipe홀수에 메인요리, 밑반판 카테고리 부여
+            entityManager.persist(memberRecipe2);//member와 recipe1,recipe2연결
 
             Tag tag1 = Tag.builder()
                     .recipe(recipe)
@@ -250,6 +260,6 @@ class RecipeServiceTest {
         List<String> recipes = result.stream()
                 .map(RecipeInfoResDto::getRecipeName)
                 .toList();
-        assertThat(recipes).hasSize(1);
+        assertThat(recipes).hasSize(10);
     }
 }

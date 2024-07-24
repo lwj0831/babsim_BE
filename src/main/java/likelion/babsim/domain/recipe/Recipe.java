@@ -31,20 +31,15 @@ public class Recipe {
     private String ingredients;
     private String recipeContents;
     private String timers;
-    private Long cookedCount;
     private String ownerId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="member_id")
-    private Member member;
+    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
+    @ToString.Exclude
+    private List<MemberRecipe> memberRecipes;
 
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
     @ToString.Exclude
     private List<Tag> tags;
-
-    @OneToMany(mappedBy = "recipe")
-    @ToString.Exclude
-    private List<Category> categories;
 
     @OneToMany(mappedBy = "recipe")
     @ToString.Exclude
@@ -66,15 +61,31 @@ public class Recipe {
     @ToString.Exclude
     private CookedRecord cookedRecord;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="category_id")
+    private Category category;
+
     @Builder
-    public Recipe(Long id, String recipeName, String recipeImgs, int cookingTime,Member member,String creatorId,String ownerId,List<Category> categories) {
+    public Recipe(Long id, String creatorId, String recipeImgs, String recipeName, String recipeDescription, Difficulty difficulty, Integer cookingTime, String recipeDetailImgs, String ingredients, String recipeContents, String timers, String ownerId, List<MemberRecipe> memberRecipes, List<Tag> tags,Category category, List<RecipeReview> reviews, List<Likes> likes, List<RecipeAllergy> recipeAllergies, Nft nft, CookedRecord cookedRecord) {
         this.id = id;
-        this.recipeName = recipeName;
-        this.recipeImgs = recipeImgs;
-        this.cookingTime = cookingTime;
-        this.member = member;
         this.creatorId = creatorId;
+        this.recipeImgs = recipeImgs;
+        this.recipeName = recipeName;
+        this.recipeDescription = recipeDescription;
+        this.difficulty = difficulty;
+        this.cookingTime = cookingTime;
+        this.recipeDetailImgs = recipeDetailImgs;
+        this.ingredients = ingredients;
+        this.recipeContents = recipeContents;
+        this.timers = timers;
         this.ownerId = ownerId;
-        this.categories = categories;
+        this.memberRecipes = memberRecipes;
+        this.tags = tags;
+        this.category = category;
+        this.reviews = reviews;
+        this.likes = likes;
+        this.recipeAllergies = recipeAllergies;
+        this.nft = nft;
+        this.cookedRecord = cookedRecord;
     }
 }

@@ -15,7 +15,4 @@ public class RecipeTimerFormatter {
         }
         return timerList;
     }
-    public static String formatImagetimerList(List<String> imagetimerList) {
-        return String.join(",", imagetimerList);
-    }
 }

@@ -1,6 +1,8 @@
 package likelion.babsim.domain.recipe.controller;
 
+import likelion.babsim.domain.recipe.Recipe;
 import likelion.babsim.domain.recipe.service.RecipeService;
+import likelion.babsim.web.recipe.RecipeCreateReqDto;
 import likelion.babsim.web.recipe.RecipeDetailResDto;
 import likelion.babsim.web.recipe.RecipeInfoResDto;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +40,10 @@ public class RecipeController {
     public List<RecipeInfoResDto> getForkedRecipesByMemberId(@RequestParam String memberId){
         return recipeService.findForkedRecipesByMemberId(memberId);
     }
+    @GetMapping("/forked/{recipeId}")
+    public List<RecipeInfoResDto> getSpecificForkedRecipesByMemberIdAndRecipeId(@RequestParam String memberId,@PathVariable Long recipeId){
+        return recipeService.findSpecificForkedRecipesByMemberIdAndRecipeId(memberId,recipeId);
+    }
 
     @GetMapping("/own")
     public List<RecipeInfoResDto> getMyRecipesByOwnerId(@RequestParam String memberId){
@@ -49,8 +55,13 @@ public class RecipeController {
     }
 
     @GetMapping("/{recipeId}")
-    public List<RecipeDetailResDto> getRecipeDetailByRecipeIdAndMemberId(@PathVariable Long recipeId, @RequestParam String memberId){
+    public RecipeDetailResDto getRecipeDetailByRecipeIdAndMemberId(@PathVariable Long recipeId, @RequestParam String memberId){
         return recipeService.findRecipeDetailByRecipeIdAndMemberId(recipeId,memberId);
+    }
+
+    @PostMapping
+    public Recipe createRecipe(@RequestParam String creatorId, @RequestBody RecipeCreateReqDto dto){
+        return recipeService.createRecipe(dto,creatorId);
     }
 
 }
