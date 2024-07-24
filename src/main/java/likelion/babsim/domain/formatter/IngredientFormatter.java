@@ -18,7 +18,7 @@ public class IngredientFormatter {
     //"apple 1,banana 2" -> {{"name":apple,"quantity":1,"link":http://~~~},{"name":banana,"quantity":2,"link":http://~~~}}
     public List<IngredientForm> parseIngredientFormList(String ingredientsStr) {
         List<IngredientForm> IngredientFormList = new ArrayList<>();
-        String[] items = ingredientsStr.split(",");// 문자열을 쉼표로 분리하여 각 항목을 가져옴
+        String[] items = ingredientsStr.split("/");// 문자열을 쉼표로 분리하여 각 항목을 가져옴
         for (String item : items) {
             String[] parts = item.trim().split(" ");// 각 항목을 공백으로 분리하여 이름과 개수를 추출
             if (parts.length == 2) {
