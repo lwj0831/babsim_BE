@@ -23,7 +23,7 @@ public class RecipeCreateReqDto {
     @Getter
     public static class IngredientDTO {
         private String name;
-        private Integer amount;
+        private String amount;
     }
 
     @Builder

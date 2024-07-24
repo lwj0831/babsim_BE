@@ -23,11 +23,11 @@ public class IngredientFormatter {
             String[] parts = item.trim().split(" ");// 각 항목을 공백으로 분리하여 이름과 개수를 추출
             if (parts.length == 2) {
                 String name = parts[0];
-                double quantity;
+                String quantity;
                 try {
-                    quantity = Double.parseDouble(parts[1]);
+                    quantity = parts[1];
                 } catch (NumberFormatException e) {
-                    quantity = 0; // 개수가 숫자가 아닌 경우 처리
+                    quantity = null; // 개수가 숫자가 아닌 경우 처리
                 }
                 String link = ingredientService.findLinkByIngredientName(name);
                 IngredientForm IngredientForm = new IngredientForm(name, quantity,link);
