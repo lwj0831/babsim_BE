@@ -69,6 +69,8 @@ public class MemberService {
                     .member(member)
                     .allergy(allergyRepository.findAllergyById(allergyId))
                     .build();
+            System.out.println(memberAllergy.getMember().getId());
+            System.out.println(memberAllergy.getAllergy().getId());
             memberAllergies.add(memberAllergy);
             memberAllergyRepository.save(memberAllergy);
         }
@@ -94,7 +96,7 @@ public class MemberService {
         return MemberResDTO.builder()
                 .id(member.getId())
                 .name(member.getName())
-                .img("")  // TODO get member img from firebase
+                .img(member.getMemberImg())
                 .email(member.getEmail())
                 .job(member.getJob().ordinal())
                 .allergies(allergyIds)
