@@ -80,6 +80,10 @@ public class RecipeService {
         List<Recipe> recipes = recipeRepository.findByCreatorIdNotAndMemberId(memberId);
         return recipesToRecipeInfoResDTOList(recipes);
     }
+    public List<RecipeInfoResDto> findSpecificForkedRecipesByMemberIdAndRecipeId(String memberId, Long recipeId){
+        List<Recipe> recipes = recipeRepository.findByCreatorIdNotAndMemberIdAndRecipeId(memberId,recipeId);
+        return recipesToRecipeInfoResDTOList(recipes);
+    }
 
     public List<RecipeInfoResDto> findMyRecipesByCreatorId(String memberId){
         List<Recipe> recipes = recipeRepository.findAllByCreatorId(memberId);

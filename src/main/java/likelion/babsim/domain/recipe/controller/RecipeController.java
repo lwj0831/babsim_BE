@@ -40,6 +40,10 @@ public class RecipeController {
     public List<RecipeInfoResDto> getForkedRecipesByMemberId(@RequestParam String memberId){
         return recipeService.findForkedRecipesByMemberId(memberId);
     }
+    @GetMapping("/forked/{recipeId}")
+    public List<RecipeInfoResDto> getSpecificForkedRecipesByMemberIdAndRecipeId(@RequestParam String memberId,@PathVariable Long recipeId){
+        return recipeService.findSpecificForkedRecipesByMemberIdAndRecipeId(memberId,recipeId);
+    }
 
     @GetMapping("/own")
     public List<RecipeInfoResDto> getMyRecipesByOwnerId(@RequestParam String memberId){
