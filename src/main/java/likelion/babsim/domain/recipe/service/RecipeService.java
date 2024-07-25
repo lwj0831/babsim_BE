@@ -178,15 +178,13 @@ public class RecipeService {
                 keywordRepository.save(k);
             }
         }
-
         return recipeRepository.save(recipe);
-
     }
     private RecipeDetailResDto recipesToRecipeDetailResDTO(Recipe recipe, Long recipeId, String memberId) {
         return RecipeDetailResDto.builder()
                 .id(recipe.getId())
                 .creatorId(recipe.getCreatorId())
-                .recipeImgs(RecipeImgFormatter.parseImageUrlList(recipe.getRecipeImgs()))//
+                .recipeImgs(RecipeImgFormatter.parseImageIdList(recipe.getRecipeImgs()))//
                 .name(recipe.getRecipeName())
                 .description(recipe.getRecipeDescription())
                 .rate(recipeReviewService.findRatingByRecipeId(recipe.getId()))//
@@ -196,7 +194,7 @@ public class RecipeService {
                 .ingredients(ingredientFormatter.parseIngredientFormList(recipe.getRecipeImgs()))//
                 .reviews(recipeReviewService.findReviewsByRecipeId(recipeId))//
                 .reviewsCount(recipeReviewService.findReviewsCount(recipeId))//
-                .recipeDetailImgs(RecipeDetailImgFormatter.parseRecipeDetailImgList(recipe.getRecipeDetailImgs()))//
+                .recipeDetailImgs(RecipeDetailImgFormatter.parseRecipeDetailIdList(recipe.getRecipeDetailImgs()))//
                 .recipeContents(RecipeContentFormatter.parseRecipeContentList(recipe.getRecipeContents()))//
                 .recipeTimers(RecipeTimerFormatter.parseTimerList(recipe.getTimers()))//
                 .liked(likesService.checkLikesByMemberIdAndRecipeId(memberId, recipeId))//
