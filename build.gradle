@@ -35,6 +35,8 @@ dependencies {
 	testCompileOnly 'org.projectlombok:lombok'
 	testAnnotationProcessor 'org.projectlombok:lombok'
 
+	implementation 'org.jsoup:jsoup:1.15.3'
+
 }
 
 tasks.named('test') {

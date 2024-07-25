@@ -2,6 +2,11 @@ package likelion.babsim;
 
 import likelion.babsim.domain.recipe.Difficulty;
 import lombok.Data;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.*;
@@ -9,12 +14,18 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 public class MultiUrlCrawler {
 
     @Data
     static class RecipeDummy {
+        private static int userIdCounter = 1;
+        private static long categoryIdCounter = 1;
+        private static long memberIdCounter = 1;
+        private static int memberTemp = 0;
+        private static int categoryTemp=0;
         String id;
         String creatorId;
         String recipeImg;
@@ -41,7 +52,6 @@ public class MultiUrlCrawler {
                     + ownerId + "', " + categoryId + "),";
         }
     }
-
     public static void main(String[] args) {
         List<String> urls = List.of(
                 "https://m.10000recipe.com/recipe/6965365",
@@ -93,7 +103,6 @@ public class MultiUrlCrawler {
                 "https://m.10000recipe.com/recipe/7005441",
                 "https://m.10000recipe.com/recipe/7011834"//키토
         );
-
         List<RecipeDummy> recipes = urls.stream()
                 .map(MultiUrlCrawler::fetchRecipeFromUrl)
                 .filter(recipe -> recipe != null) // null 체크
@@ -128,34 +137,44 @@ public class MultiUrlCrawler {
                         }
                         if (line.contains("view3_top_info")) {
                             line = reader.readLine();
-                            recipeDummy.setCookingTime(line.substring(line.indexOf("time.png") + 10, line.indexOf("time.png") + 12));
+                            recipeDummy.setCookingTime(extractCookingTime(line));
+                            recipeDummy.setDifficulty(extractLevel(line));
                         }
                         if (line.contains("step_list_txt_cont")) {
                             if (line.contains("/div></li>")) {
                                 recipeDummy.getRecipeDetailImgs().add(line.substring(line.indexOf("img src") + 9, line.indexOf("</div></li>") - 2));
                                 recipeDummy.getRecipeContents().add(line.substring(line.indexOf("step_list_txt_cont") + 20, line.indexOf("</div>")));
-                            } else if(line.contains("<br")){
+                            } else if (line.contains("<br")) {
                                 recipeDummy.getRecipeContents().add(line.substring(line.indexOf("step_list_txt_cont") + 20, line.indexOf("<br")));
-                                while(!line.contains("img src")) line = reader.readLine();
+                                while (!line.contains("img src")) line = reader.readLine();
                                 recipeDummy.getRecipeDetailImgs().add(line.substring(line.indexOf("img src") + 9, line.indexOf("</div></li>") - 2));
                             }
                         }
-                        if (line.contains("ingre_list_name")&&!line.contains("view3_box_tit")) {
+                        if (line.contains("ingre_list_name") && !line.contains("view3_box_tit")) {
                             String ingredient;
                             line = reader.readLine();
                             line = reader.readLine();
                             ingredient = line.replaceAll(" ", "").replaceAll("</a>", "");
-                            while(!line.contains("ingre_list_ea")) line = reader.readLine();
+                            while (!line.contains("ingre_list_ea")) line = reader.readLine();
                             ingredient = ingredient.concat(" " + line.substring(line.indexOf("ingre_list_ea") + 15, line.indexOf("</span>")));
                             recipeDummy.getIngredients().add(ingredient);
                         }
                     }
-                    recipeDummy.setId(String.valueOf((int) (Math.random() * 4) + 1));
-                    recipeDummy.setCreatorId(String.valueOf((int) (Math.random() * 4) + 1));
-                    recipeDummy.setDifficulty(Difficulty.EASY);
+                    recipeDummy.setId(String.valueOf(RecipeDummy.userIdCounter++));
+                    recipeDummy.setCreatorId(String.valueOf(RecipeDummy.memberIdCounter));
                     recipeDummy.setOwnerId(recipeDummy.getCreatorId());
-                    recipeDummy.setTimers(Collections.nCopies(recipeDummy.getRecipeContents().size(), 0));
-                    recipeDummy.setCategoryId(1L);
+                    recipeDummy.setTimers(getRandomNumbers(recipeDummy.getRecipeContents().size()));
+                   /* Collections.nCopies(recipeDummy.getRecipeContents().size(), 0);*/
+                    recipeDummy.setCategoryId(RecipeDummy.categoryIdCounter);
+                    if(++RecipeDummy.categoryTemp==6){
+                        RecipeDummy.categoryTemp=0;
+                        RecipeDummy.categoryIdCounter++;
+                    }
+                    if(++RecipeDummy.memberTemp==10){
+                        RecipeDummy.memberTemp=0;
+                        RecipeDummy.memberIdCounter++;
+                    }
+
 
                     return recipeDummy;
                 }
@@ -164,5 +183,46 @@ public class MultiUrlCrawler {
             e.printStackTrace();
         }
         return null; // 오류 발생 시 null 반환
+    }
+
+    public static Difficulty extractLevel(String htmlString) {
+        Document doc = Jsoup.parse(htmlString);
+        Elements spans = doc.select("span");
+
+        for (Element span : spans) {
+            String text = span.text();
+            if (text.contains("아무나")||text.contains("초급")) {
+                return Difficulty.EASY;
+            }
+            else if(text.contains("중급")) return Difficulty.MEDIUM;
+        }
+        return Difficulty.HARD;
+    }
+    public static String extractCookingTime(String htmlString) {
+        Document doc = Jsoup.parse(htmlString);
+        Elements spans = doc.select("span");
+        String cookingTime = null;
+
+        for (Element span : spans) {
+            String text = span.text();
+            if (text.contains("분 이내")) {
+                cookingTime = text.replaceAll("\\D", ""); // 숫자만 추출
+                break; // 찾았으므로 루프 종료
+            }
+        }
+        return cookingTime;
+    }
+    public static List<Integer> getRandomNumbers(int n) {
+        // 모든 가능한 숫자를 생성
+        List<Integer> numbers = new ArrayList<>();
+        for (int i = 10; i <= 180; i += 10) {
+            numbers.add(i);
+        }
+
+        // 리스트를 무작위로 섞음
+        Collections.shuffle(numbers, new Random());
+
+        // 앞에서 n개의 숫자를 선택
+        return numbers.subList(0, n);
     }
 }
