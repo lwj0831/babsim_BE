@@ -25,10 +25,13 @@ public class Recipe {
     private String recipeImgs;
     private String recipeName;
     private String recipeDescription;
+    @Enumerated(EnumType.STRING)
     private Difficulty difficulty;
     private Integer cookingTime;
+    @Column(length = 65535)
     private String recipeDetailImgs;
     private String ingredients;
+    @Column(length = 65535)
     private String recipeContents;
     private String timers;
     private String ownerId;
@@ -41,7 +44,7 @@ public class Recipe {
     @ToString.Exclude
     private List<Tag> tags;
 
-    @OneToMany(mappedBy = "recipe")
+    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
     @ToString.Exclude
     private List<RecipeReview> reviews;
 
