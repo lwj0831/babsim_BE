@@ -26,8 +26,10 @@ public class Member {
     private String name;
     private String memberImg;
     private String email;
+    @Enumerated(EnumType.STRING)
     private Job job;
     private String address;
+    @Enumerated(EnumType.STRING)
     private Membership membership;
     private Long point;
     private LocalDateTime registerDate;

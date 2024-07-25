@@ -59,16 +59,16 @@ public class MultiUrlCrawler {
                 "https://m.10000recipe.com/recipe/7022775",
                 "https://m.10000recipe.com/recipe/7027008",
                 "https://m.10000recipe.com/recipe/7030528",
-                "https://m.10000recipe.com/recipe/6992063",//메인요리
+                "https://m.10000recipe.com/recipe/6903110",//메인요리 //
                 "https://m.10000recipe.com/recipe/6877253",
-                "https://m.10000recipe.com/recipe/6979678",
+                "https://m.10000recipe.com/recipe/6979678",//
                 "https://m.10000recipe.com/recipe/6933414",
-                "https://m.10000recipe.com/recipe/6842114",
+                "https://m.10000recipe.com/recipe/6866483",//
                 "https://m.10000recipe.com/recipe/6834258",
-                "https://m.10000recipe.com/recipe/6984728",//단순요리
+                "https://m.10000recipe.com/recipe/6859263",//단순요리
                 "https://m.10000recipe.com/recipe/6866122",
                 "https://m.10000recipe.com/recipe/6933349",
-                "https://m.10000recipe.com/recipe/6907091",
+                "https://m.10000recipe.com/recipe/6888169",//
                 "https://m.10000recipe.com/recipe/6911766",
                 "https://m.10000recipe.com/recipe/6833230",
                 "https://m.10000recipe.com/recipe/6871193",//비건  //쪽파무침 오류
@@ -78,13 +78,13 @@ public class MultiUrlCrawler {
                 "https://m.10000recipe.com/recipe/6194344",
                 "https://m.10000recipe.com/recipe/6404903",
                 "https://m.10000recipe.com/recipe/3149743",//스낵
-                "https://m.10000recipe.com/recipe/6926078",
+                "https://m.10000recipe.com/recipe/6594403",//
                 "https://m.10000recipe.com/recipe/6860598",
                 "https://m.10000recipe.com/recipe/6847733",
                 "https://m.10000recipe.com/recipe/6847230",
                 "https://m.10000recipe.com/recipe/6622543",
                 "https://m.10000recipe.com/recipe/1607382",//베이킹
-                "https://m.10000recipe.com/recipe/6832722",
+                "https://m.10000recipe.com/recipe/6830560",//
                 "https://m.10000recipe.com/recipe/6769316",
                 "https://m.10000recipe.com/recipe/6403123",
                 "https://m.10000recipe.com/recipe/6754761",
@@ -95,13 +95,13 @@ public class MultiUrlCrawler {
                 "https://m.10000recipe.com/recipe/6832851",
                 "https://m.10000recipe.com/recipe/6830337",
                 "https://m.10000recipe.com/recipe/6832958",
-                "https://m.10000recipe.com/recipe/6896162",//오븐
+                "https://m.10000recipe.com/recipe/7005631",//오븐
                 "https://m.10000recipe.com/recipe/6933974",
-                "https://m.10000recipe.com/recipe/6986101",
-                "https://m.10000recipe.com/recipe/6986865",
-                "https://m.10000recipe.com/recipe/6950154",
-                "https://m.10000recipe.com/recipe/7005441",
-                "https://m.10000recipe.com/recipe/7011834"//키토
+                "https://m.10000recipe.com/recipe/6966134",//
+                "https://m.10000recipe.com/recipe/6969247",//
+                "https://m.10000recipe.com/recipe/6973074",//
+                "https://m.10000recipe.com/recipe/6983598",//
+                "https://m.10000recipe.com/recipe/7002164"//키토
         );
         List<RecipeDummy> recipes = urls.stream()
                 .map(MultiUrlCrawler::fetchRecipeFromUrl)
@@ -174,6 +174,8 @@ public class MultiUrlCrawler {
                         RecipeDummy.memberTemp=0;
                         RecipeDummy.memberIdCounter++;
                     }
+                    if(recipeDummy.getCookingTime()==null) recipeDummy.setCookingTime("900");
+
 
 
                     return recipeDummy;
@@ -202,15 +204,18 @@ public class MultiUrlCrawler {
         Document doc = Jsoup.parse(htmlString);
         Elements spans = doc.select("span");
         String cookingTime = null;
+        int result = 900;
 
         for (Element span : spans) {
             String text = span.text();
             if (text.contains("분 이내")) {
                 cookingTime = text.replaceAll("\\D", ""); // 숫자만 추출
+                result = Integer.parseInt(cookingTime)*60;
                 break; // 찾았으므로 루프 종료
             }
         }
-        return cookingTime;
+        return String.valueOf(result);
+
     }
     public static List<Integer> getRandomNumbers(int n) {
         // 모든 가능한 숫자를 생성

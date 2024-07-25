@@ -180,6 +180,65 @@ public class RecipeService {
         }
         return recipeRepository.save(recipe);
     }
+    @Transactional
+    public Recipe editRecipe(RecipeCreateReqDto dto, String creatorId,Long recipeId) {
+        Recipe findRecipe = recipeRepository.findById(recipeId).orElseThrow();
+        recipeRepository.delete(findRecipe);
+        Recipe recipe = Recipe.builder()
+                .creatorId(creatorId)
+                .recipeImgs(String.join(",", dto.getRecipeImgs()))
+                .recipeName(dto.getName())
+                .recipeDescription(dto.getDescription())
+                .difficulty(dto.getDifficulty())
+                .cookingTime(dto.getCookingTime())
+                .recipeDetailImgs(String.join(",", dto.getRecipeDetailImgs()))
+                .ingredients(String.join(",",dto.getIngredients().stream().map(i->i.getName()+" "+i.getAmount()).toList()))
+                .recipeContents(String.join("/",dto.getRecipeContents()))
+                .timers(dto.getTimers().stream().map(String::valueOf).collect(Collectors.joining(",")))
+                .category(categoryRepository.findById(dto.getCategoryId()).orElseThrow())
+                .ownerId(creatorId)
+                .build();
+        //tag
+        List<String> tagsStr = dto.getTags();
+        for (String tagStr : tagsStr) {
+            Tag tag = Tag.builder()
+                    .tagName(tagStr)
+                    .recipe(recipe).
+                    build();
+            tagService.saveTag(tag);
+        }
+        //recipeAllergy
+        /* RecipeAllergy recipeAllergy = RecipeAllergy.builder()
+                .allergy()
+                .recipe(recipe)
+                .build();*/
+        //nft
+
+        //creator와 recipe연결
+        MemberRecipe memberRecipe = MemberRecipe.builder()
+                .recipe(recipe)
+                .member(memberRepository.findById(creatorId).orElseThrow()).build();
+        memberRecipeRepository.save(memberRecipe);
+
+        //키워드 추출해서 Keyword에 넣기
+        List<String> keywords = Arrays.stream(dto.getName().split(" ")).toList();
+        Keyword k;
+        for (String keyword : keywords) {
+            if((k=keywordRepository.findByKeyword(keyword))==null){ //해당 키워드 처음
+                k = Keyword.builder()
+                        .count(0L)
+                        .keyword(keyword)
+                        .build();
+                keywordRepository.save(k);
+            }
+            else{ //해당 키워드 이미 존재 시 count 1증가
+                k.increaseCount();
+                keywordRepository.save(k);
+            }
+        }
+        return recipeRepository.save(recipe);
+    }
+
     private RecipeDetailResDto recipesToRecipeDetailResDTO(Recipe recipe, Long recipeId, String memberId) {
         return RecipeDetailResDto.builder()
                 .id(recipe.getId())
