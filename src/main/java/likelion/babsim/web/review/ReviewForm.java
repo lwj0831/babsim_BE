@@ -1,11 +1,13 @@
 package likelion.babsim.web.review;
 
 import lombok.Builder;
+import lombok.Data;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
 
 @ToString
+@Data
 public class ReviewForm {
     private String memberId;
     private String memberName;
