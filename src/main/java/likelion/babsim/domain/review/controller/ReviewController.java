@@ -12,6 +12,7 @@ import java.util.List;
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/api/reviews")
+@CrossOrigin(origins = {"http://localhost:5173"})
 public class ReviewController {
     private final RecipeReviewService recipeReviewService;
 
