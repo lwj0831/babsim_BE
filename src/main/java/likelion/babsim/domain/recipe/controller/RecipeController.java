@@ -18,7 +18,7 @@ public class RecipeController {
     private final RecipeService recipeService;
 
     @GetMapping
-    public List<RecipeInfoResDto> getRecipesByRecipeName(@RequestParam String keyword){
+    public List<RecipeInfoResDto> getRecipesByRecipeName(@RequestParam("keyword") String keyword){
         return recipeService.findRecipesByKeyword(keyword);
     }
 
@@ -28,35 +28,35 @@ public class RecipeController {
     }
 
     @GetMapping("/recommend")
-    public List<RecipeInfoResDto> getRecommendRecipesByMemberId(@RequestParam String memberId){
+    public List<RecipeInfoResDto> getRecommendRecipesByMemberId(@RequestParam("memberId") String memberId){
         return recipeService.findRecommendRecipesByMemberId(memberId);
     }
 
     @GetMapping("/likes")
-    public List<RecipeInfoResDto> getLikesRecipesByMemberId(@RequestParam String memberId){
+    public List<RecipeInfoResDto> getLikesRecipesByMemberId(@RequestParam("memberId") String memberId){
         return recipeService.findLikesRecipesByMemberId(memberId);
     }
 
     @GetMapping("/forked")
-    public List<RecipeInfoResDto> getForkedRecipesByMemberId(@RequestParam String memberId){
+    public List<RecipeInfoResDto> getForkedRecipesByMemberId(@RequestParam("memberId") String memberId){
         return recipeService.findForkedRecipesByMemberId(memberId);
     }
     @GetMapping("/forked/{recipeId}")
-    public List<RecipeInfoResDto> getSpecificForkedRecipesByMemberIdAndRecipeId(@RequestParam String memberId,@PathVariable Long recipeId){
+    public List<RecipeInfoResDto> getSpecificForkedRecipesByMemberIdAndRecipeId(@RequestParam("memberId") String memberId,@PathVariable Long recipeId){
         return recipeService.findSpecificForkedRecipesByMemberIdAndRecipeId(memberId,recipeId);
     }
 
     @GetMapping("/own")
-    public List<RecipeInfoResDto> getMyRecipesByOwnerId(@RequestParam String memberId){
+    public List<RecipeInfoResDto> getMyRecipesByOwnerId(@RequestParam("memberId") String memberId){
         return recipeService.findMyRecipesByOwnerId(memberId);
     }
     @GetMapping("/category/{categoryId}")
-    public List<RecipeInfoResDto> getRecipesByCategoryId(@PathVariable Long categoryId){
+    public List<RecipeInfoResDto> getRecipesByCategoryId(@PathVariable("categoryId") Long categoryId){
         return recipeService.findRecipesByCategoryId(categoryId);
     }
 
     @GetMapping("/{recipeId}")
-    public RecipeDetailResDto getRecipeDetailByRecipeIdAndMemberId(@PathVariable Long recipeId, @RequestParam(required = false,defaultValue = "null") String memberId){
+    public RecipeDetailResDto getRecipeDetailByRecipeIdAndMemberId(@PathVariable("recipeId") Long recipeId, @RequestParam(value="memberId", required = false,defaultValue = "null") String memberId){
         return recipeService.findRecipeDetailByRecipeIdAndMemberId(recipeId,memberId);
     }
 
