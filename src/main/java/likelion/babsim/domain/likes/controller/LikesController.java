@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequiredArgsConstructor
@@ -16,7 +17,7 @@ public class LikesController {
     private final LikesService likesService;
 
     @PostMapping
-    public LikesUpdateResDto updateLikes(String memberId,Long recipeId){
+    public LikesUpdateResDto updateLikes(@RequestParam("recipeId") Long recipeId, @RequestParam("memberId") String memberId){
         return likesService.updateLikesByMemberIdAndRecipeId(memberId,recipeId);
     }
 
