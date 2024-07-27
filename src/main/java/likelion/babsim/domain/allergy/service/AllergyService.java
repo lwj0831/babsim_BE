@@ -30,6 +30,9 @@ public class AllergyService {
                 .map(r -> r.getAllergy().getId())
                 .toList();
     }
+    public Allergy findAllergyByAllergyName(String allergyName){
+        return allergyRepository.findByAllergyName(allergyName);
+    }
 
     @PostConstruct
     public void init() {
