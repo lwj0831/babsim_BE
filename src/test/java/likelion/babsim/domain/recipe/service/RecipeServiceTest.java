@@ -267,10 +267,4 @@ class RecipeServiceTest {
                 .toList();
         assertThat(recipes).hasSize(12);
     }
-    @Test
-    @Transactional
-    @DirtiesContext
-    void testCreateRecipes(){
-
-    }
 }

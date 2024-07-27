@@ -4,12 +4,14 @@ import jakarta.persistence.*;
 import likelion.babsim.domain.order.Orders;
 import likelion.babsim.domain.review.ProductReview;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.util.List;
 
 @Entity
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class OrderProduct {
     @Id
@@ -27,7 +29,7 @@ public class OrderProduct {
     @JoinColumn(name="product_id")
     private Product product;
 
-    @OneToMany(mappedBy = "orderProduct")
+    @OneToOne(mappedBy = "orderProduct")
     @ToString.Exclude
-    private List<ProductReview> productReviews;
+    private ProductReview productReviews;
 }
