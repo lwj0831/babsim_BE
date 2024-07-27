@@ -5,11 +5,13 @@ import likelion.babsim.domain.member.Member;
 import likelion.babsim.domain.product.OrderProduct;
 import likelion.babsim.domain.recipe.Recipe;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProductReview {
     @Id
@@ -22,7 +24,7 @@ public class ProductReview {
     private String comment;
     private LocalDateTime registerDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_product_id")
     private OrderProduct orderProduct;
 
