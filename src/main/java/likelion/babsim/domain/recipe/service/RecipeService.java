@@ -250,7 +250,8 @@ public class RecipeService {
                 .difficulty(recipe.getDifficulty())
                 .cookingTime(recipe.getCookingTime())
                 .allergies(allergyService.findAllergiesByRecipeId(recipe.getId()))//
-                .ingredients(ingredientFormatter.parseIngredientFormList(recipe.getRecipeImgs()))//
+                .tags(tagService.findTagNamesByRecipeId(recipe.getId()))
+                .ingredients(ingredientFormatter.parseIngredientFormList(recipe.getIngredients()))//
                 .reviews(recipeReviewService.findReviewsByRecipeId(recipeId))//
                 .reviewsCount(recipeReviewService.findReviewsCount(recipeId))//
                 .recipeDetailImgs(RecipeDetailImgFormatter.parseRecipeDetailIdList(recipe.getRecipeDetailImgs()))//

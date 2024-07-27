@@ -2,10 +2,12 @@ package likelion.babsim.web.recipe;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.util.List;
 
 @Getter
+@ToString
 public class RecipeInfoResDto {
 
     private Long id;
