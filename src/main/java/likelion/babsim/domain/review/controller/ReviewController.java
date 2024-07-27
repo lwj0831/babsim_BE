@@ -9,14 +9,14 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/reviews")
 @CrossOrigin(origins = {"http://localhost:5173"})
 public class ReviewController {
     private final RecipeReviewService recipeReviewService;
 
-    @GetMapping("{recipeId}")
+    @GetMapping("/{recipeId}")
     public List<ReviewForm> getReviewsByRecipeId(@PathVariable Long recipeId){
         return recipeReviewService.findReviewsByRecipeId(recipeId);
     }

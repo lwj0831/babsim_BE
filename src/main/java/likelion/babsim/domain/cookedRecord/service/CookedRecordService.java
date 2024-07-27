@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -24,23 +25,20 @@ public class CookedRecordService {
     }
     @Transactional
     public CookedRecordResDto updateCookedRecord(Long recipeId){
-        CookedRecord cookedRecord = cookedRecordRepository.findByRecipeId(recipeId);
-        if (cookedRecord != null) {
-            cookedRecord.setCookedCount(cookedRecord.getCookedCount()+1);
-            cookedRecordRepository.save(cookedRecord);
-            return CookedRecordResDto.builder()
-                    .id(cookedRecord.getId())
-                    .cookedCount(cookedRecord.getCookedCount())
-                    .build();
+        Optional<CookedRecord> cookedRecord = cookedRecordRepository.findByRecipeId(recipeId);
+        CookedRecord createdCookedRecord;
+        if (cookedRecord.isPresent()) {
+            createdCookedRecord = cookedRecord.get();
+            createdCookedRecord.setCookedCount(createdCookedRecord.getCookedCount()+1);
         } else {
-            CookedRecord createdCookedRecord= CookedRecord.builder()
+            createdCookedRecord= CookedRecord.builder()
                     .cookedCount(0L)
                     .recipe(recipeRepository.findById(recipeId).orElseThrow()).build();
-            cookedRecordRepository.save(createdCookedRecord);
-            return CookedRecordResDto.builder()
-                    .id(createdCookedRecord.getId())
-                    .cookedCount(createdCookedRecord.getCookedCount())
-                    .build();
         }
+        cookedRecordRepository.save(createdCookedRecord);
+        return CookedRecordResDto.builder()
+                .id(createdCookedRecord.getId())
+                .cookedCount(createdCookedRecord.getCookedCount())
+                .build();
     }
 }

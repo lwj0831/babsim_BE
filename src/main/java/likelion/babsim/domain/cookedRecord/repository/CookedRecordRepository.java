@@ -5,9 +5,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CookedRecordRepository extends JpaRepository<CookedRecord,Long> {
     List<CookedRecord> findTop10ByOrderByCookedCountDesc();
-    CookedRecord findByRecipeId(Long recipeId);
+    Optional<CookedRecord> findByRecipeId(Long recipeId);
 }
