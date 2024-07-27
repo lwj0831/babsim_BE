@@ -13,3 +13,11 @@ spring:
       show_sql: true
       format_sql: true
       ddl-auto: update
+
+gemini:
+  baseurl: https://generativelanguage.googleapis.com
+
+googleai:
+   api:
+    key: ${GEMINI_API_KEY}
+

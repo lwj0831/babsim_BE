@@ -1,6 +1,8 @@
 package likelion.babsim.domain.recipe.service;
 
+import likelion.babsim.domain.allergy.AllergyType;
 import likelion.babsim.domain.allergy.RecipeAllergy;
+import likelion.babsim.domain.allergy.repository.RecipeAllergyRepository;
 import likelion.babsim.domain.allergy.service.AllergyService;
 import likelion.babsim.domain.category.Category;
 import likelion.babsim.domain.category.repository.CategoryRepository;
@@ -18,6 +20,7 @@ import likelion.babsim.domain.recipe.repository.RecipeRepository;
 import likelion.babsim.domain.review.service.RecipeReviewService;
 import likelion.babsim.domain.tag.Tag;
 import likelion.babsim.domain.tag.service.TagService;
+import likelion.babsim.gemini.GeminiService;
 import likelion.babsim.web.recipe.RecipeCreateReqDto;
 import likelion.babsim.web.recipe.RecipeDetailResDto;
 import likelion.babsim.web.recipe.RecipeInfoResDto;
@@ -27,9 +30,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,6 +49,8 @@ public class RecipeService {
     private final MemberRepository memberRepository;
     private final MemberRecipeRepository memberRecipeRepository;
     private final KeywordRepository keywordRepository;
+    private final GeminiService geminiService;
+    private final RecipeAllergyRepository recipeAllergyRepository;
 
     public List<RecipeInfoResDto> findRecipesByKeyword(String keyword){
         Pageable pageable = PageRequest.of(0, 50);
@@ -150,11 +153,22 @@ public class RecipeService {
             tagService.saveTag(tag);
         }
         //recipeAllergy
-        /* RecipeAllergy recipeAllergy = RecipeAllergy.builder()
-                .allergy()
-                .recipe(recipe)
-                .build();*/
+        String allergyResult = geminiService.getCompletion(recipe.getIngredients()+"레시피의 재료로 "
+                +recipe.getIngredients()+"들이 사용될 때 알레르기 리스트("+ Arrays.toString(AllergyType.values())+
+                ")중 레시피로 유발될 수 있는 알레르기명 영어로 알려줘");
+        for (AllergyType allergyType : AllergyType.values()){
+            String allergyName = allergyType.getName(); //ex)알류
+            if(allergyResult.contains(allergyType.toString())){ //ex)EGG
+                RecipeAllergy recipeAllergy = RecipeAllergy.builder()
+                        .allergy(allergyService.findAllergyByAllergyName(allergyName))
+                        .recipe(recipe)
+                        .build();
+                recipeAllergyRepository.save(recipeAllergy);
+            }
+        }
         //nft
+
+
 
         //creator와 recipe연결
         MemberRecipe memberRecipe = MemberRecipe.builder()
@@ -184,59 +198,7 @@ public class RecipeService {
     public Recipe editRecipe(RecipeCreateReqDto dto, String creatorId,Long recipeId) {
         Recipe findRecipe = recipeRepository.findById(recipeId).orElseThrow();
         recipeRepository.delete(findRecipe);
-        Recipe recipe = Recipe.builder()
-                .creatorId(creatorId)
-                .recipeImgs(String.join(",", dto.getRecipeImgs()))
-                .recipeName(dto.getName())
-                .recipeDescription(dto.getDescription())
-                .difficulty(dto.getDifficulty())
-                .cookingTime(dto.getCookingTime())
-                .recipeDetailImgs(String.join(",", dto.getRecipeDetailImgs()))
-                .ingredients(String.join(",",dto.getIngredients().stream().map(i->i.getName()+" "+i.getAmount()).toList()))
-                .recipeContents(String.join("/",dto.getRecipeContents()))
-                .timers(dto.getTimers().stream().map(String::valueOf).collect(Collectors.joining(",")))
-                .category(categoryRepository.findById(dto.getCategoryId()).orElseThrow())
-                .ownerId(creatorId)
-                .build();
-        //tag
-        List<String> tagsStr = dto.getTags();
-        for (String tagStr : tagsStr) {
-            Tag tag = Tag.builder()
-                    .tagName(tagStr)
-                    .recipe(recipe).
-                    build();
-            tagService.saveTag(tag);
-        }
-        //recipeAllergy
-        /* RecipeAllergy recipeAllergy = RecipeAllergy.builder()
-                .allergy()
-                .recipe(recipe)
-                .build();*/
-        //nft
-
-        //creator와 recipe연결
-        MemberRecipe memberRecipe = MemberRecipe.builder()
-                .recipe(recipe)
-                .member(memberRepository.findById(creatorId).orElseThrow()).build();
-        memberRecipeRepository.save(memberRecipe);
-
-        //키워드 추출해서 Keyword에 넣기
-        List<String> keywords = Arrays.stream(dto.getName().split(" ")).toList();
-        Keyword k;
-        for (String keyword : keywords) {
-            if((k=keywordRepository.findByKeyword(keyword))==null){ //해당 키워드 처음
-                k = Keyword.builder()
-                        .count(0L)
-                        .keyword(keyword)
-                        .build();
-                keywordRepository.save(k);
-            }
-            else{ //해당 키워드 이미 존재 시 count 1증가
-                k.increaseCount();
-                keywordRepository.save(k);
-            }
-        }
-        return recipeRepository.save(recipe);
+        return createRecipe(dto,creatorId);
     }
 
     private RecipeDetailResDto recipesToRecipeDetailResDTO(Recipe recipe, Long recipeId, String memberId) {
