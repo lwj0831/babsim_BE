@@ -14,7 +14,7 @@ public class KeywordController {
     private final KeywordService keywordService;
 
     @GetMapping("/related")
-    public List<String> getRelatedKeywords(@RequestParam String keyword){
+    public List<String> getRelatedKeywords(@RequestParam("keyword") String keyword){
         return keywordService.findRelatedKeywordsByKeyword(keyword);
     }
 
