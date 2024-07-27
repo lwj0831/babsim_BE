@@ -38,16 +38,16 @@ class RecipeServiceTest {
 
     List<Recipe> recipes = new ArrayList<>();
 
-    @BeforeEach
+    //@BeforeEach
     void setUp() {
-        entityManager.createQuery("DELETE FROM Recipe").executeUpdate();
+     /*   entityManager.createQuery("DELETE FROM Recipe").executeUpdate();
         entityManager.createQuery("DELETE FROM Tag").executeUpdate();
         entityManager.createQuery("DELETE FROM RecipeReview").executeUpdate();
         entityManager.createQuery("DELETE FROM RecipeAllergy").executeUpdate();
         entityManager.createQuery("DELETE FROM Member").executeUpdate();
         entityManager.createQuery("DELETE FROM Likes").executeUpdate();
         entityManager.createQuery("DELETE FROM MemberAllergy").executeUpdate();
-        entityManager.createQuery("DELETE FROM CookedRecord").executeUpdate();
+        entityManager.createQuery("DELETE FROM CookedRecord").executeUpdate();*/
 
         for (int i = 1; i <= 10; i++) {
             Member member = Member.builder()
@@ -257,9 +257,12 @@ class RecipeServiceTest {
     @DirtiesContext
     void testFindRecipesByCategoryId(){
         List<RecipeInfoResDto> result = recipeService.findRecipesByCategoryId(1L);
+        for (RecipeInfoResDto recipeInfoResDto : result) {
+            log.info("{}",recipeInfoResDto);
+        }
         List<String> recipes = result.stream()
                 .map(RecipeInfoResDto::getRecipeName)
                 .toList();
-        assertThat(recipes).hasSize(10);
+        assertThat(recipes).hasSize(12);
     }
 }

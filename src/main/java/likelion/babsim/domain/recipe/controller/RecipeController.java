@@ -56,7 +56,7 @@ public class RecipeController {
     }
 
     @GetMapping("/{recipeId}")
-    public RecipeDetailResDto getRecipeDetailByRecipeIdAndMemberId(@PathVariable Long recipeId, @RequestParam String memberId){
+    public RecipeDetailResDto getRecipeDetailByRecipeIdAndMemberId(@PathVariable Long recipeId, @RequestParam(required = false,defaultValue = "null") String memberId){
         return recipeService.findRecipeDetailByRecipeIdAndMemberId(recipeId,memberId);
     }
 
