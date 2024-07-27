@@ -27,7 +27,7 @@ public class LikesService {
     public boolean checkLikesByMemberIdAndRecipeId(String memberId,Long recipeId){
         return likesRepository.existsByMemberIdAndRecipeId(memberId,recipeId);
     }
-    
+
     @Transactional
     public LikesUpdateResDto updateLikesByMemberIdAndRecipeId(String memberId,Long recipeId){
         Member member = memberRepository.findById(memberId).orElseThrow();
