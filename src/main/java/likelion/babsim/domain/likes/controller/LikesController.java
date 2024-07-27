@@ -3,13 +3,9 @@ package likelion.babsim.domain.likes.controller;
 import likelion.babsim.domain.likes.service.LikesService;
 import likelion.babsim.web.likes.LikesUpdateResDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/likes")
 @CrossOrigin(origins = {"http://localhost:5173"})
