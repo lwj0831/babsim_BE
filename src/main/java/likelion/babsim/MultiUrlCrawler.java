@@ -76,7 +76,7 @@ public class MultiUrlCrawler {
                 "https://m.10000recipe.com/recipe/6720605",
                 "https://m.10000recipe.com/recipe/6406162",
                 "https://m.10000recipe.com/recipe/6194344",
-                "https://m.10000recipe.com/recipe/6404903",
+                "https://m.10000recipe.com/recipe/6829848",//
                 "https://m.10000recipe.com/recipe/3149743",//스낵
                 "https://m.10000recipe.com/recipe/6594403",//
                 "https://m.10000recipe.com/recipe/6860598",
@@ -88,7 +88,7 @@ public class MultiUrlCrawler {
                 "https://m.10000recipe.com/recipe/6769316",
                 "https://m.10000recipe.com/recipe/6403123",
                 "https://m.10000recipe.com/recipe/6754761",
-                "https://m.10000recipe.com/recipe/6768283",
+                "https://m.10000recipe.com/recipe/6895591",
                 "https://m.10000recipe.com/recipe/3427688",//다이어트
                 "https://m.10000recipe.com/recipe/6880131",
                 "https://m.10000recipe.com/recipe/6842570",

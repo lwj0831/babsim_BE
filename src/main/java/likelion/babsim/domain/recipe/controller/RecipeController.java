@@ -3,6 +3,7 @@ package likelion.babsim.domain.recipe.controller;
 import likelion.babsim.domain.recipe.Recipe;
 import likelion.babsim.domain.recipe.service.RecipeService;
 import likelion.babsim.web.recipe.RecipeCreateReqDto;
+import likelion.babsim.web.recipe.RecipeCreateResDto;
 import likelion.babsim.web.recipe.RecipeDetailResDto;
 import likelion.babsim.web.recipe.RecipeInfoResDto;
 import lombok.RequiredArgsConstructor;
@@ -60,12 +61,12 @@ public class RecipeController {
         return recipeService.findRecipeDetailByRecipeIdAndMemberId(recipeId,memberId);
     }
 
-    @PostMapping
-    public Recipe createRecipe(@RequestBody RecipeCreateReqDto dto, @RequestParam String creatorId){
+    @PostMapping(produces = "application/json")
+    public RecipeCreateResDto createRecipe(@RequestBody RecipeCreateReqDto dto, @RequestParam String creatorId){
         return recipeService.createRecipe(dto,creatorId);
     }
     @PostMapping("/{recipeId}")
-    public Recipe editRecipe(@RequestBody RecipeCreateReqDto dto, @RequestParam String creatorId, @PathVariable Long recipeId){
+    public RecipeCreateResDto editRecipe(@RequestBody RecipeCreateReqDto dto, @RequestParam String creatorId, @PathVariable Long recipeId){
         return recipeService.editRecipe(dto,creatorId,recipeId);
     }
 
