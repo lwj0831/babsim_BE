@@ -22,6 +22,7 @@ import likelion.babsim.domain.tag.Tag;
 import likelion.babsim.domain.tag.service.TagService;
 import likelion.babsim.gemini.GeminiService;
 import likelion.babsim.web.recipe.RecipeCreateReqDto;
+import likelion.babsim.web.recipe.RecipeCreateResDto;
 import likelion.babsim.web.recipe.RecipeDetailResDto;
 import likelion.babsim.web.recipe.RecipeInfoResDto;
 import lombok.RequiredArgsConstructor;
@@ -128,7 +129,9 @@ public class RecipeService {
         return recipesToRecipeDetailResDTO(recipe,recipeId,memberId);
     }
     @Transactional
-    public Recipe createRecipe(RecipeCreateReqDto dto, String creatorId) {
+    public RecipeCreateResDto createRecipe(RecipeCreateReqDto dto, String creatorId) {
+        System.out.println(dto);
+        System.out.println(dto.getDifficulty());
         Recipe recipe = Recipe.builder()
                 .creatorId(creatorId)
                 .recipeImgs(String.join(",", dto.getRecipeImgs()))
@@ -143,19 +146,25 @@ public class RecipeService {
                 .category(categoryRepository.findById(dto.getCategoryId()).orElseThrow())
                 .ownerId(creatorId)
                 .build();
+        Recipe savedRecipe = recipeRepository.save(recipe);
+        System.out.println(savedRecipe.getDifficulty());
         //tag
         List<String> tagsStr = dto.getTags();
+        List<String> tagNameList = new ArrayList<>();
         for (String tagStr : tagsStr) {
             Tag tag = Tag.builder()
                     .tagName(tagStr)
                     .recipe(recipe).
                     build();
             tagService.saveTag(tag);
+            tagNameList.add(tag.getTagName());
         }
         //recipeAllergy
-        String allergyResult = geminiService.getCompletion(recipe.getIngredients()+"레시피의 재료로 "
-                +recipe.getIngredients()+"들이 사용될 때 알레르기 리스트("+ Arrays.toString(AllergyType.values())+
-                ")중 레시피로 유발될 수 있는 알레르기명 영어로 알려줘");
+        String allergyResult = geminiService.getCompletion(recipe.getIngredients()+"In recipe there are ingredients("
+                +recipe.getIngredients()+")is used and there is official allergyList("+ Arrays.toString(AllergyType.values())+
+                "), choose all allergies that can be caused by eating those ingredients using English");
+        System.out.println(allergyResult);
+
         for (AllergyType allergyType : AllergyType.values()){
             String allergyName = allergyType.getName(); //ex)알류
             if(allergyResult.contains(allergyType.toString())){ //ex)EGG
@@ -167,8 +176,6 @@ public class RecipeService {
             }
         }
         //nft
-
-
 
         //creator와 recipe연결
         MemberRecipe memberRecipe = MemberRecipe.builder()
@@ -192,10 +199,22 @@ public class RecipeService {
                 keywordRepository.save(k);
             }
         }
-        return recipeRepository.save(recipe);
+
+        return RecipeCreateResDto.builder()
+                .recipeImgs(Arrays.stream(savedRecipe.getRecipeImgs().split(",")).toList())
+                .name(savedRecipe.getRecipeName())
+                .description(savedRecipe.getRecipeDescription())
+                .difficulty(savedRecipe.getDifficulty()) //
+                .cookingTime(savedRecipe.getCookingTime())
+                .categoryName(savedRecipe.getCategory().getCategoryName())
+                .tags(tagNameList) //getTags시 Null임
+                .ingredients(ingredientFormatter.parseIngredientFormList(savedRecipe.getIngredients()))
+                .recipeContents(Arrays.stream(savedRecipe.getRecipeContents().split("/")).toList())
+                .recipeDetailImgs(Arrays.stream(savedRecipe.getRecipeDetailImgs().split(",")).toList())
+                .timers(Arrays.stream(savedRecipe.getTimers().split(",")).map(Integer::parseInt).toList()).build();
     }
     @Transactional
-    public Recipe editRecipe(RecipeCreateReqDto dto, String creatorId,Long recipeId) {
+    public RecipeCreateResDto editRecipe(RecipeCreateReqDto dto, String creatorId,Long recipeId) {
         Recipe findRecipe = recipeRepository.findById(recipeId).orElseThrow();
         recipeRepository.delete(findRecipe);
         return createRecipe(dto,creatorId);

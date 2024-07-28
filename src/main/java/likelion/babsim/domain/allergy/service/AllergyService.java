@@ -31,7 +31,7 @@ public class AllergyService {
                 .toList();
     }
     public Allergy findAllergyByAllergyName(String allergyName){
-        return allergyRepository.findByAllergyName(allergyName);
+        return allergyRepository.findByAllergyName(allergyName).orElseThrow();
     }
 
 }
