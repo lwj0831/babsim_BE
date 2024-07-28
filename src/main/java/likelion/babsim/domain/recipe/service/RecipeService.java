@@ -219,9 +219,13 @@ public class RecipeService {
     }
     @Transactional
     public RecipeCreateResDto editRecipe(RecipeCreateReqDto dto, String creatorId,Long recipeId) {
-        Recipe findRecipe = recipeRepository.findById(recipeId).orElseThrow();
-        recipeRepository.delete(findRecipe);
-        return createRecipe(dto,creatorId);
+        Optional<Recipe> findRecipe = recipeRepository.findById(recipeId);
+        if(findRecipe.isPresent()) {
+            Recipe recipe = findRecipe.get();
+            recipeRepository.delete(recipe);
+            return createRecipe(dto, creatorId);
+        }
+        else return null;
     }
 
     private RecipeDetailResDto recipesToRecipeDetailResDTO(Recipe recipe, Long recipeId, String memberId) {
