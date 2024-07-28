@@ -65,7 +65,7 @@ public class RecipeController {
     public RecipeCreateResDto createRecipe(@RequestBody RecipeCreateReqDto dto, @RequestParam String creatorId){
         return recipeService.createRecipe(dto,creatorId);
     }
-    @PostMapping("/{recipeId}")
+    @PutMapping("/{recipeId}")
     public RecipeCreateResDto editRecipe(@RequestBody RecipeCreateReqDto dto, @RequestParam String creatorId, @PathVariable Long recipeId){
         return recipeService.editRecipe(dto,creatorId,recipeId);
     }

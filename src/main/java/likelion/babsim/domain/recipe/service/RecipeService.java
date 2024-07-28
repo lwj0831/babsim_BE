@@ -165,6 +165,7 @@ public class RecipeService {
                 "), choose all allergies that can be caused by eating those ingredients using English");
         System.out.println(allergyResult);
 
+        List<String> allergyList = new ArrayList<>();
         for (AllergyType allergyType : AllergyType.values()){
             String allergyName = allergyType.getName(); //ex)알류
             if(allergyResult.contains(allergyType.toString())){ //ex)EGG
@@ -173,6 +174,7 @@ public class RecipeService {
                         .recipe(recipe)
                         .build();
                 recipeAllergyRepository.save(recipeAllergy);
+                allergyList.add(allergyName);
             }
         }
         //nft
@@ -211,13 +213,19 @@ public class RecipeService {
                 .ingredients(ingredientFormatter.parseIngredientFormList(savedRecipe.getIngredients()))
                 .recipeContents(Arrays.stream(savedRecipe.getRecipeContents().split("/")).toList())
                 .recipeDetailImgs(Arrays.stream(savedRecipe.getRecipeDetailImgs().split(",")).toList())
-                .timers(Arrays.stream(savedRecipe.getTimers().split(",")).map(Integer::parseInt).toList()).build();
+                .timers(Arrays.stream(savedRecipe.getTimers().split(",")).map(Integer::parseInt).toList())
+                .allergyList(allergyList)
+                .build();
     }
     @Transactional
     public RecipeCreateResDto editRecipe(RecipeCreateReqDto dto, String creatorId,Long recipeId) {
-        Recipe findRecipe = recipeRepository.findById(recipeId).orElseThrow();
-        recipeRepository.delete(findRecipe);
-        return createRecipe(dto,creatorId);
+        Optional<Recipe> findRecipe = recipeRepository.findById(recipeId);
+        if(findRecipe.isPresent()) {
+            Recipe recipe = findRecipe.get();
+            recipeRepository.delete(recipe);
+            return createRecipe(dto, creatorId);
+        }
+        else return null;
     }
 
     private RecipeDetailResDto recipesToRecipeDetailResDTO(Recipe recipe, Long recipeId, String memberId) {

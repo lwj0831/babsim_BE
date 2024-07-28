@@ -1,10 +1,5 @@
 package likelion.babsim.domain.recipe;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonValue;
-import lombok.Getter;
-
 public enum Difficulty {
     EASY("초급"),
     MEDIUM("중급"),

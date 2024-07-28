@@ -4,7 +4,6 @@ package likelion.babsim.web.recipe;
 import likelion.babsim.domain.recipe.Difficulty;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.List;
 
@@ -21,9 +20,10 @@ public class RecipeCreateResDto {
     private List<String> recipeContents;
     private List<String> recipeDetailImgs;
     private List<Integer> timers;
+    private List<String> allergyList;
 
     @Builder
-    public RecipeCreateResDto(List<String> recipeImgs, String name, String description, Difficulty difficulty, Integer cookingTime, String categoryName, List<String> tags, List<IngredientForm> ingredients, List<String> recipeContents, List<String> recipeDetailImgs, List<Integer> timers) {
+    public RecipeCreateResDto(List<String> recipeImgs, String name, String description, Difficulty difficulty, Integer cookingTime, String categoryName, List<String> tags, List<IngredientForm> ingredients, List<String> recipeContents, List<String> recipeDetailImgs, List<Integer> timers,List<String> allergyList) {
         this.recipeImgs = recipeImgs;
         this.name = name;
         this.description = description;
@@ -35,5 +35,6 @@ public class RecipeCreateResDto {
         this.recipeContents = recipeContents;
         this.recipeDetailImgs = recipeDetailImgs;
         this.timers = timers;
+        this.allergyList = allergyList;
     }
 }
