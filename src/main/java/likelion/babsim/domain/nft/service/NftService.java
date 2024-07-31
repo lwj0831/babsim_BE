@@ -48,8 +48,4 @@ public class NftService {
         return null;
     }
 
-    public boolean checkCreatedNftByRecipeId(Long recipeId){
-        return nftRepository.existsByRecipeId(recipeId);
-    }
-
 }

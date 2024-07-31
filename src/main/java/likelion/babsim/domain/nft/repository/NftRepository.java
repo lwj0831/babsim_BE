@@ -6,6 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface NftRepository extends JpaRepository<Nft,Long> {
-
-    boolean existsByRecipeId(Long recipeId);
+    
 }
