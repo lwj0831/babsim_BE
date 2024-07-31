@@ -1,4 +1,4 @@
-package likelion.babsim.web.nft;
+package likelion.babsim.web.nft.kas;
 
 import lombok.Getter;
 

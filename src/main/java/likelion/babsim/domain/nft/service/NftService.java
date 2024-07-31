@@ -1,84 +1,55 @@
 package likelion.babsim.domain.nft.service;
 
-import jakarta.annotation.PostConstruct;
-import likelion.babsim.web.nft.*;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.MediaType;
+import likelion.babsim.domain.member.repository.MemberRepository;
+import likelion.babsim.domain.nft.Nft;
+import likelion.babsim.domain.nft.repository.NftRepository;
+import likelion.babsim.domain.recipe.Recipe;
+import likelion.babsim.domain.recipe.repository.RecipeRepository;
+import likelion.babsim.web.nft.NftCreateResDto;
+import likelion.babsim.web.nft.kas.TokenCreateResDto;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.reactive.function.client.WebClient;
+
+import java.util.UUID;
 
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class NftService {
 
-    private WebClient webClient;
-    @Value("${klaytn.auth.x-chain-id}")
-    private String xChainId;
-    @Value("${klaytn.auth.authorization}")
-    private String authorization;
+    private final NftRepository nftRepository;
+    private final KlaytnApiService klaytnApiService;
+    private final MemberRepository memberRepository;
+    private final RecipeRepository recipeRepository;
 
-    @PostConstruct
-    public void initWebClient() {
-        webClient = WebClient.create();
-    }
     @Transactional
-    public AccountCreateResDto createAccount() {
-        return webClient.post()
-                .uri("wallet-api.klaytnapi.com/v2/account")
-                .header("x-chain-id", xChainId)
-                .header("Authorization", authorization)
-                .contentType(MediaType.APPLICATION_JSON) // Content-Type을 명시적으로 설정
-                .retrieve()
-                .bodyToMono(AccountCreateResDto.class)
-                .block();
+    public NftCreateResDto createNft(Long recipeId){
+        Recipe recipe = recipeRepository.findById(recipeId).orElseThrow();
+        String creatorId = recipe.getCreatorId();
+
+        String to = memberRepository.findById(creatorId).orElseThrow().getNftAccountAddress();
+        String tokenId = "0x"+recipeId;
+        String uri = recipe.getRecipeName(); //생각해봐야함
+        TokenCreateResDto tokenCreateResDto = klaytnApiService.createToken(to, tokenId, uri);
+        System.out.println(tokenCreateResDto);
+        if(tokenCreateResDto.getStatus().equals("Submitted")) {
+            Nft nft = Nft.builder()
+                    .tokenId(tokenId)
+                    .uri(uri)
+                    .recipe(recipe)
+                    .build();
+            nftRepository.save(nft);
+            return NftCreateResDto.builder()
+                    .id(nft.getId())
+                    .tokenId(tokenId)
+                    .uri(uri).build();
+        }
+        return null;
     }
 
-    public AccountReadResDto findAccount() {
-        return webClient.get()
-                .uri("wallet-api.klaytnapi.com/v2/account")
-                .header("x-chain-id", xChainId)
-                .header("Authorization", authorization)
-                .accept(MediaType.APPLICATION_JSON)
-                .retrieve()
-                .bodyToMono(AccountReadResDto.class)
-                .block();
-    }
-
-    public TokenCreateResDto createToken(String to, String id, String uri){
-        TokenCreateReqDto tokenCreateReqDto = new TokenCreateReqDto(to,id,uri);
-
-        return webClient.post()
-                .uri("https://kip17-api.klaytnapi.com/v2/contract/babsim/token")
-                .header("x-chain-id", xChainId)
-                .header("Authorization", authorization)
-                .contentType(MediaType.APPLICATION_JSON) // Content-Type을 명시적으로 설정
-                .bodyValue(tokenCreateReqDto)//Content-Type: application/json 자동 설정
-                .retrieve()
-                .bodyToMono(TokenCreateResDto.class)
-                .block();
-
-    }
-    public TokenReadResDto findTokens(String ownerAddress){
-        return webClient.get()
-                .uri("https://kip17-api.klaytnapi.com/v2/contract/babsim/owner/"+ownerAddress)
-                .header("x-chain-id", xChainId)
-                .header("Authorization", authorization)
-                .retrieve()
-                .bodyToMono(TokenReadResDto.class)
-                .block();
-    }
-    public TokenApproveResDto approveToken(String ownerAddress,String toAddress,String tokenId){
-        TokenApproveReqDto tokenApproveReqDto = new TokenApproveReqDto(ownerAddress,ownerAddress,toAddress);
-        return webClient.post()
-                .uri("https://kip17-api.klaytnapi.com/v2/contract/babsim/token/"+tokenId)
-                .header("x-chain-id", xChainId)
-                .header("Authorization", authorization)
-                .bodyValue(tokenApproveReqDto)//Content-Type: application/json 자동 설정
-                .retrieve()
-                .bodyToMono(TokenApproveResDto.class)
-                .block();
+    public boolean checkCreatedNftByRecipeId(Long recipeId){
+        return nftRepository.existsByRecipeId(recipeId);
     }
 
 }
-

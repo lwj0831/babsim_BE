@@ -4,7 +4,6 @@ import likelion.babsim.domain.allergy.AllergyType;
 import likelion.babsim.domain.allergy.RecipeAllergy;
 import likelion.babsim.domain.allergy.repository.RecipeAllergyRepository;
 import likelion.babsim.domain.allergy.service.AllergyService;
-import likelion.babsim.domain.category.Category;
 import likelion.babsim.domain.category.repository.CategoryRepository;
 import likelion.babsim.domain.cookedRecord.CookedRecord;
 import likelion.babsim.domain.cookedRecord.service.CookedRecordService;
@@ -14,6 +13,9 @@ import likelion.babsim.domain.keyword.repository.KeywordRepository;
 import likelion.babsim.domain.likes.Likes;
 import likelion.babsim.domain.likes.service.LikesService;
 import likelion.babsim.domain.member.repository.MemberRepository;
+import likelion.babsim.domain.nft.repository.NftRepository;
+import likelion.babsim.domain.nft.service.KlaytnApiService;
+import likelion.babsim.domain.nft.service.NftService;
 import likelion.babsim.domain.recipe.*;
 import likelion.babsim.domain.recipe.repository.MemberRecipeRepository;
 import likelion.babsim.domain.recipe.repository.RecipeRepository;
@@ -84,6 +86,7 @@ public class RecipeService {
         List<Recipe> recipes = recipeRepository.findByCreatorIdNotAndMemberId(memberId);
         return recipesToRecipeInfoResDTOList(recipes);
     }
+
     public List<RecipeInfoResDto> findSpecificForkedRecipesByMemberIdAndRecipeId(String memberId, Long recipeId){
         List<Recipe> recipes = recipeRepository.findByCreatorIdNotAndMemberIdAndRecipeId(memberId,recipeId);
         return recipesToRecipeInfoResDTOList(recipes);
@@ -93,10 +96,12 @@ public class RecipeService {
         List<Recipe> recipes = recipeRepository.findAllByCreatorId(memberId);
         return recipesToRecipeInfoResDTOList(recipes);
     }
+
     public List<RecipeInfoResDto> findMyRecipesByOwnerId(String memberId){
         List<Recipe> recipes = recipeRepository.findAllByOwnerId(memberId);
         return recipesToRecipeInfoResDTOList(recipes);
     }
+
     public List<RecipeInfoResDto> findRecipesByCategoryId(Long categoryId){
         List<Recipe> recipes;
         if(categoryId==0){  //모두보기
@@ -107,6 +112,7 @@ public class RecipeService {
         }
         return recipesToRecipeInfoResDTOList(recipes);
     }
+
     private List<RecipeInfoResDto> recipesToRecipeInfoResDTOList(List<Recipe> recipes){
         List<RecipeInfoResDto> result = new ArrayList<>();
         for (Recipe recipe : recipes) {
@@ -126,12 +132,11 @@ public class RecipeService {
 
     public RecipeDetailResDto findRecipeDetailByRecipeIdAndMemberId(Long recipeId, String memberId){
         Recipe recipe = recipeRepository.findById(recipeId).orElseThrow();
-        return recipesToRecipeDetailResDTO(recipe,recipeId,memberId);
+        return recipeToRecipeDetailResDTO(recipe,recipeId,memberId);
     }
+
     @Transactional
     public RecipeCreateResDto createRecipe(RecipeCreateReqDto dto, String creatorId) {
-        System.out.println(dto);
-        System.out.println(dto.getDifficulty());
         Recipe recipe = Recipe.builder()
                 .creatorId(creatorId)
                 .recipeImgs(String.join(",", dto.getRecipeImgs()))
@@ -148,6 +153,7 @@ public class RecipeService {
                 .build();
         Recipe savedRecipe = recipeRepository.save(recipe);
         System.out.println(savedRecipe.getDifficulty());
+
         //tag
         List<String> tagsStr = dto.getTags();
         List<String> tagNameList = new ArrayList<>();
@@ -159,6 +165,7 @@ public class RecipeService {
             tagService.saveTag(tag);
             tagNameList.add(tag.getTagName());
         }
+
         //recipeAllergy
         String allergyResult = geminiService.getCompletion(recipe.getIngredients()+"In recipe there are ingredients("
                 +recipe.getIngredients()+")is used and there is official allergyList("+ Arrays.toString(AllergyType.values())+
@@ -177,6 +184,7 @@ public class RecipeService {
                 allergyList.add(allergyName);
             }
         }
+
         //nft
 
         //creator와 recipe연결
@@ -185,7 +193,7 @@ public class RecipeService {
                 .member(memberRepository.findById(creatorId).orElseThrow()).build();
         memberRecipeRepository.save(memberRecipe);
 
-        //키워드 추출해서 Keyword에 넣기
+        //키워드 추출해서 Keyword 테이블에 넣기
         List<String> keywords = Arrays.stream(dto.getName().split(" ")).toList();
         Keyword k;
         for (String keyword : keywords) {
@@ -209,7 +217,7 @@ public class RecipeService {
                 .difficulty(savedRecipe.getDifficulty()) //
                 .cookingTime(savedRecipe.getCookingTime())
                 .categoryName(savedRecipe.getCategory().getCategoryName())
-                .tags(tagNameList) //getTags시 Null임
+                .tags(tagNameList) //getTags()시 Null
                 .ingredients(ingredientFormatter.parseIngredientFormList(savedRecipe.getIngredients()))
                 .recipeContents(Arrays.stream(savedRecipe.getRecipeContents().split("/")).toList())
                 .recipeDetailImgs(Arrays.stream(savedRecipe.getRecipeDetailImgs().split(",")).toList())
@@ -217,6 +225,7 @@ public class RecipeService {
                 .allergyList(allergyList)
                 .build();
     }
+
     @Transactional
     public RecipeCreateResDto editRecipe(RecipeCreateReqDto dto, String creatorId,Long recipeId) {
         Optional<Recipe> findRecipe = recipeRepository.findById(recipeId);
@@ -228,7 +237,7 @@ public class RecipeService {
         else return null;
     }
 
-    private RecipeDetailResDto recipesToRecipeDetailResDTO(Recipe recipe, Long recipeId, String memberId) {
+    private RecipeDetailResDto recipeToRecipeDetailResDTO(Recipe recipe, Long recipeId, String memberId) {
         return RecipeDetailResDto.builder()
                 .id(recipe.getId())
                 .creatorId(recipe.getCreatorId())
@@ -247,6 +256,7 @@ public class RecipeService {
                 .recipeContents(RecipeContentFormatter.parseRecipeContentList(recipe.getRecipeContents()))//
                 .recipeTimers(RecipeTimerFormatter.parseTimerList(recipe.getTimers()))//
                 .liked(likesService.checkLikesByMemberIdAndRecipeId(memberId, recipeId))//
+                .createdNft(recipe.getNft() != null)
                 .categoryName(categoryRepository.findById(recipe.getCategory().getId()).orElseThrow().getCategoryName())
                 .build();
     }
