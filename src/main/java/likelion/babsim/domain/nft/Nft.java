@@ -2,7 +2,6 @@ package likelion.babsim.domain.nft;
 
 import jakarta.persistence.*;
 import likelion.babsim.domain.recipe.Recipe;
-import likelion.babsim.domain.sale.Sale;
 import lombok.*;
 
 @Entity
@@ -22,7 +21,7 @@ public class Nft {
 
     @OneToOne(mappedBy = "nft", cascade = CascadeType.ALL)
     @ToString.Exclude
-    private Sale sale;
+    private SaleNft saleNft;
 
     @Builder
     public Nft(String tokenId, String uri, String ownerId, Recipe recipe) {

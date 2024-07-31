@@ -5,20 +5,20 @@ import likelion.babsim.domain.nft.Nft;
 import likelion.babsim.domain.nft.repository.NftRepository;
 import likelion.babsim.domain.recipe.Recipe;
 import likelion.babsim.domain.recipe.repository.RecipeRepository;
-import likelion.babsim.domain.sale.repository.SaleRepository;
-import likelion.babsim.web.nft.NftApproveResDto;
-import likelion.babsim.web.nft.NftCreateResDto;
-import likelion.babsim.web.nft.NftInfoResDto;
+import likelion.babsim.domain.nft.SaleNft;
+import likelion.babsim.domain.nft.repository.SaleNftRepository;
+import likelion.babsim.web.nft.*;
 import likelion.babsim.web.nft.kas.TokenApproveResDto;
 import likelion.babsim.web.nft.kas.TokenCreateResDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @Transactional(readOnly = true)
@@ -29,7 +29,7 @@ public class NftService {
     private final KlaytnApiService klaytnApiService;
     private final MemberRepository memberRepository;
     private final RecipeRepository recipeRepository;
-    private final SaleRepository saleRepository;
+    private final SaleNftRepository saleNftRepository;
 
     @Transactional
     public NftCreateResDto createNft(Long recipeId, String memberId){ //프론트단에서도 검증 로직 필요
@@ -82,15 +82,42 @@ public class NftService {
         return null;
     }
 
+    @Transactional
+    public SaleNftRegisterResDto registerNftSale(Long recipeId, BigDecimal price){
+        Nft nft = nftRepository.findByRecipeId(recipeId).orElseThrow();
+        SaleNft saleNft = SaleNft.builder()
+                .price(price)
+                .saleStartTime(LocalDateTime.now())
+                .nft(nftRepository.findById(nft.getId()).orElseThrow())
+                .build();
+        saleNftRepository.save(saleNft);
+        return SaleNftRegisterResDto.builder()
+                .saleNftId(saleNft.getId())
+                .status("register")
+                .build();
+    }
+
+    @Transactional
+    public SaleNftTerminateResDto terminateNftSale(Long recipeId){
+        Nft nft = nftRepository.findByRecipeId(recipeId).orElseThrow();
+        SaleNft saleNft = saleNftRepository.findByNft(nft).orElseThrow();
+        saleNftRepository.delete(saleNft);
+        return SaleNftTerminateResDto.builder()
+                .saleNftId(saleNft.getId())
+                .status("terminate")
+                .build();
+    }
+
     public List<NftInfoResDto> findRecommendNfts(){
-        List<Nft> random10Nfts = nftRepository.findRandom10Nfts();
+        List<SaleNft> random10SaleNfts = saleNftRepository.findRandom10SaleNfts();
 
         List<NftInfoResDto> result = new ArrayList<>();
-        for (Nft nft : random10Nfts) {
+        for (SaleNft saleNft : random10SaleNfts) {
+            Nft nft = nftRepository.findBySaleNft(saleNft).orElseThrow();
             NftInfoResDto nftInfoResDto = NftInfoResDto.builder()
                     .nftId(nft.getId())
                     .uri(nft.getUri())
-                    .price(saleRepository.findByNft(nft).orElseThrow().getPrice())
+                    .price(saleNftRepository.findByNft(nft).orElseThrow().getPrice())
                     .recipeId(recipeRepository.findByNft(nft).orElseThrow().getId())
                     .recipeName(recipeRepository.findByNft(nft).orElseThrow().getRecipeName())
                     .build();
