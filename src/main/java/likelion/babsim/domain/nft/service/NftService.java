@@ -23,6 +23,7 @@ public class NftService {
     private final MemberRepository memberRepository;
     private final RecipeRepository recipeRepository;
 
+
     @Transactional
     public NftCreateResDto createNft(Long recipeId){
         Recipe recipe = recipeRepository.findById(recipeId).orElseThrow();

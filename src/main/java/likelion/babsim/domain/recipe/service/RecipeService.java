@@ -4,6 +4,7 @@ import likelion.babsim.domain.allergy.AllergyType;
 import likelion.babsim.domain.allergy.RecipeAllergy;
 import likelion.babsim.domain.allergy.repository.RecipeAllergyRepository;
 import likelion.babsim.domain.allergy.service.AllergyService;
+import likelion.babsim.domain.category.Category;
 import likelion.babsim.domain.category.repository.CategoryRepository;
 import likelion.babsim.domain.cookedRecord.CookedRecord;
 import likelion.babsim.domain.cookedRecord.service.CookedRecordService;
@@ -13,6 +14,7 @@ import likelion.babsim.domain.keyword.repository.KeywordRepository;
 import likelion.babsim.domain.likes.Likes;
 import likelion.babsim.domain.likes.service.LikesService;
 import likelion.babsim.domain.member.repository.MemberRepository;
+import likelion.babsim.domain.nft.Nft;
 import likelion.babsim.domain.nft.repository.NftRepository;
 import likelion.babsim.domain.nft.service.KlaytnApiService;
 import likelion.babsim.domain.nft.service.NftService;
@@ -21,6 +23,7 @@ import likelion.babsim.domain.recipe.repository.MemberRecipeRepository;
 import likelion.babsim.domain.recipe.repository.RecipeRepository;
 import likelion.babsim.domain.review.service.RecipeReviewService;
 import likelion.babsim.domain.tag.Tag;
+import likelion.babsim.domain.tag.repository.TagRepository;
 import likelion.babsim.domain.tag.service.TagService;
 import likelion.babsim.gemini.GeminiService;
 import likelion.babsim.web.recipe.RecipeCreateReqDto;
@@ -42,6 +45,7 @@ import java.util.stream.Collectors;
 public class RecipeService {
 
     private final RecipeRepository recipeRepository;
+    private final TagRepository tagRepository;
     private final TagService tagService;
     private final RecipeReviewService recipeReviewService;
     private final AllergyService allergyService;
@@ -54,6 +58,7 @@ public class RecipeService {
     private final KeywordRepository keywordRepository;
     private final GeminiService geminiService;
     private final RecipeAllergyRepository recipeAllergyRepository;
+    private final NftRepository nftRepository;
 
     public List<RecipeInfoResDto> findRecipesByKeyword(String keyword){
         Pageable pageable = PageRequest.of(0, 50);
@@ -98,7 +103,12 @@ public class RecipeService {
     }
 
     public List<RecipeInfoResDto> findMyRecipesByOwnerId(String memberId){
-        List<Recipe> recipes = recipeRepository.findAllByOwnerId(memberId);
+        List<Nft> nfts = nftRepository.findAllByOwnerId(memberId);
+        List<Recipe> recipes = new ArrayList<>();
+        for (Nft nft : nfts) {
+            Optional<Recipe> findRecipe = recipeRepository.findByNft(nft);
+            findRecipe.ifPresent(recipes::add);
+        }
         return recipesToRecipeInfoResDTOList(recipes);
     }
 
@@ -135,108 +145,6 @@ public class RecipeService {
         return recipeToRecipeDetailResDTO(recipe,recipeId,memberId);
     }
 
-    @Transactional
-    public RecipeCreateResDto createRecipe(RecipeCreateReqDto dto, String creatorId) {
-        Recipe recipe = Recipe.builder()
-                .creatorId(creatorId)
-                .recipeImgs(String.join(",", dto.getRecipeImgs()))
-                .recipeName(dto.getName())
-                .recipeDescription(dto.getDescription())
-                .difficulty(dto.getDifficulty())
-                .cookingTime(dto.getCookingTime())
-                .recipeDetailImgs(String.join(",", dto.getRecipeDetailImgs()))
-                .ingredients(String.join(",",dto.getIngredients().stream().map(i->i.getName()+" "+i.getAmount()).toList()))
-                .recipeContents(String.join("/",dto.getRecipeContents()))
-                .timers(dto.getTimers().stream().map(String::valueOf).collect(Collectors.joining(",")))
-                .category(categoryRepository.findById(dto.getCategoryId()).orElseThrow())
-                .ownerId(creatorId)
-                .build();
-        Recipe savedRecipe = recipeRepository.save(recipe);
-        System.out.println(savedRecipe.getDifficulty());
-
-        //tag
-        List<String> tagsStr = dto.getTags();
-        List<String> tagNameList = new ArrayList<>();
-        for (String tagStr : tagsStr) {
-            Tag tag = Tag.builder()
-                    .tagName(tagStr)
-                    .recipe(recipe).
-                    build();
-            tagService.saveTag(tag);
-            tagNameList.add(tag.getTagName());
-        }
-
-        //recipeAllergy
-        String allergyResult = geminiService.getCompletion(recipe.getIngredients()+"In recipe there are ingredients("
-                +recipe.getIngredients()+")is used and there is official allergyList("+ Arrays.toString(AllergyType.values())+
-                "), choose all allergies that can be caused by eating those ingredients using English");
-        System.out.println(allergyResult);
-
-        List<String> allergyList = new ArrayList<>();
-        for (AllergyType allergyType : AllergyType.values()){
-            String allergyName = allergyType.getName(); //ex)알류
-            if(allergyResult.contains(allergyType.toString())){ //ex)EGG
-                RecipeAllergy recipeAllergy = RecipeAllergy.builder()
-                        .allergy(allergyService.findAllergyByAllergyName(allergyName))
-                        .recipe(recipe)
-                        .build();
-                recipeAllergyRepository.save(recipeAllergy);
-                allergyList.add(allergyName);
-            }
-        }
-
-        //nft
-
-        //creator와 recipe연결
-        MemberRecipe memberRecipe = MemberRecipe.builder()
-                .recipe(recipe)
-                .member(memberRepository.findById(creatorId).orElseThrow()).build();
-        memberRecipeRepository.save(memberRecipe);
-
-        //키워드 추출해서 Keyword 테이블에 넣기
-        List<String> keywords = Arrays.stream(dto.getName().split(" ")).toList();
-        Keyword k;
-        for (String keyword : keywords) {
-            if((k=keywordRepository.findByKeyword(keyword))==null){ //해당 키워드 처음
-                k = Keyword.builder()
-                        .count(0L)
-                        .keyword(keyword)
-                        .build();
-                keywordRepository.save(k);
-            }
-            else{ //해당 키워드 이미 존재 시 count 1증가
-                k.increaseCount();
-                keywordRepository.save(k);
-            }
-        }
-
-        return RecipeCreateResDto.builder()
-                .recipeImgs(Arrays.stream(savedRecipe.getRecipeImgs().split(",")).toList())
-                .name(savedRecipe.getRecipeName())
-                .description(savedRecipe.getRecipeDescription())
-                .difficulty(savedRecipe.getDifficulty()) //
-                .cookingTime(savedRecipe.getCookingTime())
-                .categoryName(savedRecipe.getCategory().getCategoryName())
-                .tags(tagNameList) //getTags()시 Null
-                .ingredients(ingredientFormatter.parseIngredientFormList(savedRecipe.getIngredients()))
-                .recipeContents(Arrays.stream(savedRecipe.getRecipeContents().split("/")).toList())
-                .recipeDetailImgs(Arrays.stream(savedRecipe.getRecipeDetailImgs().split(",")).toList())
-                .timers(Arrays.stream(savedRecipe.getTimers().split(",")).map(Integer::parseInt).toList())
-                .allergyList(allergyList)
-                .build();
-    }
-
-    @Transactional
-    public RecipeCreateResDto editRecipe(RecipeCreateReqDto dto, String creatorId,Long recipeId) {
-        Optional<Recipe> findRecipe = recipeRepository.findById(recipeId);
-        if(findRecipe.isPresent()) {
-            Recipe recipe = findRecipe.get();
-            recipeRepository.delete(recipe);
-            return createRecipe(dto, creatorId);
-        }
-        else return null;
-    }
-
     private RecipeDetailResDto recipeToRecipeDetailResDTO(Recipe recipe, Long recipeId, String memberId) {
         return RecipeDetailResDto.builder()
                 .id(recipe.getId())
@@ -260,4 +168,150 @@ public class RecipeService {
                 .categoryName(categoryRepository.findById(recipe.getCategory().getId()).orElseThrow().getCategoryName())
                 .build();
     }
+
+    @Transactional
+    public RecipeCreateResDto createRecipe(RecipeCreateReqDto dto, String creatorId) {
+        return generateRecipe(dto,creatorId,creatorId);
+    }
+
+    @Transactional
+    public RecipeCreateResDto editRecipe(RecipeCreateReqDto dto, Long editedRecipeId) {
+        Optional<Recipe> findRecipe = recipeRepository.findById(editedRecipeId);
+        if(findRecipe.isPresent()) {
+            Recipe existingRecipe = findRecipe.get();
+            String recipeImgs = String.join(",", dto.getRecipeImgs());
+            String recipeName = dto.getName();
+            String description = dto.getDescription();
+            Difficulty difficulty = dto.getDifficulty();
+            Integer cookingTime = dto.getCookingTime();
+            String recipeDetailImgs = String.join(",", dto.getRecipeDetailImgs());
+            String ingredients = String.join(",", dto.getIngredients().stream().map(i -> i.getName() + " " + i.getAmount()).toList());
+            String recipeContents = String.join("/", dto.getRecipeContents());
+            String timers = dto.getTimers().stream().map(String::valueOf).collect(Collectors.joining(","));
+            Category category = categoryRepository.findById(dto.getCategoryId()).orElseThrow();
+
+            // 레시피 업데이트
+            existingRecipe.updateRecipeInfo(recipeImgs, recipeName, description, difficulty, cookingTime, recipeDetailImgs, ingredients, recipeContents, timers, category);
+
+            // 태그 업데이트
+            List<Tag> tags = dto.getTags().stream()
+                    .map(tagStr -> new Tag(existingRecipe, tagStr))
+                    .collect(Collectors.toList());
+            tagRepository.deleteByRecipe(existingRecipe); // 기존 태그 삭제
+            tagRepository.saveAll(tags); // 새로운 태그 저장
+            existingRecipe.updateTags(tags);
+
+            // 알레르기 정보 업데이트
+            String allergyResult = geminiService.getCompletion("In recipe there are ingredients(" + dto.getIngredients() +
+                    ")is used and there is official allergyList(" + Arrays.toString(AllergyType.values()) +
+                    "), choose all allergies that can be caused by eating those ingredients using English");
+
+            List<RecipeAllergy> recipeAllergies = Arrays.stream(AllergyType.values())
+                    .filter(allergyType -> allergyResult.contains(allergyType.toString()))
+                    .map(allergyType -> new RecipeAllergy(existingRecipe, allergyService.findAllergyByAllergyName(allergyType.getName())))
+                    .collect(Collectors.toList());
+            recipeAllergyRepository.deleteByRecipe(existingRecipe); // 기존 알레르기 정보 삭제
+            recipeAllergyRepository.saveAll(recipeAllergies); // 새로운 알레르기 정보 저장
+            existingRecipe.updateAllergies(recipeAllergies);
+
+            Recipe updatedRecipe = recipeRepository.save(existingRecipe);
+
+            return RecipeCreateResDto.builder()
+                    .recipeImgs(Arrays.asList(updatedRecipe.getRecipeImgs().split(",")))
+                    .name(updatedRecipe.getRecipeName())
+                    .description(updatedRecipe.getRecipeDescription())
+                    .difficulty(updatedRecipe.getDifficulty())
+                    .cookingTime(updatedRecipe.getCookingTime())
+                    .categoryName(updatedRecipe.getCategory().getCategoryName())
+                    .tags(tags.stream().map(Tag::getTagName).collect(Collectors.toList()))
+                    .ingredients(ingredientFormatter.parseIngredientFormList(updatedRecipe.getIngredients()))
+                    .recipeContents(Arrays.asList(updatedRecipe.getRecipeContents().split("/")))
+                    .recipeDetailImgs(Arrays.asList(updatedRecipe.getRecipeDetailImgs().split(",")))
+                    .timers(Arrays.stream(updatedRecipe.getTimers().split(",")).map(Integer::parseInt).collect(Collectors.toList()))
+                    .allergyList(recipeAllergies.stream().map(ra -> ra.getAllergy().getAllergyName()).collect(Collectors.toList()))
+                    .build();
+        }
+        else return null;
+    }
+
+    @Transactional
+    public RecipeCreateResDto forkRecipe(RecipeCreateReqDto dto, String creatorId, Long forkedRecipeId) {
+        String originalCreatorId = recipeRepository.findById(forkedRecipeId).orElseThrow().getCreatorId();
+        return generateRecipe(dto,originalCreatorId,creatorId);
+    }
+
+    private RecipeCreateResDto generateRecipe(RecipeCreateReqDto dto, String originalCreatorId, String creatorId){
+        Recipe recipe = Recipe.builder()
+                .creatorId(originalCreatorId) //
+                .recipeImgs(String.join(",", dto.getRecipeImgs()))
+                .recipeName(dto.getName())
+                .recipeDescription(dto.getDescription())
+                .difficulty(dto.getDifficulty())
+                .cookingTime(dto.getCookingTime())
+                .recipeDetailImgs(String.join(",", dto.getRecipeDetailImgs()))
+                .ingredients(String.join(",",dto.getIngredients().stream().map(i->i.getName()+" "+i.getAmount()).toList()))
+                .recipeContents(String.join("/",dto.getRecipeContents()))
+                .timers(dto.getTimers().stream().map(String::valueOf).collect(Collectors.joining(",")))
+                .category(categoryRepository.findById(dto.getCategoryId()).orElseThrow())
+                .build();
+        Recipe savedRecipe = recipeRepository.save(recipe);
+
+        //tags
+        List<Tag> tags = dto.getTags().stream()
+                .map(tagStr -> new Tag(savedRecipe, tagStr))
+                .collect(Collectors.toList());
+        tagRepository.saveAll(tags); // 새로운 태그 저장
+
+        //recipeAllergy
+        String allergyResult = geminiService.getCompletion("In recipe there are ingredients(" + dto.getIngredients() +
+                ")is used and there is official allergyList(" + Arrays.toString(AllergyType.values()) +
+                "), choose all allergies that can be caused by eating those ingredients using English");
+
+        List<RecipeAllergy> recipeAllergies = Arrays.stream(AllergyType.values())
+                .filter(allergyType -> allergyResult.contains(allergyType.toString()))
+                .map(allergyType -> new RecipeAllergy(savedRecipe, allergyService.findAllergyByAllergyName(allergyType.getName())))
+                .collect(Collectors.toList());
+        recipeAllergyRepository.saveAll(recipeAllergies); // 새로운 알레르기 정보 저장
+
+        Recipe updatedRecipe = recipeRepository.save(savedRecipe);
+
+        //creator와 recipe연결
+        MemberRecipe memberRecipe = MemberRecipe.builder()
+                .recipe(recipe)
+                .member(memberRepository.findById(creatorId).orElseThrow()).build();//
+        memberRecipeRepository.save(memberRecipe);
+
+        //키워드 추출해서 Keyword 테이블에 넣기
+        List<String> keywords = Arrays.stream(dto.getName().split(" ")).toList();
+        Keyword k;
+        for (String keyword : keywords) {
+            if((k=keywordRepository.findByKeyword(keyword))==null){ //해당 키워드 처음
+                k = Keyword.builder()
+                        .count(0L)
+                        .keyword(keyword)
+                        .build();
+                keywordRepository.save(k);
+            }
+            else{ //해당 키워드 이미 존재 시 count 1증가
+                k.increaseCount();
+                keywordRepository.save(k);
+            }
+        }
+
+        return RecipeCreateResDto.builder()
+                .recipeImgs(Arrays.asList(updatedRecipe.getRecipeImgs().split(",")))
+                .name(updatedRecipe.getRecipeName())
+                .description(updatedRecipe.getRecipeDescription())
+                .difficulty(updatedRecipe.getDifficulty())
+                .cookingTime(updatedRecipe.getCookingTime())
+                .categoryName(updatedRecipe.getCategory().getCategoryName())
+                .tags(tags.stream().map(Tag::getTagName).collect(Collectors.toList()))
+                .ingredients(ingredientFormatter.parseIngredientFormList(updatedRecipe.getIngredients()))
+                .recipeContents(Arrays.asList(updatedRecipe.getRecipeContents().split("/")))
+                .recipeDetailImgs(Arrays.asList(updatedRecipe.getRecipeDetailImgs().split(",")))
+                .timers(Arrays.stream(updatedRecipe.getTimers().split(",")).map(Integer::parseInt).collect(Collectors.toList()))
+                .allergyList(recipeAllergies.stream().map(ra -> ra.getAllergy().getAllergyName()).collect(Collectors.toList()))
+                .build();
+    }
+
 }

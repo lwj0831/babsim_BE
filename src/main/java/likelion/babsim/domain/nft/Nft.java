@@ -17,14 +17,16 @@ public class Nft {
     private Long id;
     private String tokenId;
     private String uri;
+    private String ownerId;
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="recipe_id")
     private Recipe recipe;
 
     @Builder
-    public Nft(String tokenId, String uri, Recipe recipe) {
+    public Nft(String tokenId, String uri, String ownerId, Recipe recipe) {
         this.tokenId = tokenId;
         this.uri = uri;
+        this.ownerId = ownerId;
         this.recipe = recipe;
     }
 }
