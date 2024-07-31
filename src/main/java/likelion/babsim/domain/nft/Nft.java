@@ -2,10 +2,8 @@ package likelion.babsim.domain.nft;
 
 import jakarta.persistence.*;
 import likelion.babsim.domain.recipe.Recipe;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import likelion.babsim.domain.sale.Sale;
+import lombok.*;
 
 @Entity
 @Getter
@@ -22,11 +20,19 @@ public class Nft {
     @JoinColumn(name="recipe_id")
     private Recipe recipe;
 
+    @OneToOne(mappedBy = "nft", cascade = CascadeType.ALL)
+    @ToString.Exclude
+    private Sale sale;
+
     @Builder
     public Nft(String tokenId, String uri, String ownerId, Recipe recipe) {
         this.tokenId = tokenId;
         this.uri = uri;
         this.ownerId = ownerId;
         this.recipe = recipe;
+    }
+
+    public void setOwnerId(String ownerId) {
+        this.ownerId = ownerId;
     }
 }
