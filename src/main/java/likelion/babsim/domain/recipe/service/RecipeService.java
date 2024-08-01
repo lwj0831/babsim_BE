@@ -102,7 +102,7 @@ public class RecipeService {
         return recipesToRecipeInfoResDTOList(recipes);
     }
 
-    public List<RecipeInfoResDto> findMyRecipesByOwnerId(String memberId){
+    public List<RecipeInfoResDto> findMyRecipesByOwnerId(String memberId){ //nft소유자 기준
         List<Nft> nfts = nftRepository.findAllByOwnerId(memberId);
         List<Recipe> recipes = new ArrayList<>();
         for (Nft nft : nfts) {

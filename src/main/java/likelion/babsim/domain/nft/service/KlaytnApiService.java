@@ -73,7 +73,7 @@ public class KlaytnApiService {
                 .uri("https://kip17-api.klaytnapi.com/v2/contract/babsim/token/"+tokenId)
                 .header("x-chain-id", xChainId)
                 .header("Authorization", authorization)
-                .bodyValue(tokenApproveReqDto)//Content-Type: application/json 자동 설정
+                .bodyValue(tokenApproveReqDto)
                 .retrieve()
                 .bodyToMono(TokenApproveResDto.class)
                 .block();
