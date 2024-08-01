@@ -14,16 +14,16 @@ public class NftInfoResDto {
     private String recipeName;
     private BigDecimal price;
 
-    private boolean isSale;
+    private boolean nftSaleStatus;
 
     @Builder
-    public NftInfoResDto(Long nftId, String uri, Long recipeId, String recipeName, BigDecimal price, boolean isSale) {
+    public NftInfoResDto(Long nftId, String uri, Long recipeId, String recipeName, BigDecimal price, boolean nftSaleStatus) {
         this.nftId = nftId;
         this.uri = uri;
         this.recipeId = recipeId;
         this.recipeName = recipeName;
         this.price = price;
-        this.isSale = isSale;
+        this.nftSaleStatus = nftSaleStatus;
     }
 }
 

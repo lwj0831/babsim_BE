@@ -16,8 +16,7 @@ import likelion.babsim.domain.likes.service.LikesService;
 import likelion.babsim.domain.member.repository.MemberRepository;
 import likelion.babsim.domain.nft.Nft;
 import likelion.babsim.domain.nft.repository.NftRepository;
-import likelion.babsim.domain.nft.service.KlaytnApiService;
-import likelion.babsim.domain.nft.service.NftService;
+import likelion.babsim.domain.nft.repository.SaleNftRepository;
 import likelion.babsim.domain.recipe.*;
 import likelion.babsim.domain.recipe.repository.MemberRecipeRepository;
 import likelion.babsim.domain.recipe.repository.RecipeRepository;
@@ -59,6 +58,7 @@ public class RecipeService {
     private final GeminiService geminiService;
     private final RecipeAllergyRepository recipeAllergyRepository;
     private final NftRepository nftRepository;
+    private final SaleNftRepository saleNftRepository;
 
     public List<RecipeInfoResDto> findRecipesByKeyword(String keyword){
         Pageable pageable = PageRequest.of(0, 50);
@@ -74,7 +74,7 @@ public class RecipeService {
     }
 
     public List<RecipeInfoResDto> findRecommendRecipesByMemberId(String memberId){
-        Pageable pageable = PageRequest.of(0, 10);
+        Pageable pageable = PageRequest.of(0, 12);
         List<Long> allergies = allergyService.findAllergiesByMemberId(memberId);
         List<Recipe> recipes = recipeRepository.findRecipesExcludingAllergies(allergies,pageable);
         return recipesToRecipeInfoResDTOList(recipes);
@@ -164,7 +164,8 @@ public class RecipeService {
                 .recipeContents(RecipeContentFormatter.parseRecipeContentList(recipe.getRecipeContents()))//
                 .recipeTimers(RecipeTimerFormatter.parseTimerList(recipe.getTimers()))//
                 .liked(likesService.checkLikesByMemberIdAndRecipeId(memberId, recipeId))//
-                .createdNft(recipe.getNft() != null)
+                .nftCreateStatus(recipe.getNft() != null)
+                .nftSaleStatus(recipe.getNft() != null && saleNftRepository.findByNft(recipe.getNft()).isPresent())
                 .categoryName(categoryRepository.findById(recipe.getCategory().getId()).orElseThrow().getCategoryName())
                 .build();
     }
