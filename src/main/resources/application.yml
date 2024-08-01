@@ -26,3 +26,16 @@ googleai:
    api:
     key: ${GEMINI_API_KEY}
 
+klaytn:
+  api:
+    base-url: https://wallet-api.klaytnapi.com/v2
+    account-endpoint: /account
+    contract-endpoint: /contract/babsim/token
+    contract-address-or-alias: babsim
+
+  auth:
+    x-chain-id: 1001
+    authorization: Basic S0FTS1FNTVlaV1lOTzJJUDlWNEVSQ1RaOjdEUHg3M0IzWFZsaS05NjRRTVZGV0Y0WjNCODctWm9IQk9fMmhTRkE=
+
+
+

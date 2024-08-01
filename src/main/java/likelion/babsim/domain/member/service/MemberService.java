@@ -12,8 +12,10 @@ import likelion.babsim.domain.point.Point;
 import likelion.babsim.domain.point.PointType;
 import likelion.babsim.domain.point.repository.PointRepository;
 import likelion.babsim.domain.point.service.PointService;
+import likelion.babsim.domain.nft.service.KlaytnApiService;
 import likelion.babsim.web.member.MemberReqDTO;
 import likelion.babsim.web.member.MemberResDTO;
+import likelion.babsim.web.nft.kas.AccountCreateResDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -38,6 +40,7 @@ public class MemberService {
     private final AllergyRepository allergyRepository;
     private final PointRepository pointRepository;
     private final PointService pointService;
+    private final KlaytnApiService klaytnApiService;
 
     private static final String REST_API_KEY = "f0b7ac898da3a5b19640f297fd76d1be";
     private static final String REDIRECT_URI = "http://localhost:5173/login";
@@ -55,6 +58,8 @@ public class MemberService {
         String email = memberRequestDTO.getEmail();
         Job job = Job.values()[memberRequestDTO.getJob()];
         LocalDateTime registerDate = LocalDateTime.now();
+        AccountCreateResDto response = klaytnApiService.createAccount();
+        String address = response.getAddress();
 
         Member member = Member.dtoBuilder()
                 .id(id)
@@ -63,6 +68,7 @@ public class MemberService {
                 .email(email)
                 .job(job)
                 .registerDate(registerDate)
+                .nftAccountAddress(address)
                 .build();
 
         memberRepository.save(member);

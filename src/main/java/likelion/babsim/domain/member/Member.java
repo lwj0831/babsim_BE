@@ -33,6 +33,7 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private Membership membership;
     private LocalDateTime registerDate;
+    private String nftAccountAddress;
 
     @OneToMany(mappedBy = "member")
     @ToString.Exclude
@@ -68,13 +69,14 @@ public class Member {
     private Cart cart;
 
     @Builder(builderMethodName = "dtoBuilder")
-    public Member(String id, String name, String memberImg, String email, Job job, LocalDateTime registerDate) {
+    public Member(String id, String name, String memberImg, String email, Job job, LocalDateTime registerDate, String nftAccountAddress) {
         this.id = id;
         this.name = name;
         this.memberImg = memberImg;
         this.email = email;
         this.job = job;
         this.registerDate = registerDate;
+        this.nftAccountAddress = nftAccountAddress;
     }
 
     @Builder
