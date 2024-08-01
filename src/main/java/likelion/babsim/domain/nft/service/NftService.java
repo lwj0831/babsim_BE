@@ -78,9 +78,8 @@ public class NftService {
                         .tokenId(tokenId)
                         .build();
             }
-
         }
-        return null;
+        return null; //예외처리 필요
     }
 
     @Transactional
@@ -112,7 +111,7 @@ public class NftService {
                 .status("terminate")
                 .build();
     }
-    
+
     public List<SaleNftInfoResDto> findRecommendNfts(){
         List<SaleNft> random10SaleNfts = saleNftRepository.findRandom10SaleNfts();
 
