@@ -8,6 +8,9 @@ import likelion.babsim.domain.allergy.repository.MemberAllergyRepository;
 import likelion.babsim.domain.member.Job;
 import likelion.babsim.domain.member.Member;
 import likelion.babsim.domain.member.repository.MemberRepository;
+import likelion.babsim.domain.point.Point;
+import likelion.babsim.domain.point.PointType;
+import likelion.babsim.domain.point.repository.PointRepository;
 import likelion.babsim.web.member.MemberReqDTO;
 import likelion.babsim.web.member.MemberResDTO;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +43,7 @@ public class MemberService {
     private static final String TOKEN_TYPE = "bearer ";
     private static final String TOKEN_REQ_URL = "https://kauth.kakao.com/oauth/token";
     private static final String USER_INFO_REQ_URL = "https://kapi.kakao.com/v2/user/me";
+    private final PointRepository pointRepository;
 
     @Transactional(readOnly = false)
     public MemberResDTO createMember(MemberReqDTO memberRequestDTO) {
@@ -75,6 +79,14 @@ public class MemberService {
             memberAllergyRepository.save(memberAllergy);
         }
         member.setMemberAllergies(memberAllergies);
+
+        Point point = Point.builder()
+                .pointContent("신규회원")
+                .pointType(PointType.REWARD)
+                .pointPrice(1000)
+                .member(member)
+                .build();
+        pointRepository.save(point);
 
         return MemberResDTO.builder()
                 .id(member.getId())

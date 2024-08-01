@@ -1,12 +1,20 @@
 use babsim;
 
-INSERT INTO Member (member_id, name, email, job, address, membership, point, register_date, member_img)
+INSERT INTO Member (member_id, name, email, job, address, membership, register_date, member_img)
 VALUES
-    ('1', '이원준', 'wjl0831@gmail.com', 'STUDENT', '대구광역시', 'NORMAL', 1000, '2023-01-15 10:00:00', 'https://avatars.githubusercontent.com/u/151692917?s=400&v=4'),
-    ('2', '조재용', 'jaedragon2002@gmail.com', 'STUDENT', '인천광역시', 'PREMIUM', 750, '2023-06-12 11:10:00', 'https://avatars.githubusercontent.com/u/66457807?v=4'),
-    ('3', '송재훈', 'jhssong02@gmail.com', 'STUDENT', '대구광역시', 'NORMAL', 750, '2023-06-12 11:10:00', 'https://avatars.githubusercontent.com/u/66457807?v=4'),
-    ('4', '임준혁', 'imjh0417@gmail.com', 'STUDENT', '울산광역시', 'PREMIUM', 100, '2024-07-24 20:30:00', 'https://avatars.githubusercontent.com/u/139840247?v=4'),
-    ('5', '김민수', 'minsoo@naver.com', 'WORKER', '서울특별시', 'NORMAL', 1200,'2024-06-23 10:20:11', 'https://avatars.githubusercontent.com/u/151692917?s=400&v=4');
+    ('1', '이원준', 'wjl0831@gmail.com', 'STUDENT', '대구광역시', 'NORMAL', '2023-01-15 10:00:00', 'https://avatars.githubusercontent.com/u/151692917?s=400&v=4'),
+    ('2', '조재용', 'jaedragon2002@gmail.com', 'STUDENT', '인천광역시', 'PREMIUM', '2023-06-12 11:10:00', 'https://avatars.githubusercontent.com/u/66457807?v=4'),
+    ('3', '송재훈', 'jhssong02@gmail.com', 'STUDENT', '대구광역시', 'NORMAL', '2023-06-12 11:10:00', 'https://avatars.githubusercontent.com/u/66457807?v=4'),
+    ('4', '임준혁', 'imjh0417@gmail.com', 'STUDENT', '울산광역시', 'PREMIUM', '2024-07-24 20:30:00', 'https://avatars.githubusercontent.com/u/139840247?v=4'),
+    ('5', '김민수', 'minsoo@naver.com', 'WORKER', '서울특별시', 'NORMAL','2024-06-23 10:20:11', 'https://avatars.githubusercontent.com/u/151692917?s=400&v=4');
+
+INSERT INTO Point (point_id, member_id, point_content, point_price, point_type)
+VALUES
+    (1, 1, '신규회원', 1000, 'REWARD'),
+    (2, 2, '신규회원', 1000, 'REWARD'),
+    (3, 3, '신규회원', 1000, 'REWARD'),
+    (4, 4, '신규회원', 1000, 'REWARD'),
+    (5, 5, '신규회원', 1000, 'REWARD');
 
 INSERT INTO Category (category_id, category_name)
 VALUES

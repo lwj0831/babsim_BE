@@ -32,7 +32,6 @@ public class Member {
     private String address;
     @Enumerated(EnumType.STRING)
     private Membership membership;
-    private Long point;
     private LocalDateTime registerDate;
 
     @OneToMany(mappedBy = "member")
