@@ -5,14 +5,14 @@ import lombok.Getter;
 
 @Getter
 public class NftApproveResDto {
-    private String ownerAddress;
-    private String toAddress;
+    private String ownerName;
+    private String toName;
     private String tokenId;
 
     @Builder
-    public NftApproveResDto(String ownerAddress, String toAddress, String tokenId) {
-        this.ownerAddress = ownerAddress;
-        this.toAddress = toAddress;
+    public NftApproveResDto(String ownerName, String toName, String tokenId) {
+        this.ownerName = ownerName;
+        this.toName = toName;
         this.tokenId = tokenId;
     }
 }

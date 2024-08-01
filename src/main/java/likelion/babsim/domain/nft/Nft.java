@@ -35,4 +35,8 @@ public class Nft {
     public void setOwnerId(String ownerId) {
         this.ownerId = ownerId;
     }
+
+    public void setSaleNft(SaleNft saleNft) {
+        this.saleNft = saleNft;
+    }
 }

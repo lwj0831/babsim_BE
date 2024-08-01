@@ -28,7 +28,7 @@ public class NftController {
         return nftService.registerNftSale(recipeId,price);
     }
     @DeleteMapping("/saleNft")
-    public SaleNftTerminateResDto terminateSaleNft(@RequestParam Long recipeId){ //파라미터 nftId로 받을 수 있는지 확인 후 변경
+    public SaleNftTerminateResDto terminateSaleNft(@RequestParam Long recipeId){
         return nftService.terminateNftSale(recipeId);
     }
     @GetMapping("/saleNft")

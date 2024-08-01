@@ -1,5 +1,6 @@
 package likelion.babsim.domain.nft.service;
 
+import likelion.babsim.domain.member.Member;
 import likelion.babsim.domain.member.repository.MemberRepository;
 import likelion.babsim.domain.nft.Nft;
 import likelion.babsim.domain.nft.repository.NftRepository;
@@ -65,16 +66,18 @@ public class NftService {
         Optional<Nft> findNft = nftRepository.findById(nftId);
         if(findNft.isPresent()) {
             Nft nft = findNft.get();
-            String ownerAddress = memberRepository.findById(nft.getOwnerId()).orElseThrow().getNftAccountAddress();
-            String toAddress = memberRepository.findById(memberId).orElseThrow().getNftAccountAddress();
+            Member owner = memberRepository.findById(nft.getOwnerId()).orElseThrow();
+            Member to = memberRepository.findById(memberId).orElseThrow();
+            String ownerAddress = owner.getNftAccountAddress();
+            String toAddress = to.getNftAccountAddress();
             String tokenId = nft.getTokenId();
             TokenApproveResDto tokenApproveResDto = klaytnApiService.approveToken(ownerAddress, toAddress, tokenId);
             if(tokenApproveResDto.getStatus().equals("Submitted")){
                 nft.setOwnerId(memberId);
                 nftRepository.save(nft);
                 return NftApproveResDto.builder()
-                        .ownerAddress(ownerAddress)
-                        .toAddress(toAddress)
+                        .ownerName(owner.getName())
+                        .toName(to.getName())
                         .tokenId(tokenId)
                         .build();
             }
@@ -103,8 +106,10 @@ public class NftService {
         SaleNft saleNft = saleNftRepository.findByNft(nft).orElseThrow();
         Long saleNftId = saleNft.getId();
 
+        if (nft != null) {
+            nft.setSaleNft(null);  // 관계 제거
+        }
         saleNftRepository.delete(saleNft);
-        saleNftRepository.flush();
 
         return SaleNftTerminateResDto.builder()
                 .saleNftId(saleNftId)
@@ -146,7 +151,7 @@ public class NftService {
                     .price(findSaleNft.map(SaleNft::getPrice).orElse(null))
                     .recipeId(recipe.getId())
                     .recipeName(recipe.getRecipeName())
-                    .isSale(findSaleNft.isPresent())
+                    .nftSaleStatus(findSaleNft.isPresent())
                     .build();
         }).collect(Collectors.toList());
     }

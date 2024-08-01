@@ -27,12 +27,12 @@ public class RecipeDetailResDto {
     private List<String> recipeContents;
     private List<Integer> recipeTimers;
     private boolean liked;
-    private boolean createdNft;
-    private boolean isSale;
+    private boolean nftCreateStatus;
+    private boolean nftSaleStatus;
     private String categoryName;
 
     @Builder
-    public RecipeDetailResDto(Long id, String creatorId, List<String> recipeImgs, String name, String description, Double rate, Difficulty difficulty, Integer cookingTime, List<String> tags, List<Long> allergies, List<IngredientForm> ingredients, List<ReviewForm> reviews,Long reviewsCount, List<String> recipeDetailImgs, List<String> recipeContents, List<Integer> recipeTimers, boolean liked,boolean createdNft,boolean isSale, String categoryName) {
+    public RecipeDetailResDto(Long id, String creatorId, List<String> recipeImgs, String name, String description, Double rate, Difficulty difficulty, Integer cookingTime, List<String> tags, List<Long> allergies, List<IngredientForm> ingredients, List<ReviewForm> reviews,Long reviewsCount, List<String> recipeDetailImgs, List<String> recipeContents, List<Integer> recipeTimers, boolean liked, boolean nftCreateStatus, boolean nftSaleStatus, String categoryName) {
         this.id = id;
         this.creatorId = creatorId;
         this.recipeImgs = recipeImgs;
@@ -50,8 +50,8 @@ public class RecipeDetailResDto {
         this.recipeContents = recipeContents;
         this.recipeTimers = recipeTimers;
         this.liked = liked;
-        this.createdNft = createdNft;
-        this.isSale = isSale;
+        this.nftCreateStatus = nftCreateStatus;
+        this.nftSaleStatus = nftSaleStatus;
         this.categoryName = categoryName;
     }
 }

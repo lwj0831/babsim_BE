@@ -14,10 +14,10 @@ import java.util.Optional;
 @Repository
 public interface SaleNftRepository extends JpaRepository<SaleNft,Long> {
     Optional<SaleNft> findByNft(Nft nft);
-
     default List<SaleNft> findRandom10SaleNfts() {
         Pageable pageable = PageRequest.of(0, 10);
         Page<SaleNft> page = findAll(pageable);
         return page.getContent();
     }
+    void deleteByNftId(Long nftId);
 }

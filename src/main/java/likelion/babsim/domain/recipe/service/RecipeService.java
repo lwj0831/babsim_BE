@@ -74,7 +74,7 @@ public class RecipeService {
     }
 
     public List<RecipeInfoResDto> findRecommendRecipesByMemberId(String memberId){
-        Pageable pageable = PageRequest.of(0, 10);
+        Pageable pageable = PageRequest.of(0, 12);
         List<Long> allergies = allergyService.findAllergiesByMemberId(memberId);
         List<Recipe> recipes = recipeRepository.findRecipesExcludingAllergies(allergies,pageable);
         return recipesToRecipeInfoResDTOList(recipes);
@@ -164,8 +164,8 @@ public class RecipeService {
                 .recipeContents(RecipeContentFormatter.parseRecipeContentList(recipe.getRecipeContents()))//
                 .recipeTimers(RecipeTimerFormatter.parseTimerList(recipe.getTimers()))//
                 .liked(likesService.checkLikesByMemberIdAndRecipeId(memberId, recipeId))//
-                .createdNft(recipe.getNft() != null)
-                .isSale(recipe.getNft() != null && saleNftRepository.findByNft(recipe.getNft()).isPresent())
+                .nftCreateStatus(recipe.getNft() != null)
+                .nftSaleStatus(recipe.getNft() != null && saleNftRepository.findByNft(recipe.getNft()).isPresent())
                 .categoryName(categoryRepository.findById(recipe.getCategory().getId()).orElseThrow().getCategoryName())
                 .build();
     }
