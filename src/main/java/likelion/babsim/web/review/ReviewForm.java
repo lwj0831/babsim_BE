@@ -27,4 +27,5 @@ public class ReviewForm {
         this.registerDate = registerDate;
         this.forkedRecipeId = forkedRecipeId;
     }
+
 }

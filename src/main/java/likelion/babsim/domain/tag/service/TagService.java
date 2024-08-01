@@ -19,7 +19,4 @@ public class TagService {
                 .map(Tag::getTagName)
                 .toList();
     }
-    public Tag saveTag(Tag tag){
-        return tagRepository.save(tag);
-    }
 }

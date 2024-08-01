@@ -15,6 +15,7 @@ import java.util.List;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
 public class Recipe {
     @Id
@@ -30,37 +31,37 @@ public class Recipe {
     private Integer cookingTime;
     @Column(length = 65535)
     private String recipeDetailImgs;
+    @Column(length = 65535)
     private String ingredients;
     @Column(length = 65535)
     private String recipeContents;
     private String timers;
-    private String ownerId;
 
-    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     private List<MemberRecipe> memberRecipes;
 
-    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     private List<Tag> tags;
 
-    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     private List<RecipeReview> reviews;
 
-    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     private List<Likes> likes;
 
-    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     private List<RecipeAllergy> recipeAllergies;
 
-    @OneToOne(mappedBy = "recipe", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     private Nft nft;
 
-    @OneToOne(mappedBy = "recipe", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     private CookedRecord cookedRecord;
 
@@ -69,7 +70,7 @@ public class Recipe {
     private Category category;
 
     @Builder
-    public Recipe(Long id, String creatorId, String recipeImgs, String recipeName, String recipeDescription, Difficulty difficulty, Integer cookingTime, String recipeDetailImgs, String ingredients, String recipeContents, String timers, String ownerId, List<MemberRecipe> memberRecipes, List<Tag> tags,Category category, List<RecipeReview> reviews, List<Likes> likes, List<RecipeAllergy> recipeAllergies, Nft nft, CookedRecord cookedRecord) {
+    public Recipe(Long id, String creatorId, String recipeImgs, String recipeName, String recipeDescription, Difficulty difficulty, Integer cookingTime, String recipeDetailImgs, String ingredients, String recipeContents, String timers, List<MemberRecipe> memberRecipes, List<Tag> tags,Category category, List<RecipeReview> reviews, List<Likes> likes, List<RecipeAllergy> recipeAllergies, Nft nft, CookedRecord cookedRecord) {
         this.id = id;
         this.creatorId = creatorId;
         this.recipeImgs = recipeImgs;
@@ -81,7 +82,6 @@ public class Recipe {
         this.ingredients = ingredients;
         this.recipeContents = recipeContents;
         this.timers = timers;
-        this.ownerId = ownerId;
         this.memberRecipes = memberRecipes;
         this.tags = tags;
         this.category = category;
@@ -90,5 +90,30 @@ public class Recipe {
         this.recipeAllergies = recipeAllergies;
         this.nft = nft;
         this.cookedRecord = cookedRecord;
+    }
+
+    public void updateRecipeInfo(String recipeImgs, String recipeName, String recipeDescription, Difficulty difficulty, Integer cookingTime, String recipeDetailImgs, String ingredients, String recipeContents, String timers, Category category) {
+        this.recipeImgs = recipeImgs;
+        this.recipeName = recipeName;
+        this.recipeDescription = recipeDescription;
+        this.difficulty = difficulty;
+        this.cookingTime = cookingTime;
+        this.recipeDetailImgs = recipeDetailImgs;
+        this.ingredients = ingredients;
+        this.recipeContents = recipeContents;
+        this.timers = timers;
+        this.category = category;
+        this.tags.clear();
+        this.recipeAllergies.clear();
+    }
+
+    public void updateTags(List<Tag> tags) {
+        this.tags.clear();
+        this.tags.addAll(tags);
+    }
+
+    public void updateAllergies(List<RecipeAllergy> recipeAllergies) {
+        this.recipeAllergies.clear();
+        this.recipeAllergies.addAll(recipeAllergies);
     }
 }

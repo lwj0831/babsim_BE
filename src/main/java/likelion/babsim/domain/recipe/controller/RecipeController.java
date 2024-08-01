@@ -66,8 +66,13 @@ public class RecipeController {
         return recipeService.createRecipe(dto,creatorId);
     }
     @PutMapping("/{recipeId}")
-    public RecipeCreateResDto editRecipe(@RequestBody RecipeCreateReqDto dto, @RequestParam String creatorId, @PathVariable Long recipeId){
-        return recipeService.editRecipe(dto,creatorId,recipeId);
+    public RecipeCreateResDto editRecipe(@RequestBody RecipeCreateReqDto dto, @PathVariable Long recipeId){
+        return recipeService.editRecipe(dto,recipeId);
+    }
+
+    @PostMapping("/{recipeId}/fork")
+    public RecipeCreateResDto forkRecipe(@RequestBody RecipeCreateReqDto dto, @RequestParam String creatorId, @PathVariable Long recipeId){
+        return recipeService.forkRecipe(dto,creatorId,recipeId);
     }
 
 }
