@@ -55,6 +55,7 @@ public class PointService {
         return total;
     }
 
+    @Transactional
     public boolean makePointTransactions(String buyerId, String sellerId, String pointContent, Integer pointPrice) {
         try {
             Point buyerPoint = Point.builder()
@@ -83,6 +84,7 @@ public class PointService {
         }
     }
 
+    @Transactional
     public void givePointReward(String memberId, String pointContent, Integer pointPrice) {
         try {
             Point point = Point.builder()
