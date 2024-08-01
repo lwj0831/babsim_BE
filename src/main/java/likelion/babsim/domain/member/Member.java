@@ -5,6 +5,7 @@ import likelion.babsim.domain.allergy.MemberAllergy;
 import likelion.babsim.domain.cart.Cart;
 import likelion.babsim.domain.likes.Likes;
 import likelion.babsim.domain.order.Orders;
+import likelion.babsim.domain.point.Point;
 import likelion.babsim.domain.recipe.MemberRecipe;
 import likelion.babsim.domain.recipe.Recipe;
 import likelion.babsim.domain.review.ProductReview;
@@ -31,7 +32,6 @@ public class Member {
     private String address;
     @Enumerated(EnumType.STRING)
     private Membership membership;
-    private Long point;
     private LocalDateTime registerDate;
     private String nftAccountAddress;
 
@@ -55,6 +55,10 @@ public class Member {
     @OneToMany(mappedBy = "member")
     @ToString.Exclude
     private List<Orders> orders;
+
+    @OneToMany(mappedBy = "member")
+    @ToString.Exclude
+    private List<Point> points;
 
     @OneToMany(mappedBy = "member")
     @ToString.Exclude

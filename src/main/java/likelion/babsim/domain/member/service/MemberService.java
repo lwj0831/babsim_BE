@@ -8,6 +8,10 @@ import likelion.babsim.domain.allergy.repository.MemberAllergyRepository;
 import likelion.babsim.domain.member.Job;
 import likelion.babsim.domain.member.Member;
 import likelion.babsim.domain.member.repository.MemberRepository;
+import likelion.babsim.domain.point.Point;
+import likelion.babsim.domain.point.PointType;
+import likelion.babsim.domain.point.repository.PointRepository;
+import likelion.babsim.domain.point.service.PointService;
 import likelion.babsim.domain.nft.service.KlaytnApiService;
 import likelion.babsim.web.member.MemberReqDTO;
 import likelion.babsim.web.member.MemberResDTO;
@@ -34,6 +38,8 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final MemberAllergyRepository memberAllergyRepository;
     private final AllergyRepository allergyRepository;
+    private final PointRepository pointRepository;
+    private final PointService pointService;
     private final KlaytnApiService klaytnApiService;
 
     private static final String REST_API_KEY = "f0b7ac898da3a5b19640f297fd76d1be";
@@ -82,6 +88,15 @@ public class MemberService {
         }
         member.setMemberAllergies(memberAllergies);
 
+        Point point = Point.builder()
+                .pointContent("신규회원")
+                .pointType(PointType.REWARD)
+                .pointPrice(1000)
+                .member(member)
+                .transactionDate(LocalDateTime.now())
+                .build();
+        pointRepository.save(point);
+
         return MemberResDTO.builder()
                 .id(member.getId())
                 .name(member.getName())
@@ -89,6 +104,7 @@ public class MemberService {
                 .email(member.getEmail())
                 .job(member.getJob().ordinal())
                 .allergies(allergyIds)
+                .point(pointService.getPointByMemberId(member.getId()))
                 .build();
     }
 
@@ -106,6 +122,7 @@ public class MemberService {
                 .email(member.getEmail())
                 .job(member.getJob().ordinal())
                 .allergies(allergyIds)
+                .point(pointService.getPointByMemberId(member.getId()))
                 .build();
     }
 
