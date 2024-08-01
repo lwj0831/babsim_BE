@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import likelion.babsim.domain.member.Member;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @AllArgsConstructor
@@ -18,6 +20,7 @@ public class Point {
     private Integer pointPrice;
     @Enumerated(EnumType.STRING)
     private PointType pointType;
+    private LocalDateTime transactionDate;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -26,10 +29,11 @@ public class Point {
     private Member member;
 
     @Builder
-    public Point(String pointContent, Integer pointPrice, PointType pointType, Member member) {
+    public Point(String pointContent, Integer pointPrice, PointType pointType, LocalDateTime transactionDate, Member member) {
         this.pointContent = pointContent;
         this.pointPrice = pointPrice;
         this.pointType = pointType;
+        this.transactionDate = transactionDate;
         this.member = member;
     }
 }

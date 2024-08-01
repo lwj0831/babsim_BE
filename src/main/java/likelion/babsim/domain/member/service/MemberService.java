@@ -35,6 +35,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final MemberAllergyRepository memberAllergyRepository;
     private final AllergyRepository allergyRepository;
+    private final PointRepository pointRepository;
 
     private static final String REST_API_KEY = "f0b7ac898da3a5b19640f297fd76d1be";
     private static final String REDIRECT_URI = "http://localhost:5173/login";
@@ -43,7 +44,6 @@ public class MemberService {
     private static final String TOKEN_TYPE = "bearer ";
     private static final String TOKEN_REQ_URL = "https://kauth.kakao.com/oauth/token";
     private static final String USER_INFO_REQ_URL = "https://kapi.kakao.com/v2/user/me";
-    private final PointRepository pointRepository;
 
     @Transactional(readOnly = false)
     public MemberResDTO createMember(MemberReqDTO memberRequestDTO) {
@@ -85,6 +85,7 @@ public class MemberService {
                 .pointType(PointType.REWARD)
                 .pointPrice(1000)
                 .member(member)
+                .transactionDate(LocalDateTime.now())
                 .build();
         pointRepository.save(point);
 

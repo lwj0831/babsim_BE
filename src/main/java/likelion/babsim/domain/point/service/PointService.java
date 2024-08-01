@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +31,7 @@ public class PointService {
                     .pointContent(point.getPointContent())
                     .pointPrice(point.getPointPrice())
                     .pointType(point.getPointType())
+                    .transactionDate(point.getTransactionDate())
                     .build();
             pointLogResDTOs.add(pointLogResDTO);
         }
@@ -59,6 +61,7 @@ public class PointService {
                     .pointContent(pointContent)
                     .pointPrice(pointPrice)
                     .pointType(PointType.BUY)
+                    .transactionDate(LocalDateTime.now())
                     .member(memberRepository.findById(buyerId).orElseThrow())
                     .build();
 
@@ -66,6 +69,7 @@ public class PointService {
                     .pointContent(pointContent)
                     .pointPrice(pointPrice)
                     .pointType(PointType.SELL)
+                    .transactionDate(LocalDateTime.now())
                     .member(memberRepository.findById(sellerId).orElseThrow())
                     .build();
 
@@ -85,6 +89,7 @@ public class PointService {
                     .pointContent(pointContent)
                     .pointPrice(pointPrice)
                     .pointType(PointType.REWARD)
+                    .transactionDate(LocalDateTime.now())
                     .member(memberRepository.findById(memberId).orElseThrow())
                     .build();
 
