@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import likelion.babsim.domain.member.Member;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -17,7 +18,7 @@ public class Point {
     private Long id;
 
     private String pointContent;
-    private Integer pointPrice;
+    private BigDecimal pointPrice;
     @Enumerated(EnumType.STRING)
     private PointType pointType;
     private LocalDateTime transactionDate;
@@ -29,7 +30,7 @@ public class Point {
     private Member member;
 
     @Builder
-    public Point(String pointContent, Integer pointPrice, PointType pointType, LocalDateTime transactionDate, Member member) {
+    public Point(String pointContent, BigDecimal pointPrice, PointType pointType, LocalDateTime transactionDate, Member member) {
         this.pointContent = pointContent;
         this.pointPrice = pointPrice;
         this.pointType = pointType;

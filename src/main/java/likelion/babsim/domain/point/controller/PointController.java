@@ -5,6 +5,7 @@ import likelion.babsim.web.point.PointLogResDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -21,7 +22,7 @@ public class PointController {
     }
 
     @GetMapping
-    public Integer getPointByMemberId(@RequestParam("memberId") String memberId) {
+    public BigDecimal getPointByMemberId(@RequestParam("memberId") String memberId) {
         return pointService.getPointByMemberId(memberId);
     }
 }

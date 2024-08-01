@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,24 +40,24 @@ public class PointService {
         return pointLogResDTOs;
     }
 
-    public Integer getPointByMemberId(String memberId) {
+    public BigDecimal getPointByMemberId(String memberId) {
         List<Point> pointLogs = pointRepository.findAllByMemberId(memberId);
 
-        Integer total = 0;
+        BigDecimal total = BigDecimal.valueOf(0);
         for (Point point : pointLogs) {
             if (point.getPointType().equals(PointType.BUY))
-                total -= point.getPointPrice();
+                total = total.subtract(point.getPointPrice());
             else if (point.getPointType().equals(PointType.SELL))
-                total += point.getPointPrice();
+                total = total.add(point.getPointPrice());
             else if (point.getPointType().equals(PointType.REWARD))
-                total += point.getPointPrice();
+                total = total.add(point.getPointPrice());
         }
 
         return total;
     }
 
     @Transactional
-    public boolean makePointTransactions(String buyerId, String sellerId, String pointContent, Integer pointPrice) {
+    public boolean makePointTransactions(String buyerId, String sellerId, String pointContent, BigDecimal pointPrice) {
         try {
             Point buyerPoint = Point.builder()
                     .pointContent(pointContent)
@@ -85,7 +86,7 @@ public class PointService {
     }
 
     @Transactional
-    public void givePointReward(String memberId, String pointContent, Integer pointPrice) {
+    public void givePointReward(String memberId, String pointContent, BigDecimal pointPrice) {
         try {
             Point point = Point.builder()
                     .pointContent(pointContent)

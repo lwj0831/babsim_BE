@@ -4,6 +4,7 @@ import likelion.babsim.domain.member.Member;
 import likelion.babsim.domain.member.repository.MemberRepository;
 import likelion.babsim.domain.nft.Nft;
 import likelion.babsim.domain.nft.repository.NftRepository;
+import likelion.babsim.domain.point.service.PointService;
 import likelion.babsim.domain.recipe.Recipe;
 import likelion.babsim.domain.recipe.repository.RecipeRepository;
 import likelion.babsim.domain.nft.SaleNft;
@@ -32,6 +33,7 @@ public class NftService {
     private final MemberRepository memberRepository;
     private final RecipeRepository recipeRepository;
     private final SaleNftRepository saleNftRepository;
+    private final PointService pointService;
 
     @Transactional
     public NftCreateResDto createNft(Long recipeId, String memberId){ //프론트단에서도 검증 로직 필요
@@ -75,6 +77,9 @@ public class NftService {
             if(tokenApproveResDto.getStatus().equals("Submitted")){
                 nft.setOwnerId(memberId);
                 nftRepository.save(nft);
+
+                //saleNft도 제거하는 로직 추가해야함
+                pointService.makePointTransactions(memberId,nft.getOwnerId(),"토큰 거래",saleNftRepository.findByNft(nft).orElseThrow().getPrice());
                 return NftApproveResDto.builder()
                         .ownerName(owner.getName())
                         .toName(to.getName())
