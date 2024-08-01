@@ -15,6 +15,7 @@ public class Nft {
     private String tokenId;
     private String uri;
     private String ownerId;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="recipe_id")
     private Recipe recipe;

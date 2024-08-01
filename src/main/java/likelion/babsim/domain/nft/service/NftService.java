@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -56,7 +57,7 @@ public class NftService {
                         .uri(uri).build();
             }
         }
-        return null;
+        return null; //예외 처리 필요
     }
 
     @Transactional
@@ -98,31 +99,56 @@ public class NftService {
     }
 
     @Transactional
-    public SaleNftTerminateResDto terminateNftSale(Long recipeId){
+    public SaleNftTerminateResDto terminateNftSale(Long recipeId) {
         Nft nft = nftRepository.findByRecipeId(recipeId).orElseThrow();
         SaleNft saleNft = saleNftRepository.findByNft(nft).orElseThrow();
+        Long saleNftId = saleNft.getId();
+
         saleNftRepository.delete(saleNft);
+        saleNftRepository.flush();
+
         return SaleNftTerminateResDto.builder()
-                .saleNftId(saleNft.getId())
+                .saleNftId(saleNftId)
                 .status("terminate")
                 .build();
     }
-
-    public List<NftInfoResDto> findRecommendNfts(){
+    
+    public List<SaleNftInfoResDto> findRecommendNfts(){
         List<SaleNft> random10SaleNfts = saleNftRepository.findRandom10SaleNfts();
 
-        List<NftInfoResDto> result = new ArrayList<>();
+        List<SaleNftInfoResDto> result = new ArrayList<>();
         for (SaleNft saleNft : random10SaleNfts) {
             Nft nft = nftRepository.findBySaleNft(saleNft).orElseThrow();
-            NftInfoResDto nftInfoResDto = NftInfoResDto.builder()
+            SaleNftInfoResDto saleNftInfoResDto = SaleNftInfoResDto.builder()
                     .nftId(nft.getId())
                     .uri(nft.getUri())
                     .price(saleNftRepository.findByNft(nft).orElseThrow().getPrice())
                     .recipeId(recipeRepository.findByNft(nft).orElseThrow().getId())
                     .recipeName(recipeRepository.findByNft(nft).orElseThrow().getRecipeName())
                     .build();
-            result.add(nftInfoResDto);
+            result.add(saleNftInfoResDto);
         }
         return result;
+    }
+
+    public List<NftInfoResDto> findOwnNft(String memberId){
+        List<Nft> nfts = nftRepository.findAllByOwnerId(memberId);
+        return nftsToNftInfoResDtoList(nfts);
+    }
+
+    public List<NftInfoResDto> nftsToNftInfoResDtoList(List<Nft> nfts){
+        return nfts.stream().map(nft -> {
+            Optional<SaleNft> findSaleNft = saleNftRepository.findByNft(nft);
+            Recipe recipe = recipeRepository.findByNft(nft).orElseThrow();
+
+            return NftInfoResDto.builder()
+                    .nftId(nft.getId())
+                    .uri(nft.getUri())
+                    .price(findSaleNft.map(SaleNft::getPrice).orElse(null))
+                    .recipeId(recipe.getId())
+                    .recipeName(recipe.getRecipeName())
+                    .isSale(findSaleNft.isPresent())
+                    .build();
+        }).collect(Collectors.toList());
     }
 }

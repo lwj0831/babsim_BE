@@ -6,7 +6,7 @@ import lombok.Getter;
 import java.math.BigDecimal;
 
 @Getter
-public class NftInfoResDto {
+public class SaleNftInfoResDto {
 
     private Long nftId;
     private String uri;
@@ -14,16 +14,13 @@ public class NftInfoResDto {
     private String recipeName;
     private BigDecimal price;
 
-    private boolean isSale;
-
     @Builder
-    public NftInfoResDto(Long nftId, String uri, Long recipeId, String recipeName, BigDecimal price, boolean isSale) {
+    public SaleNftInfoResDto(Long nftId, String uri, Long recipeId, String recipeName, BigDecimal price) {
         this.nftId = nftId;
         this.uri = uri;
         this.recipeId = recipeId;
         this.recipeName = recipeName;
         this.price = price;
-        this.isSale = isSale;
     }
 }
 

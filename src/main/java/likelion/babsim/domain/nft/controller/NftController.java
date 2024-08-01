@@ -1,14 +1,12 @@
 package likelion.babsim.domain.nft.controller;
 
 import likelion.babsim.domain.nft.service.NftService;
-import likelion.babsim.web.nft.NftApproveResDto;
-import likelion.babsim.web.nft.NftCreateResDto;
-import likelion.babsim.web.nft.SaleNftRegisterResDto;
-import likelion.babsim.web.nft.SaleNftTerminateResDto;
+import likelion.babsim.web.nft.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,8 +28,17 @@ public class NftController {
         return nftService.registerNftSale(recipeId,price);
     }
     @DeleteMapping("/saleNft")
-    public SaleNftTerminateResDto terminateSaleNft(@RequestParam Long recipeId){
+    public SaleNftTerminateResDto terminateSaleNft(@RequestParam Long recipeId){ //파라미터 nftId로 받을 수 있는지 확인 후 변경
         return nftService.terminateNftSale(recipeId);
     }
-    
+    @GetMapping("/saleNft")
+    public List<SaleNftInfoResDto> findRecommendSaleNfts(){
+        return nftService.findRecommendNfts();
+    }
+    @GetMapping
+    public List<NftInfoResDto> findOwnNfts(@RequestParam String memberId){
+        return nftService.findOwnNft(memberId);
+    }
+
+
 }
