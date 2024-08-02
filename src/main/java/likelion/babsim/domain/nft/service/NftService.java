@@ -9,10 +9,12 @@ import likelion.babsim.domain.recipe.Recipe;
 import likelion.babsim.domain.recipe.repository.RecipeRepository;
 import likelion.babsim.domain.nft.SaleNft;
 import likelion.babsim.domain.nft.repository.SaleNftRepository;
+import likelion.babsim.exception.CreateNftException;
 import likelion.babsim.web.nft.*;
 import likelion.babsim.web.nft.kas.TokenApproveResDto;
 import likelion.babsim.web.nft.kas.TokenCreateResDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,7 +62,7 @@ public class NftService {
                         .uri(uri).build();
             }
         }
-        return null; //예외 처리 필요
+        throw new CreateNftException("member is not owner of recipe!");
     }
 
     @Transactional
@@ -87,7 +89,7 @@ public class NftService {
                         .build();
             }
         }
-        return null; //예외처리 필요
+        throw new EmptyResultDataAccessException(1);
     }
 
     @Transactional

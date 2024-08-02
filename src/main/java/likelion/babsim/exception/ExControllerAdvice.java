@@ -25,4 +25,11 @@ public class ExControllerAdvice {
         return new ResponseEntity<>(errorResult, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(CreateNftException.class)
+    public ResponseEntity<ErrorResult> noSuchElementExHandle(CreateNftException e){
+        log.info("CreateNftException occurs! : {}",e);
+        ErrorResult errorResult = new ErrorResult("CreateNftException-EX",e.getMessage());
+        return new ResponseEntity<>(errorResult, HttpStatus.BAD_REQUEST);
+    }
+
 }
