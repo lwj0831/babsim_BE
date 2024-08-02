@@ -4,6 +4,7 @@ import likelion.babsim.domain.member.repository.MemberRepository;
 import likelion.babsim.domain.point.Point;
 import likelion.babsim.domain.point.PointType;
 import likelion.babsim.domain.point.repository.PointRepository;
+import likelion.babsim.exception.NotEnoughMoneyException;
 import likelion.babsim.web.point.PointLogResDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -36,7 +37,6 @@ public class PointService {
                     .build();
             pointLogResDTOs.add(pointLogResDTO);
         }
-
         return pointLogResDTOs;
     }
 
@@ -57,8 +57,11 @@ public class PointService {
     }
 
     @Transactional
-    public boolean makePointTransactions(String buyerId, String sellerId, String pointContent, BigDecimal pointPrice) {
-        try {
+    public void makePointTransactions(String buyerId, String sellerId, String pointContent, BigDecimal pointPrice) {
+        BigDecimal currentBuyerPoint = getPointByMemberId(buyerId);
+        if(currentBuyerPoint.compareTo(pointPrice)>0)
+            throw new NotEnoughMoneyException("buyer has not enough money to buy!"); //언체크예외(RuntimeException)
+        else {
             Point buyerPoint = Point.builder()
                     .pointContent(pointContent)
                     .pointPrice(pointPrice)
@@ -77,30 +80,19 @@ public class PointService {
 
             pointRepository.save(buyerPoint);
             pointRepository.save(sellerPoint);
-
-            return true;
-        } catch (Exception e){
-            e.printStackTrace();
-            return false;
         }
     }
 
     @Transactional
     public void givePointReward(String memberId, String pointContent, BigDecimal pointPrice) {
-        try {
-            Point point = Point.builder()
-                    .pointContent(pointContent)
-                    .pointPrice(pointPrice)
-                    .pointType(PointType.REWARD)
-                    .transactionDate(LocalDateTime.now())
-                    .member(memberRepository.findById(memberId).orElseThrow())
-                    .build();
-
-            pointRepository.save(point);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Point point = Point.builder()
+                .pointContent(pointContent)
+                .pointPrice(pointPrice)
+                .pointType(PointType.REWARD)
+                .transactionDate(LocalDateTime.now())
+                .member(memberRepository.findById(memberId).orElseThrow())
+                .build();
+        pointRepository.save(point);
     }
 
 }

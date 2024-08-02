@@ -78,7 +78,7 @@ public class NftService {
                 nft.setOwnerId(memberId);
                 nftRepository.save(nft);
 
-                //saleNft도 제거하는 로직 추가해야함
+                terminateNftSale(recipeRepository.findByNft(nft).orElseThrow().getId());//saleNft 제거(판매등록해제)
                 pointService.makePointTransactions(memberId,nft.getOwnerId(),"토큰 거래",saleNftRepository.findByNft(nft).orElseThrow().getPrice());
                 return NftApproveResDto.builder()
                         .ownerName(owner.getName())
@@ -92,7 +92,7 @@ public class NftService {
 
     @Transactional
     public SaleNftRegisterResDto registerNftSale(Long recipeId, BigDecimal price){
-        Nft nft = nftRepository.findByRecipeId(recipeId).orElseThrow();
+        Nft nft = nftRepository.findByRecipeId(recipeId);
         SaleNft saleNft = SaleNft.builder()
                 .price(price)
                 .saleStartTime(LocalDateTime.now())
@@ -107,7 +107,7 @@ public class NftService {
 
     @Transactional
     public SaleNftTerminateResDto terminateNftSale(Long recipeId) {
-        Nft nft = nftRepository.findByRecipeId(recipeId).orElseThrow();
+        Nft nft = nftRepository.findByRecipeId(recipeId);
         SaleNft saleNft = saleNftRepository.findByNft(nft).orElseThrow();
         Long saleNftId = saleNft.getId();
 
@@ -127,7 +127,7 @@ public class NftService {
 
         List<SaleNftInfoResDto> result = new ArrayList<>();
         for (SaleNft saleNft : random10SaleNfts) {
-            Nft nft = nftRepository.findBySaleNft(saleNft).orElseThrow();
+            Nft nft = nftRepository.findBySaleNft(saleNft);
             SaleNftInfoResDto saleNftInfoResDto = SaleNftInfoResDto.builder()
                     .nftId(nft.getId())
                     .uri(nft.getUri())
