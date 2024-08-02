@@ -4,11 +4,13 @@ import likelion.babsim.domain.member.repository.MemberRepository;
 import likelion.babsim.domain.point.Point;
 import likelion.babsim.domain.point.PointType;
 import likelion.babsim.domain.point.repository.PointRepository;
+import likelion.babsim.exception.NotEnoughMoneyException;
 import likelion.babsim.web.point.PointLogResDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,29 +37,31 @@ public class PointService {
                     .build();
             pointLogResDTOs.add(pointLogResDTO);
         }
-
         return pointLogResDTOs;
     }
 
-    public Integer getPointByMemberId(String memberId) {
+    public BigDecimal getPointByMemberId(String memberId) {
         List<Point> pointLogs = pointRepository.findAllByMemberId(memberId);
 
-        Integer total = 0;
+        BigDecimal total = BigDecimal.valueOf(0);
         for (Point point : pointLogs) {
             if (point.getPointType().equals(PointType.BUY))
-                total -= point.getPointPrice();
+                total = total.subtract(point.getPointPrice());
             else if (point.getPointType().equals(PointType.SELL))
-                total += point.getPointPrice();
+                total = total.add(point.getPointPrice());
             else if (point.getPointType().equals(PointType.REWARD))
-                total += point.getPointPrice();
+                total = total.add(point.getPointPrice());
         }
 
         return total;
     }
 
     @Transactional
-    public boolean makePointTransactions(String buyerId, String sellerId, String pointContent, Integer pointPrice) {
-        try {
+    public void makePointTransactions(String buyerId, String sellerId, String pointContent, BigDecimal pointPrice) {
+        BigDecimal currentBuyerPoint = getPointByMemberId(buyerId);
+        if(currentBuyerPoint.compareTo(pointPrice)>0)
+            throw new NotEnoughMoneyException("buyer has not enough money to buy!"); //언체크예외(RuntimeException)
+        else {
             Point buyerPoint = Point.builder()
                     .pointContent(pointContent)
                     .pointPrice(pointPrice)
@@ -76,30 +80,19 @@ public class PointService {
 
             pointRepository.save(buyerPoint);
             pointRepository.save(sellerPoint);
-
-            return true;
-        } catch (Exception e){
-            e.printStackTrace();
-            return false;
         }
     }
 
     @Transactional
-    public void givePointReward(String memberId, String pointContent, Integer pointPrice) {
-        try {
-            Point point = Point.builder()
-                    .pointContent(pointContent)
-                    .pointPrice(pointPrice)
-                    .pointType(PointType.REWARD)
-                    .transactionDate(LocalDateTime.now())
-                    .member(memberRepository.findById(memberId).orElseThrow())
-                    .build();
-
-            pointRepository.save(point);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void givePointReward(String memberId, String pointContent, BigDecimal pointPrice) {
+        Point point = Point.builder()
+                .pointContent(pointContent)
+                .pointPrice(pointPrice)
+                .pointType(PointType.REWARD)
+                .transactionDate(LocalDateTime.now())
+                .member(memberRepository.findById(memberId).orElseThrow())
+                .build();
+        pointRepository.save(point);
     }
 
 }

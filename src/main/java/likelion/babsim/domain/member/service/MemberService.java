@@ -24,6 +24,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -79,7 +80,7 @@ public class MemberService {
             // Create a new MemberAllergy instance
             MemberAllergy memberAllergy = MemberAllergy.builder()
                     .member(member)
-                    .allergy(allergyRepository.findAllergyById(allergyId).orElseThrow())
+                    .allergy(allergyRepository.findAllergyById(allergyId))
                     .build();
             System.out.println(memberAllergy.getMember().getId());
             System.out.println(memberAllergy.getAllergy().getId());
@@ -91,7 +92,7 @@ public class MemberService {
         Point point = Point.builder()
                 .pointContent("신규회원")
                 .pointType(PointType.REWARD)
-                .pointPrice(1000)
+                .pointPrice(BigDecimal.valueOf(1000))
                 .member(member)
                 .transactionDate(LocalDateTime.now())
                 .build();

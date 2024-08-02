@@ -30,6 +30,7 @@ import likelion.babsim.web.recipe.RecipeCreateResDto;
 import likelion.babsim.web.recipe.RecipeDetailResDto;
 import likelion.babsim.web.recipe.RecipeInfoResDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -106,8 +107,8 @@ public class RecipeService {
         List<Nft> nfts = nftRepository.findAllByOwnerId(memberId);
         List<Recipe> recipes = new ArrayList<>();
         for (Nft nft : nfts) {
-            Optional<Recipe> findRecipe = recipeRepository.findByNft(nft);
-            findRecipe.ifPresent(recipes::add);
+            Recipe findRecipe = recipeRepository.findByNft(nft);
+            recipes.add(findRecipe);
         }
         return recipesToRecipeInfoResDTOList(recipes);
     }
@@ -232,7 +233,7 @@ public class RecipeService {
                     .allergyList(recipeAllergies.stream().map(ra -> ra.getAllergy().getAllergyName()).collect(Collectors.toList()))
                     .build();
         }
-        else return null;
+        else throw new EmptyResultDataAccessException(1);
     }
 
     @Transactional
