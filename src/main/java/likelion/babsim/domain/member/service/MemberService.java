@@ -80,7 +80,7 @@ public class MemberService {
             // Create a new MemberAllergy instance
             MemberAllergy memberAllergy = MemberAllergy.builder()
                     .member(member)
-                    .allergy(allergyRepository.findAllergyById(allergyId).orElseThrow())
+                    .allergy(allergyRepository.findAllergyById(allergyId))
                     .build();
             System.out.println(memberAllergy.getMember().getId());
             System.out.println(memberAllergy.getAllergy().getId());

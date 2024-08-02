@@ -25,7 +25,7 @@ public interface RecipeRepository extends JpaRepository<Recipe,Long> {
     List<Recipe> findByCreatorIdNotAndMemberIdAndRecipeId(@Param("memberId") String memberId, @Param("recipeId") Long recipeId);
 
     List<Recipe> findAllByCreatorId(String creatorId);
-    Optional<Recipe> findByNft(Nft nft);
+    Recipe findByNft(Nft nft);
     List<Recipe> findAllByCategoryId(Long categoryId);
 
     default List<Recipe> findRandom50Recipes() {
