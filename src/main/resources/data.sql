@@ -518,7 +518,7 @@ VALUES
     (17, 'https://prs.ohou.se/apne2/any/uploads/productions/v1-264565982646400.jpg?gif=1&w=640&h=640&c=c', 39900, '[1+1]국내생산 홈쇼핑 완판! 까리노 IH인덕션 사각팬 프라이팬/웍/냄비'),
     (18, 'https://prs.ohou.se/apne2/any/uploads/productions/v1-266285342609536.jpg?gif=1&w=640&h=640&c=c&webp=1', 29900, '1+1 국내생산 세라믹 IH 프라이팬&냄비 14종'),
     (19, 'https://prs.ohou.se/apne2/any/uploads/productions/v1-254954389991424.jpg?gif=1&w=640&h=640&c=c&webp=1', 118900, '매직핸즈 인덕션 미네랄리아 딜라이트 프라이팬 멀티 6p세트'),
-    (20, 'https://ohou.se/productions/1001042/selling?affect_type=ProductCategoryIndex', 16900, '버터컬러출시! 어스 IH 인덕션 전골냄비 20cm');
+    (20, 'https://image.ohou.se/i/bucketplace-v2-development/uploads/productions/168309141052243626.jpg?gif=1&w=640&h=640&c=c&webp=1', 16900, '버터컬러출시! 어스 IH 인덕션 전골냄비 20cm');
 
 INSERT INTO Orders (order_id, member_id)
 VALUES
