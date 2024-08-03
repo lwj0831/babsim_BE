@@ -169,6 +169,7 @@ public class RecipeService {
                 .nftSaleStatus(recipe.getNft() != null && saleNftRepository.findByNft(recipe.getNft()).isPresent())
                 .nftOwnerId(recipe.getNft() != null ? nftRepository.findByRecipeId(recipeId)
                         .orElseThrow(() -> new EmptyResultDataAccessException("No Nft found with recipeId: " + recipeId, 1)).getOwnerId() : null)
+                .editable(memberId!=null && memberRecipeRepository.existsByMemberIdAndRecipeId(memberId,recipeId))
                 .categoryName(categoryRepository.findById(recipe.getCategory().getId()).orElseThrow().getCategoryName())
                 .build();
     }
@@ -288,7 +289,7 @@ public class RecipeService {
 
         Recipe updatedRecipe = recipeRepository.save(savedRecipe);
 
-        //creator와 recipe연결
+        //creator와 recipe연결(create or forked)
         MemberRecipe memberRecipe = MemberRecipe.builder()
                 .recipe(recipe)
                 .member(memberRepository.findById(creatorId).orElseThrow()).build();//
