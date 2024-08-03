@@ -1,6 +1,7 @@
 package likelion.babsim.domain.review.service;
 
 import likelion.babsim.domain.member.repository.MemberRepository;
+import likelion.babsim.domain.point.service.PointService;
 import likelion.babsim.domain.recipe.repository.RecipeRepository;
 import likelion.babsim.domain.review.RecipeReview;
 import likelion.babsim.domain.review.repository.RecipeReviewRepository;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +23,7 @@ public class RecipeReviewService {
     private final RecipeReviewRepository recipeReviewRepository;
     private final RecipeRepository recipeRepository;
     private final MemberRepository memberRepository;
+    private final PointService pointService;
 
     public Double findRatingByRecipeId(Long recipeId){
         return recipeReviewRepository.findAllByRecipeId(recipeId).stream()
@@ -57,6 +60,7 @@ public class RecipeReviewService {
                 .forkedRecipeId(reviewCreateReqDto.getForkedRecipeId())
                 .build();
         recipeReviewRepository.save(recipeReview);
+        pointService.givePointReward(memberId,"리뷰 작성", BigDecimal.valueOf(500));
         return recipeReview.getId();
     }
 

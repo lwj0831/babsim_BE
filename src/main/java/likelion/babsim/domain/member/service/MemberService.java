@@ -39,7 +39,6 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final MemberAllergyRepository memberAllergyRepository;
     private final AllergyRepository allergyRepository;
-    private final PointRepository pointRepository;
     private final PointService pointService;
     private final KlaytnApiService klaytnApiService;
 
@@ -89,14 +88,7 @@ public class MemberService {
         }
         member.setMemberAllergies(memberAllergies);
 
-        Point point = Point.builder()
-                .pointContent("신규회원")
-                .pointType(PointType.REWARD)
-                .pointPrice(BigDecimal.valueOf(1000))
-                .member(member)
-                .transactionDate(LocalDateTime.now())
-                .build();
-        pointRepository.save(point);
+        pointService.givePointReward(member.getId(),"신규회원",BigDecimal.valueOf(1000));
 
         return MemberResDTO.builder()
                 .id(member.getId())

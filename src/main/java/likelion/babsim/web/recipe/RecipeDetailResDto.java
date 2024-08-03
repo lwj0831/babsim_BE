@@ -29,10 +29,11 @@ public class RecipeDetailResDto {
     private boolean liked;
     private boolean nftCreateStatus;
     private boolean nftSaleStatus;
+    private String nftOwnerId;
     private String categoryName;
 
     @Builder
-    public RecipeDetailResDto(Long id, String creatorId, List<String> recipeImgs, String name, String description, Double rate, Difficulty difficulty, Integer cookingTime, List<String> tags, List<Long> allergies, List<IngredientForm> ingredients, List<ReviewForm> reviews,Long reviewsCount, List<String> recipeDetailImgs, List<String> recipeContents, List<Integer> recipeTimers, boolean liked, boolean nftCreateStatus, boolean nftSaleStatus, String categoryName) {
+    public RecipeDetailResDto(Long id, String creatorId, List<String> recipeImgs, String name, String description, Double rate, Difficulty difficulty, Integer cookingTime, List<String> tags, List<Long> allergies, List<IngredientForm> ingredients, List<ReviewForm> reviews,Long reviewsCount, List<String> recipeDetailImgs, List<String> recipeContents, List<Integer> recipeTimers, boolean liked, boolean nftCreateStatus, boolean nftSaleStatus, String nftOwnerId, String categoryName) {
         this.id = id;
         this.creatorId = creatorId;
         this.recipeImgs = recipeImgs;
@@ -52,6 +53,7 @@ public class RecipeDetailResDto {
         this.liked = liked;
         this.nftCreateStatus = nftCreateStatus;
         this.nftSaleStatus = nftSaleStatus;
+        this.nftOwnerId = nftOwnerId;
         this.categoryName = categoryName;
     }
 }
