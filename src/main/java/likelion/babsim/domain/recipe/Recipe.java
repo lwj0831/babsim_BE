@@ -26,6 +26,7 @@ public class Recipe {
     private String recipeImgs;
     private String recipeName;
     private String recipeDescription;
+    @Column(length = 65535)
     private String nutritionInfo;
     @Enumerated(EnumType.STRING)
     private Difficulty difficulty;
