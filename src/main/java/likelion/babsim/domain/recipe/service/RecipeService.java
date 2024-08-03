@@ -153,6 +153,7 @@ public class RecipeService {
                 .recipeImgs(RecipeImgFormatter.parseImageIdList(recipe.getRecipeImgs()))//
                 .name(recipe.getRecipeName())
                 .description(recipe.getRecipeDescription())
+                .nutritionInfo(recipe.getNutritionInfo())
                 .rate(recipeReviewService.findRatingByRecipeId(recipe.getId()))//
                 .difficulty(recipe.getDifficulty())
                 .cookingTime(recipe.getCookingTime())
@@ -193,8 +194,12 @@ public class RecipeService {
             String timers = dto.getTimers().stream().map(String::valueOf).collect(Collectors.joining(","));
             Category category = categoryRepository.findById(dto.getCategoryId()).orElseThrow();
 
+            //nutritionInfo
+            String nutritionResult = geminiService.getCompletion("When making food using"+dto.getIngredients()+
+                    "please tell me the calories per 100g of the main ingredients and the approximate calories consumed in one serving of that recipe");
+
             // 레시피 업데이트
-            existingRecipe.updateRecipeInfo(recipeImgs, recipeName, description, difficulty, cookingTime, recipeDetailImgs, ingredients, recipeContents, timers, category);
+            existingRecipe.updateRecipeInfo(recipeImgs, recipeName, description, nutritionResult, difficulty, cookingTime, recipeDetailImgs, ingredients, recipeContents, timers, category);
 
             // 태그 업데이트
             List<Tag> tags = dto.getTags().stream()
@@ -244,6 +249,10 @@ public class RecipeService {
     }
 
     private RecipeCreateResDto generateRecipe(RecipeCreateReqDto dto, String originalCreatorId, String creatorId){
+        //nutritionInfo
+        String nutritionResult = geminiService.getCompletion("When making food using"+dto.getIngredients()+
+                "please tell me the calories per 100g of the main ingredients and the approximate calories consumed in one serving of that recipe");
+
         Recipe recipe = Recipe.builder()
                 .creatorId(originalCreatorId) //
                 .recipeImgs(String.join(",", dto.getRecipeImgs()))
@@ -256,6 +265,7 @@ public class RecipeService {
                 .recipeContents(String.join("/",dto.getRecipeContents()))
                 .timers(dto.getTimers().stream().map(String::valueOf).collect(Collectors.joining(",")))
                 .category(categoryRepository.findById(dto.getCategoryId()).orElseThrow())
+                .nutritionInfo(nutritionResult)
                 .build();
         Recipe savedRecipe = recipeRepository.save(recipe);
 
