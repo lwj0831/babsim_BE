@@ -67,7 +67,9 @@ public class NftService {
 
     @Transactional
     public NftApproveResDto approveNft(String memberId, Long recipeId){
-        Nft nft = nftRepository.findByRecipeId(recipeId);
+        Nft nft = nftRepository.findByRecipeId(recipeId)
+                .orElseThrow(() -> new EmptyResultDataAccessException("No Nft found with recipeId: " + recipeId, 1));
+
         Member owner = memberRepository.findById(nft.getOwnerId()).orElseThrow();
         Member to = memberRepository.findById(memberId).orElseThrow();
         String ownerAddress = owner.getNftAccountAddress();
@@ -78,8 +80,8 @@ public class NftService {
             nft.setOwnerId(memberId);
             nftRepository.save(nft);
 
-            terminateNftSale(recipeRepository.findByNft(nft).getId());//saleNft 제거(판매등록해제)
             pointService.makePointTransactions(memberId, nft.getOwnerId(), "토큰 거래", saleNftRepository.findByNft(nft).orElseThrow().getPrice());
+            terminateNftSale(recipeRepository.findByNft(nft).getId());//saleNft 제거(판매등록해제)
             return NftApproveResDto.builder()
                     .ownerName(owner.getName())
                     .toName(to.getName())
@@ -91,7 +93,8 @@ public class NftService {
 
     @Transactional
     public SaleNftRegisterResDto registerNftSale(Long recipeId, BigDecimal price){
-        Nft nft = nftRepository.findByRecipeId(recipeId);
+        Nft nft = nftRepository.findByRecipeId(recipeId)
+                .orElseThrow(() -> new EmptyResultDataAccessException("No Nft found with recipeId: " + recipeId, 1));;
         SaleNft saleNft = SaleNft.builder()
                 .price(price)
                 .saleStartTime(LocalDateTime.now())
@@ -106,7 +109,8 @@ public class NftService {
 
     @Transactional
     public SaleNftTerminateResDto terminateNftSale(Long recipeId) {
-        Nft nft = nftRepository.findByRecipeId(recipeId);
+        Nft nft = nftRepository.findByRecipeId(recipeId)
+                .orElseThrow(() -> new EmptyResultDataAccessException("No Nft found with recipeId: " + recipeId, 1));;
         SaleNft saleNft = saleNftRepository.findByNft(nft).orElseThrow();
         Long saleNftId = saleNft.getId();
 
@@ -126,7 +130,8 @@ public class NftService {
 
         List<SaleNftInfoResDto> result = new ArrayList<>();
         for (SaleNft saleNft : random10SaleNfts) {
-            Nft nft = nftRepository.findBySaleNft(saleNft);
+            Nft nft = nftRepository.findBySaleNft(saleNft)
+                    .orElseThrow(() -> new EmptyResultDataAccessException("No Nft found with SaleNft: " + saleNft, 1));;
             SaleNftInfoResDto saleNftInfoResDto = SaleNftInfoResDto.builder()
                     .nftId(nft.getId())
                     .uri(nft.getUri())

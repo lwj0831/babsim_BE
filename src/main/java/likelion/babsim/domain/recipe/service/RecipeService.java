@@ -62,8 +62,7 @@ public class RecipeService {
     private final SaleNftRepository saleNftRepository;
 
     public List<RecipeInfoResDto> findRecipesByKeyword(String keyword){
-        Pageable pageable = PageRequest.of(0, 50);
-        List<Recipe> recipes = recipeRepository.findAllByRecipeNameContaining(keyword,pageable);
+        List<Recipe> recipes = recipeRepository.findAllByRecipeNameContaining(keyword);
         return recipesToRecipeInfoResDTOList(recipes);
     }
 
@@ -168,7 +167,8 @@ public class RecipeService {
                 .liked(likesService.checkLikesByMemberIdAndRecipeId(memberId, recipeId))//
                 .nftCreateStatus(recipe.getNft() != null)
                 .nftSaleStatus(recipe.getNft() != null && saleNftRepository.findByNft(recipe.getNft()).isPresent())
-                .nftOwnerId(recipe.getNft() != null ? nftRepository.findByRecipeId(recipeId).getOwnerId() : null)
+                .nftOwnerId(recipe.getNft() != null ? nftRepository.findByRecipeId(recipeId)
+                        .orElseThrow(() -> new EmptyResultDataAccessException("No Nft found with recipeId: " + recipeId, 1)).getOwnerId() : null)
                 .categoryName(categoryRepository.findById(recipe.getCategory().getId()).orElseThrow().getCategoryName())
                 .build();
     }
@@ -196,7 +196,7 @@ public class RecipeService {
 
             //nutritionInfo
             String nutritionResult = geminiService.getCompletion("When making food using"+dto.getIngredients()+
-                    "please tell me the calories per 100g of the main ingredients and the approximate calories consumed in one serving of that recipe");
+                    "please tell me the calories per 100g of the main ingredients and the approximate calories consumed in one serving of that recipe using Korean");
 
             // 레시피 업데이트
             existingRecipe.updateRecipeInfo(recipeImgs, recipeName, description, nutritionResult, difficulty, cookingTime, recipeDetailImgs, ingredients, recipeContents, timers, category);
@@ -251,7 +251,7 @@ public class RecipeService {
     private RecipeCreateResDto generateRecipe(RecipeCreateReqDto dto, String originalCreatorId, String creatorId){
         //nutritionInfo
         String nutritionResult = geminiService.getCompletion("When making food using"+dto.getIngredients()+
-                "please tell me the calories per 100g of the main ingredients and the approximate calories consumed in one serving of that recipe");
+                "please tell me the calories per 100g of the main ingredients and the approximate calories consumed in one serving of that recipe using Korean");
 
         Recipe recipe = Recipe.builder()
                 .creatorId(originalCreatorId) //
