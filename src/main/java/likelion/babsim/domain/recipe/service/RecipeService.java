@@ -62,8 +62,7 @@ public class RecipeService {
     private final SaleNftRepository saleNftRepository;
 
     public List<RecipeInfoResDto> findRecipesByKeyword(String keyword){
-        Pageable pageable = PageRequest.of(0, 50);
-        List<Recipe> recipes = recipeRepository.findAllByRecipeNameContaining(keyword,pageable);
+        List<Recipe> recipes = recipeRepository.findAllByRecipeNameContaining(keyword);
         return recipesToRecipeInfoResDTOList(recipes);
     }
 
@@ -153,6 +152,7 @@ public class RecipeService {
                 .recipeImgs(RecipeImgFormatter.parseImageIdList(recipe.getRecipeImgs()))//
                 .name(recipe.getRecipeName())
                 .description(recipe.getRecipeDescription())
+                .nutritionInfo(recipe.getNutritionInfo())
                 .rate(recipeReviewService.findRatingByRecipeId(recipe.getId()))//
                 .difficulty(recipe.getDifficulty())
                 .cookingTime(recipe.getCookingTime())
@@ -167,7 +167,8 @@ public class RecipeService {
                 .liked(likesService.checkLikesByMemberIdAndRecipeId(memberId, recipeId))//
                 .nftCreateStatus(recipe.getNft() != null)
                 .nftSaleStatus(recipe.getNft() != null && saleNftRepository.findByNft(recipe.getNft()).isPresent())
-                .nftOwnerId(recipe.getNft() != null ? nftRepository.findByRecipeId(recipeId).getOwnerId() : null)
+                .nftOwnerId(recipe.getNft() != null ? nftRepository.findByRecipeId(recipeId)
+                        .orElseThrow(() -> new EmptyResultDataAccessException("No Nft found with recipeId: " + recipeId, 1)).getOwnerId() : null)
                 .categoryName(categoryRepository.findById(recipe.getCategory().getId()).orElseThrow().getCategoryName())
                 .build();
     }
@@ -193,8 +194,12 @@ public class RecipeService {
             String timers = dto.getTimers().stream().map(String::valueOf).collect(Collectors.joining(","));
             Category category = categoryRepository.findById(dto.getCategoryId()).orElseThrow();
 
+            //nutritionInfo
+            String nutritionResult = geminiService.getCompletion("When making food using"+dto.getIngredients()+
+                    "please tell me the calories per 100g of the main ingredients and the approximate calories consumed in one serving of that recipe using Korean");
+
             // 레시피 업데이트
-            existingRecipe.updateRecipeInfo(recipeImgs, recipeName, description, difficulty, cookingTime, recipeDetailImgs, ingredients, recipeContents, timers, category);
+            existingRecipe.updateRecipeInfo(recipeImgs, recipeName, description, nutritionResult, difficulty, cookingTime, recipeDetailImgs, ingredients, recipeContents, timers, category);
 
             // 태그 업데이트
             List<Tag> tags = dto.getTags().stream()
@@ -244,6 +249,10 @@ public class RecipeService {
     }
 
     private RecipeCreateResDto generateRecipe(RecipeCreateReqDto dto, String originalCreatorId, String creatorId){
+        //nutritionInfo
+        String nutritionResult = geminiService.getCompletion("When making food using"+dto.getIngredients()+
+                "please tell me the calories per 100g of the main ingredients and the approximate calories consumed in one serving of that recipe using Korean");
+
         Recipe recipe = Recipe.builder()
                 .creatorId(originalCreatorId) //
                 .recipeImgs(String.join(",", dto.getRecipeImgs()))
@@ -256,6 +265,7 @@ public class RecipeService {
                 .recipeContents(String.join("/",dto.getRecipeContents()))
                 .timers(dto.getTimers().stream().map(String::valueOf).collect(Collectors.joining(",")))
                 .category(categoryRepository.findById(dto.getCategoryId()).orElseThrow())
+                .nutritionInfo(nutritionResult)
                 .build();
         Recipe savedRecipe = recipeRepository.save(recipe);
 

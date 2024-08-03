@@ -26,6 +26,8 @@ public class Recipe {
     private String recipeImgs;
     private String recipeName;
     private String recipeDescription;
+    @Column(length = 65535)
+    private String nutritionInfo;
     @Enumerated(EnumType.STRING)
     private Difficulty difficulty;
     private Integer cookingTime;
@@ -70,12 +72,13 @@ public class Recipe {
     private Category category;
 
     @Builder
-    public Recipe(Long id, String creatorId, String recipeImgs, String recipeName, String recipeDescription, Difficulty difficulty, Integer cookingTime, String recipeDetailImgs, String ingredients, String recipeContents, String timers, List<MemberRecipe> memberRecipes, List<Tag> tags,Category category, List<RecipeReview> reviews, List<Likes> likes, List<RecipeAllergy> recipeAllergies, Nft nft, CookedRecord cookedRecord) {
+    public Recipe(Long id, String creatorId, String recipeImgs, String recipeName, String recipeDescription, String nutritionInfo, Difficulty difficulty, Integer cookingTime, String recipeDetailImgs, String ingredients, String recipeContents, String timers, List<MemberRecipe> memberRecipes, List<Tag> tags,Category category, List<RecipeReview> reviews, List<Likes> likes, List<RecipeAllergy> recipeAllergies, Nft nft, CookedRecord cookedRecord) {
         this.id = id;
         this.creatorId = creatorId;
         this.recipeImgs = recipeImgs;
         this.recipeName = recipeName;
         this.recipeDescription = recipeDescription;
+        this.nutritionInfo = nutritionInfo;
         this.difficulty = difficulty;
         this.cookingTime = cookingTime;
         this.recipeDetailImgs = recipeDetailImgs;
@@ -92,10 +95,11 @@ public class Recipe {
         this.cookedRecord = cookedRecord;
     }
 
-    public void updateRecipeInfo(String recipeImgs, String recipeName, String recipeDescription, Difficulty difficulty, Integer cookingTime, String recipeDetailImgs, String ingredients, String recipeContents, String timers, Category category) {
+    public void updateRecipeInfo(String recipeImgs, String recipeName, String recipeDescription, String nutritionInfo, Difficulty difficulty, Integer cookingTime, String recipeDetailImgs, String ingredients, String recipeContents, String timers, Category category) {
         this.recipeImgs = recipeImgs;
         this.recipeName = recipeName;
         this.recipeDescription = recipeDescription;
+        this.nutritionInfo = nutritionInfo;
         this.difficulty = difficulty;
         this.cookingTime = cookingTime;
         this.recipeDetailImgs = recipeDetailImgs;

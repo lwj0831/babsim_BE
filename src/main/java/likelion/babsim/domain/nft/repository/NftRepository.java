@@ -11,6 +11,6 @@ import java.util.Optional;
 @Repository
 public interface NftRepository extends JpaRepository<Nft,Long> {
     List<Nft> findAllByOwnerId(String ownerId);
-    Nft findBySaleNft(SaleNft saleNft);
-    Nft findByRecipeId(Long recipeId);
+    Optional<Nft> findBySaleNft(SaleNft saleNft);
+    Optional<Nft> findByRecipeId(Long recipeId);
 }

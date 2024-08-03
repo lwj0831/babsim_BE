@@ -15,12 +15,12 @@ import java.util.List;
 public class NftController {
     private final NftService nftService;
 
-    @PostMapping
+    @PostMapping("/create")
     public NftCreateResDto createNft(@RequestParam Long recipeId, @RequestParam String memberId){
         return nftService.createNft(recipeId,memberId);
     }
-    @PostMapping("/{nftId}")
-    public NftApproveResDto approveNft(@RequestParam String memberId, @PathVariable Long recipeId){
+    @PostMapping("/approve")
+    public NftApproveResDto approveNft(@RequestParam String memberId, @RequestParam Long recipeId){
         return nftService.approveNft(memberId,recipeId);
     }
     @PostMapping("/saleNft")

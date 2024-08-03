@@ -16,7 +16,7 @@ import java.util.Optional;
 
 @Repository
 public interface RecipeRepository extends JpaRepository<Recipe,Long> {
-    List<Recipe> findAllByRecipeNameContaining(String keyword, Pageable pageable);
+    List<Recipe> findAllByRecipeNameContaining(String keyword);
     @Query("SELECT r FROM Recipe r WHERE r.id NOT IN (SELECT ra.recipe.id FROM RecipeAllergy ra WHERE ra.allergy.id IN :allergyIds)")
     List<Recipe> findRecipesExcludingAllergies(@Param("allergyIds") List<Long> allergyIds, Pageable pageable);
     @Query("SELECT r FROM Recipe r WHERE r.creatorId <> :memberId AND EXISTS (SELECT mr FROM MemberRecipe mr WHERE mr.recipe = r AND mr.member.id = :memberId)")
