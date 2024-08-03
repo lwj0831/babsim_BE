@@ -66,28 +66,25 @@ public class NftService {
     }
 
     @Transactional
-    public NftApproveResDto approveNft(String memberId, Long nftId){
-        Optional<Nft> findNft = nftRepository.findById(nftId);
-        if(findNft.isPresent()) {
-            Nft nft = findNft.get();
-            Member owner = memberRepository.findById(nft.getOwnerId()).orElseThrow();
-            Member to = memberRepository.findById(memberId).orElseThrow();
-            String ownerAddress = owner.getNftAccountAddress();
-            String toAddress = to.getNftAccountAddress();
-            String tokenId = nft.getTokenId();
-            TokenApproveResDto tokenApproveResDto = klaytnApiService.approveToken(ownerAddress, toAddress, tokenId);
-            if(tokenApproveResDto.getStatus().equals("Submitted")){
-                nft.setOwnerId(memberId);
-                nftRepository.save(nft);
+    public NftApproveResDto approveNft(String memberId, Long recipeId){
+        Nft nft = nftRepository.findByRecipeId(recipeId);
+        Member owner = memberRepository.findById(nft.getOwnerId()).orElseThrow();
+        Member to = memberRepository.findById(memberId).orElseThrow();
+        String ownerAddress = owner.getNftAccountAddress();
+        String toAddress = to.getNftAccountAddress();
+        String tokenId = nft.getTokenId();
+        TokenApproveResDto tokenApproveResDto = klaytnApiService.approveToken(ownerAddress, toAddress, tokenId);
+        if(tokenApproveResDto.getStatus().equals("Submitted")) {
+            nft.setOwnerId(memberId);
+            nftRepository.save(nft);
 
-                terminateNftSale(recipeRepository.findByNft(nft).getId());//saleNft 제거(판매등록해제)
-                pointService.makePointTransactions(memberId,nft.getOwnerId(),"토큰 거래",saleNftRepository.findByNft(nft).orElseThrow().getPrice());
-                return NftApproveResDto.builder()
-                        .ownerName(owner.getName())
-                        .toName(to.getName())
-                        .tokenId(tokenId)
-                        .build();
-            }
+            terminateNftSale(recipeRepository.findByNft(nft).getId());//saleNft 제거(판매등록해제)
+            pointService.makePointTransactions(memberId, nft.getOwnerId(), "토큰 거래", saleNftRepository.findByNft(nft).orElseThrow().getPrice());
+            return NftApproveResDto.builder()
+                    .ownerName(owner.getName())
+                    .toName(to.getName())
+                    .tokenId(tokenId)
+                    .build();
         }
         throw new EmptyResultDataAccessException(1);
     }

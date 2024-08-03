@@ -39,7 +39,6 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final MemberAllergyRepository memberAllergyRepository;
     private final AllergyRepository allergyRepository;
-    private final PointRepository pointRepository;
     private final PointService pointService;
     private final KlaytnApiService klaytnApiService;
 

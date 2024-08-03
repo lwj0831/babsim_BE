@@ -20,8 +20,8 @@ public class NftController {
         return nftService.createNft(recipeId,memberId);
     }
     @PostMapping("/{nftId}")
-    public NftApproveResDto approveNft(@RequestParam String memberId, @PathVariable Long nftId){
-        return nftService.approveNft(memberId,nftId);
+    public NftApproveResDto approveNft(@RequestParam String memberId, @PathVariable Long recipeId){
+        return nftService.approveNft(memberId,recipeId);
     }
     @PostMapping("/saleNft")
     public SaleNftRegisterResDto registerSaleNft(@RequestParam Long recipeId, @RequestParam BigDecimal price){

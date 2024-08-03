@@ -167,6 +167,7 @@ public class RecipeService {
                 .liked(likesService.checkLikesByMemberIdAndRecipeId(memberId, recipeId))//
                 .nftCreateStatus(recipe.getNft() != null)
                 .nftSaleStatus(recipe.getNft() != null && saleNftRepository.findByNft(recipe.getNft()).isPresent())
+                .nftOwnerId(recipe.getNft() != null ? nftRepository.findByRecipeId(recipeId).getOwnerId() : null)
                 .categoryName(categoryRepository.findById(recipe.getCategory().getId()).orElseThrow().getCategoryName())
                 .build();
     }
