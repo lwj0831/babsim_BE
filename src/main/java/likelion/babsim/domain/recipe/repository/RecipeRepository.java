@@ -20,8 +20,7 @@ public interface RecipeRepository extends JpaRepository<Recipe,Long> {
     List<Recipe> findRecipesExcludingAllergies(@Param("allergyIds") List<Long> allergyIds, Pageable pageable);
     @Query("SELECT r FROM Recipe r WHERE r.creatorId <> :memberId AND EXISTS (SELECT mr FROM MemberRecipe mr WHERE mr.recipe = r AND mr.member.id = :memberId)")
     List<Recipe> findByCreatorIdNotAndMemberId(@Param("memberId") String memberId);
-    @Query("SELECT r FROM Recipe r WHERE r.creatorId <> :memberId AND r.id = :recipeId AND EXISTS (SELECT mr FROM MemberRecipe mr WHERE mr.recipe = r AND mr.member.id = :memberId)")
-    List<Recipe> findByCreatorIdNotAndMemberIdAndRecipeId(@Param("memberId") String memberId, @Param("recipeId") Long recipeId);
+    List<Recipe> findAllByCreatorIdAndForkedRecipeId(String memberId,Long forkedRecipeId);
 
     List<Recipe> findAllByCreatorId(String creatorId);
     Optional<Recipe> findByNft(Nft nft);
