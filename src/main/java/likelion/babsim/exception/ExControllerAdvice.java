@@ -1,5 +1,6 @@
 package likelion.babsim.exception;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -18,10 +19,10 @@ public class ExControllerAdvice {
         return new ResponseEntity<>(errorResult, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(EmptyResultDataAccessException.class)
-    public ResponseEntity<ErrorResult> noSuchElementExHandle(EmptyResultDataAccessException e){
-        log.info("EmptyResultDataAccessException occurs! : {}",e);
-        ErrorResult errorResult = new ErrorResult("EmptyResultDataAccessException-EX",e.getMessage());
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorResult> noSuchElementExHandle(EntityNotFoundException e){
+        log.info("EntityNotFoundException occurs! : {}",e);
+        ErrorResult errorResult = new ErrorResult("EntityNotFoundException-EX",e.getMessage());
         return new ResponseEntity<>(errorResult, HttpStatus.BAD_REQUEST);
     }
 

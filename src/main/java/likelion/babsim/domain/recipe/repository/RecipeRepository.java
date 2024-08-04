@@ -1,6 +1,5 @@
 package likelion.babsim.domain.recipe.repository;
 
-import likelion.babsim.domain.member.Member;
 import likelion.babsim.domain.nft.Nft;
 import likelion.babsim.domain.recipe.Recipe;
 import org.springframework.data.domain.Page;
@@ -25,7 +24,7 @@ public interface RecipeRepository extends JpaRepository<Recipe,Long> {
     List<Recipe> findByCreatorIdNotAndMemberIdAndRecipeId(@Param("memberId") String memberId, @Param("recipeId") Long recipeId);
 
     List<Recipe> findAllByCreatorId(String creatorId);
-    Recipe findByNft(Nft nft);
+    Optional<Recipe> findByNft(Nft nft);
     List<Recipe> findAllByCategoryId(Long categoryId);
 
     default List<Recipe> findRandom50Recipes() {

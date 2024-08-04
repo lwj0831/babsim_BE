@@ -1,5 +1,6 @@
 package likelion.babsim.domain.nft.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import likelion.babsim.domain.member.Member;
 import likelion.babsim.domain.member.repository.MemberRepository;
 import likelion.babsim.domain.nft.Nft;
@@ -76,7 +77,7 @@ public class NftService {
     @Transactional
     public NftApproveResDto approveNft(String memberId, Long recipeId){
         Nft nft = nftRepository.findByRecipeId(recipeId)
-                .orElseThrow(() -> new EmptyResultDataAccessException("No Nft found with recipeId: " + recipeId, 1));
+                .orElseThrow(() -> new EntityNotFoundException("Nft not found with recipeId " + recipeId));
 
         Member owner = memberRepository.findById(nft.getOwnerId()).orElseThrow();
         Member to = memberRepository.findById(memberId).orElseThrow();
@@ -89,7 +90,8 @@ public class NftService {
             nftRepository.save(nft);
 
             pointService.makePointTransactions(memberId, nft.getOwnerId(), "토큰 거래", saleNftRepository.findByNft(nft).orElseThrow().getPrice());
-            terminateNftSale(recipeRepository.findByNft(nft).getId());//saleNft 제거(판매등록해제)
+            terminateNftSale(recipeRepository.findByNft(nft)
+                    .orElseThrow(() -> new EntityNotFoundException("Recipe not found with Nft " + nft)).getId());//saleNft 제거(판매등록해제)
             return NftApproveResDto.builder()
                     .ownerName(owner.getName())
                     .toName(to.getName())
@@ -102,7 +104,7 @@ public class NftService {
     @Transactional
     public SaleNftRegisterResDto registerNftSale(Long recipeId, BigDecimal price){
         Nft nft = nftRepository.findByRecipeId(recipeId)
-                .orElseThrow(() -> new EmptyResultDataAccessException("No Nft found with recipeId: " + recipeId, 1));;
+                .orElseThrow(() -> new EntityNotFoundException("Nft not found with recipeId " + recipeId));
         SaleNft saleNft = SaleNft.builder()
                 .price(price)
                 .saleStartTime(LocalDateTime.now())
@@ -118,7 +120,7 @@ public class NftService {
     @Transactional
     public SaleNftTerminateResDto terminateNftSale(Long recipeId) {
         Nft nft = nftRepository.findByRecipeId(recipeId)
-                .orElseThrow(() -> new EmptyResultDataAccessException("No Nft found with recipeId: " + recipeId, 1));;
+                .orElseThrow(() -> new EntityNotFoundException("Nft not found with recipeId " + recipeId));
         SaleNft saleNft = saleNftRepository.findByNft(nft).orElseThrow();
         Long saleNftId = saleNft.getId();
 
@@ -139,13 +141,15 @@ public class NftService {
         List<SaleNftInfoResDto> result = new ArrayList<>();
         for (SaleNft saleNft : random10SaleNfts) {
             Nft nft = nftRepository.findBySaleNft(saleNft)
-                    .orElseThrow(() -> new EmptyResultDataAccessException("No Nft found with SaleNft: " + saleNft, 1));;
+                    .orElseThrow(() -> new EntityNotFoundException("Nft not found with saleNft " + saleNft));
             SaleNftInfoResDto saleNftInfoResDto = SaleNftInfoResDto.builder()
                     .nftId(nft.getId())
                     .uri(nft.getUri())
                     .price(saleNftRepository.findByNft(nft).orElseThrow().getPrice())
-                    .recipeId(recipeRepository.findByNft(nft).getId())
-                    .recipeName(recipeRepository.findByNft(nft).getRecipeName())
+                    .recipeId(recipeRepository.findByNft(nft)
+                            .orElseThrow(() -> new EntityNotFoundException("Recipe not found with Nft " + nft)).getId())
+                    .recipeName(recipeRepository.findByNft(nft)
+                            .orElseThrow(() -> new EntityNotFoundException("Recipe not found with Nft " + nft)).getRecipeName())
                     .build();
             result.add(saleNftInfoResDto);
         }
@@ -160,7 +164,7 @@ public class NftService {
     public List<NftInfoResDto> nftsToNftInfoResDtoList(List<Nft> nfts){
         return nfts.stream().map(nft -> {
             Optional<SaleNft> findSaleNft = saleNftRepository.findByNft(nft);
-            Recipe recipe = recipeRepository.findByNft(nft);
+            Recipe recipe = recipeRepository.findByNft(nft).orElseThrow(() -> new EntityNotFoundException("Recipe not found with Nft " + nft));
 
             return NftInfoResDto.builder()
                     .nftId(nft.getId())

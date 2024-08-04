@@ -9,6 +9,6 @@ import java.util.Optional;
 
 @Repository
 public interface CookedRecordRepository extends JpaRepository<CookedRecord,Long> {
-    List<CookedRecord> findTop10ByOrderByCookedCountDesc();
+    List<CookedRecord> findTop12ByOrderByCookedCountDesc();
     Optional<CookedRecord> findByRecipeId(Long recipeId);
 }
