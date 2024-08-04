@@ -46,6 +46,7 @@ public class NftService {
         if(memberId.equals(creatorId)){
             String to = memberRepository.findById(creatorId).orElseThrow().getNftAccountAddress();
             String tokenId = "0x"+Long.toHexString(recipeId);
+            /*String tokenId = "0x"+recipeId;*/
             String uri = extractFirstId(recipe.getRecipeImgs()); //URI로 recipeImgs의 첫번째 id제공
             TokenCreateResDto tokenCreateResDto = klaytnApiService.createToken(to, tokenId, uri);
             System.out.println(tokenCreateResDto);
@@ -84,12 +85,14 @@ public class NftService {
         String ownerAddress = owner.getNftAccountAddress();
         String toAddress = to.getNftAccountAddress();
         String tokenId = nft.getTokenId();
+
         TokenApproveResDto tokenApproveResDto = klaytnApiService.approveToken(ownerAddress, toAddress, tokenId);
         if(tokenApproveResDto.getStatus().equals("Submitted")) {
             nft.setOwnerId(memberId);
             nftRepository.save(nft);
 
-            pointService.makePointTransactions(memberId, nft.getOwnerId(), "토큰 거래", saleNftRepository.findByNft(nft).orElseThrow().getPrice());
+            pointService.makePointTransactions(memberId, nft.getOwnerId(), "토큰 거래", saleNftRepository.findByNft(nft)
+                    .orElseThrow(() -> new EntityNotFoundException("SaleNft not found with Nft " + nft)).getPrice());
             terminateNftSale(recipeRepository.findByNft(nft)
                     .orElseThrow(() -> new EntityNotFoundException("Recipe not found with Nft " + nft)).getId());//saleNft 제거(판매등록해제)
             return NftApproveResDto.builder()

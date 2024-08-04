@@ -286,7 +286,6 @@ public class RecipeService {
         for (RecipeCreateReqDto.IngredientDTO ingredient : ingredients) {
             result.append(ingredient.getName()).append(":").append(ingredient.getAmount()).append(",");
         }
-        System.out.println(result);
         return result.toString();
     }
 
