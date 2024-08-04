@@ -43,7 +43,7 @@ public class RecipeReviewService {
                     .comment(recipeReview.getComment())
                     .rating(recipeReview.getRating())
                     .registerDate(recipeReview.getRegisterDate())
-                    .forkedRecipeId(recipeReview.getForkedRecipeId())
+                    .forkRecipeId(recipeReview.getForkedRecipeId())
                     .build();
             result.add(reviewForm);
         }

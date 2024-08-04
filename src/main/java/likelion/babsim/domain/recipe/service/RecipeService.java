@@ -90,8 +90,8 @@ public class RecipeService {
         return recipesToRecipeInfoResDTOList(recipes);
     }
 
-    public List<RecipeInfoResDto> findSpecificForkedRecipesByMemberIdAndRecipeId(String memberId, Long recipeId){
-        List<Recipe> recipes = recipeRepository.findByCreatorIdNotAndMemberIdAndRecipeId(memberId,recipeId);
+    public List<RecipeInfoResDto> findSpecificForkedRecipesByMemberIdAndForkedRecipeId(String memberId, Long forkedRecipeId){
+        List<Recipe> recipes = recipeRepository.findAllByCreatorIdAndForkedRecipeId(memberId, forkedRecipeId);
         return recipesToRecipeInfoResDTOList(recipes);
     }
 
@@ -175,7 +175,7 @@ public class RecipeService {
 
     @Transactional
     public RecipeCreateResDto createRecipe(RecipeCreateReqDto dto, String creatorId) {
-        return generateRecipe(dto,creatorId,creatorId);
+        return generateRecipe(dto,creatorId,creatorId,null);
     }
 
     @Transactional
@@ -220,10 +220,10 @@ public class RecipeService {
     @Transactional
     public RecipeCreateResDto forkRecipe(RecipeCreateReqDto dto, String creatorId, Long forkedRecipeId) {
         String originalCreatorId = recipeRepository.findById(forkedRecipeId).orElseThrow().getCreatorId();
-        return generateRecipe(dto,originalCreatorId,creatorId);
+        return generateRecipe(dto,originalCreatorId,creatorId,forkedRecipeId);
     }
 
-    private RecipeCreateResDto generateRecipe(RecipeCreateReqDto dto, String originalCreatorId, String creatorId){
+    private RecipeCreateResDto generateRecipe(RecipeCreateReqDto dto, String originalCreatorId, String creatorId, Long forkedRecipeId){
         Recipe recipe = Recipe.builder()
                 .creatorId(originalCreatorId) //
                 .recipeImgs(String.join(",", dto.getRecipeImgs()))
@@ -235,6 +235,7 @@ public class RecipeService {
                 .ingredients(String.join(",",dto.getIngredients().stream().map(i->i.getName()+" "+i.getAmount()).toList()))
                 .recipeContents(String.join("/",dto.getRecipeContents()))
                 .timers(dto.getTimers().stream().map(String::valueOf).collect(Collectors.joining(",")))
+                .forkedRecipeId(forkedRecipeId)
                 .category(categoryRepository.findById(dto.getCategoryId()).orElseThrow())
                 .nutritionInfo(getNutritionResult(dto))
                 .build();
