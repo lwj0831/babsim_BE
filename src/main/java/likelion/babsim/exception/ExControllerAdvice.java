@@ -2,12 +2,16 @@ package likelion.babsim.exception;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.NoSuchElementException;
+
 @Slf4j
+@Order(1)
 @RestControllerAdvice
 public class ExControllerAdvice {
 
@@ -43,6 +47,20 @@ public class ExControllerAdvice {
     public ResponseEntity<ErrorResult> ApproveTokenExHandle(ApproveTokenException e){
         log.info("ApproveTokenException occurs! : {}",e);
         ErrorResult errorResult = new ErrorResult("ApproveToken-EX",e.getMessage());
+        return new ResponseEntity<>(errorResult, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(GeminiResponseErrorException.class)
+    public ResponseEntity<ErrorResult> GeminiResponseErrorExHandle(GeminiResponseErrorException e){
+        log.info("GeminiResponseErrorException occurs! : {}",e);
+        ErrorResult errorResult = new ErrorResult("GeminiResponseError-EX",e.getMessage());
+        return new ResponseEntity<>(errorResult, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<ErrorResult> NoSuchElementExHandle(NoSuchElementException e){
+        log.info("NoSuchElementException occurs! : {}",e);
+        ErrorResult errorResult = new ErrorResult("NoSuchElement-EX",e.getMessage());
         return new ResponseEntity<>(errorResult, HttpStatus.BAD_REQUEST);
     }
 
