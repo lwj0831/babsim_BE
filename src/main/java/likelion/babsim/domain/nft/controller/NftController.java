@@ -40,5 +40,9 @@ public class NftController {
         return nftService.findOwnNft(memberId);
     }
 
+    @GetMapping("/transactionBefore")
+    public NftTransactionBeforeDto findNftTransactionBeforeInfo(@RequestParam Long recipeId, @RequestParam String memberId){
+        return nftService.findNftTransactionBeforeInfo(recipeId,memberId);
+    }
 
 }
