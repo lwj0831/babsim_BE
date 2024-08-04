@@ -15,17 +15,17 @@ public class ReviewForm {
     private Integer rating;
     private String comment;
     private LocalDateTime registerDate;
-    private Long forkedRecipeId;
+    private Long forkRecipeId;
 
     @Builder
-    public ReviewForm(String memberId, String memberName, String memberImg, Integer rating, String comment, LocalDateTime registerDate, Long forkedRecipeId) {
+    public ReviewForm(String memberId, String memberName, String memberImg, Integer rating, String comment, LocalDateTime registerDate, Long forkRecipeId) {
         this.memberId = memberId;
         this.memberName = memberName;
         this.memberImg = memberImg;
         this.rating = rating;
         this.comment = comment;
         this.registerDate = registerDate;
-        this.forkedRecipeId = forkedRecipeId;
+        this.forkRecipeId = forkRecipeId;
     }
 
 }
