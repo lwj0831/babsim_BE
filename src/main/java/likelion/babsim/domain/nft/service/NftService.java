@@ -187,7 +187,7 @@ public class NftService {
         return NftTransactionBeforeDto.builder()
                 .nftPrice(nftPrice)
                 .point(point)
-                .available(nftPrice.compareTo(point)<0).build();
+                .available(nftPrice.compareTo(point)<=0).build();
 
     }
 }
