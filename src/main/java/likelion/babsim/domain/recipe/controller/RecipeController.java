@@ -24,8 +24,8 @@ public class RecipeController {
     }
 
     @GetMapping("/week")
-    public List<RecipeInfoResDto> getTop10RecipesByCookedCount(){
-        return recipeService.findTop10RecipesByCookedCount();
+    public List<RecipeInfoResDto> getWeeklyBestRecipesByCookedCount(){
+        return recipeService.findWeeklyBestRecipesByCookedCount();
     }
 
     @GetMapping("/recommend")

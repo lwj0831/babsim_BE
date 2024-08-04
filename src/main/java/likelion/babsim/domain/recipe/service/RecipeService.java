@@ -67,7 +67,7 @@ public class RecipeService {
         return recipesToRecipeInfoResDTOList(recipes);
     }
 
-    public List<RecipeInfoResDto> findTop10RecipesByCookedCount(){
+    public List<RecipeInfoResDto> findWeeklyBestRecipesByCookedCount(){
         List<Recipe> recipes = cookedRecordService.findTop10CookedRecords().stream()
                 .map(CookedRecord::getRecipe)
                 .toList();
@@ -107,7 +107,8 @@ public class RecipeService {
         List<Nft> nfts = nftRepository.findAllByOwnerId(memberId);
         List<Recipe> recipes = new ArrayList<>();
         for (Nft nft : nfts) {
-            Recipe findRecipe = recipeRepository.findByNft(nft);
+            Recipe findRecipe = recipeRepository.findByNft(nft)
+                    .orElseThrow(()->new EntityNotFoundException("Recipe is not found by Nft "+nft));
             recipes.add(findRecipe);
         }
         return recipesToRecipeInfoResDTOList(recipes);
@@ -195,51 +196,27 @@ public class RecipeService {
             String recipeContents = String.join("/", dto.getRecipeContents());
             String timers = dto.getTimers().stream().map(String::valueOf).collect(Collectors.joining(","));
             Category category = categoryRepository.findById(dto.getCategoryId()).orElseThrow();
-
             //nutritionInfo
             String nutritionResult = geminiService.getCompletion("When making food using"+dto.getIngredients()+
                     "please tell me the calories per 100g of the main ingredients and the approximate calories consumed in one serving of that recipe using Korean");
-
-            // 레시피 업데이트
+            //recipe update
             existingRecipe.updateRecipeInfo(recipeImgs, recipeName, description, nutritionResult, difficulty, cookingTime, recipeDetailImgs, ingredients, recipeContents, timers, category);
 
-            // 태그 업데이트
-            List<Tag> tags = dto.getTags().stream()
-                    .map(tagStr -> new Tag(existingRecipe, tagStr))
-                    .collect(Collectors.toList());
+
+            //tag update
             tagRepository.deleteByRecipe(existingRecipe); // 기존 태그 삭제
-            tagRepository.saveAll(tags); // 새로운 태그 저장
+            List<Tag> tags = registerTagInfo(dto, existingRecipe);
             existingRecipe.updateTags(tags);
 
-            // 알레르기 정보 업데이트
-            String allergyResult = geminiService.getCompletion("In recipe there are ingredients(" + dto.getIngredients() +
-                    ")is used and there is official allergyList(" + Arrays.toString(AllergyType.values()) +
-                    "), choose all allergies that can be caused by eating those ingredients using English");
 
-            List<RecipeAllergy> recipeAllergies = Arrays.stream(AllergyType.values())
-                    .filter(allergyType -> allergyResult.contains(allergyType.toString()))
-                    .map(allergyType -> new RecipeAllergy(existingRecipe, allergyService.findAllergyByAllergyName(allergyType.getName())))
-                    .collect(Collectors.toList());
+            //allergyInfo update
             recipeAllergyRepository.deleteByRecipe(existingRecipe); // 기존 알레르기 정보 삭제
-            recipeAllergyRepository.saveAll(recipeAllergies); // 새로운 알레르기 정보 저장
+            List<RecipeAllergy> recipeAllergies = registerRecipeAllergies(dto, existingRecipe);
             existingRecipe.updateAllergies(recipeAllergies);
 
             Recipe updatedRecipe = recipeRepository.save(existingRecipe);
 
-            return RecipeCreateResDto.builder()
-                    .recipeImgs(Arrays.asList(updatedRecipe.getRecipeImgs().split(",")))
-                    .name(updatedRecipe.getRecipeName())
-                    .description(updatedRecipe.getRecipeDescription())
-                    .difficulty(updatedRecipe.getDifficulty())
-                    .cookingTime(updatedRecipe.getCookingTime())
-                    .categoryName(updatedRecipe.getCategory().getCategoryName())
-                    .tags(tags.stream().map(Tag::getTagName).collect(Collectors.toList()))
-                    .ingredients(ingredientFormatter.parseIngredientFormList(updatedRecipe.getIngredients()))
-                    .recipeContents(Arrays.asList(updatedRecipe.getRecipeContents().split("/")))
-                    .recipeDetailImgs(Arrays.asList(updatedRecipe.getRecipeDetailImgs().split(",")))
-                    .timers(Arrays.stream(updatedRecipe.getTimers().split(",")).map(Integer::parseInt).collect(Collectors.toList()))
-                    .allergyList(recipeAllergies.stream().map(ra -> ra.getAllergy().getAllergyName()).collect(Collectors.toList()))
-                    .build();
+            return getRecipeCreateResDto(tags, recipeAllergies, updatedRecipe);
         }
         else throw new EmptyResultDataAccessException(1);
     }
@@ -271,22 +248,11 @@ public class RecipeService {
                 .build();
         Recipe savedRecipe = recipeRepository.save(recipe);
 
-        //tags
-        List<Tag> tags = dto.getTags().stream()
-                .map(tagStr -> new Tag(savedRecipe, tagStr))
-                .collect(Collectors.toList());
-        tagRepository.saveAll(tags); // 새로운 태그 저장
+        //tag register
+        List<Tag> tags = registerTagInfo(dto, savedRecipe);
 
-        //recipeAllergy
-        String allergyResult = geminiService.getCompletion("In recipe there are ingredients(" + dto.getIngredients() +
-                ")is used and there is official allergyList(" + Arrays.toString(AllergyType.values()) +
-                "), choose all allergies that can be caused by eating those ingredients using English");
-
-        List<RecipeAllergy> recipeAllergies = Arrays.stream(AllergyType.values())
-                .filter(allergyType -> allergyResult.contains(allergyType.toString()))
-                .map(allergyType -> new RecipeAllergy(savedRecipe, allergyService.findAllergyByAllergyName(allergyType.getName())))
-                .collect(Collectors.toList());
-        recipeAllergyRepository.saveAll(recipeAllergies); // 새로운 알레르기 정보 저장
+        //recipeAllergy register
+        List<RecipeAllergy> recipeAllergies = registerRecipeAllergies(dto, savedRecipe);
 
         Recipe updatedRecipe = recipeRepository.save(savedRecipe);
 
@@ -314,6 +280,31 @@ public class RecipeService {
             }
         }
 
+        return getRecipeCreateResDto(tags, recipeAllergies, updatedRecipe);
+    }
+
+    private List<Tag> registerTagInfo(RecipeCreateReqDto dto, Recipe existingRecipe) {
+        List<Tag> tags = dto.getTags().stream()
+                .map(tagStr -> new Tag(existingRecipe, tagStr))
+                .collect(Collectors.toList());
+        tagRepository.saveAll(tags); // 새로운 태그 저장
+        return tags;
+    }
+
+    private List<RecipeAllergy> registerRecipeAllergies(RecipeCreateReqDto dto, Recipe savedRecipe) {
+        String allergyResult = geminiService.getCompletion("In recipe there are ingredients(" + dto.getIngredients() +
+                ")is used and there is official allergyList(" + Arrays.toString(AllergyType.values()) +
+                "), choose all allergies that can be caused by eating those ingredients using English");
+
+        List<RecipeAllergy> recipeAllergies = Arrays.stream(AllergyType.values())
+                .filter(allergyType -> allergyResult.contains(allergyType.toString()))
+                .map(allergyType -> new RecipeAllergy(savedRecipe, allergyService.findAllergyByAllergyName(allergyType.getName())))
+                .collect(Collectors.toList());
+        recipeAllergyRepository.saveAll(recipeAllergies); // 새로운 알레르기 정보 저장
+        return recipeAllergies;
+    }
+
+    private RecipeCreateResDto getRecipeCreateResDto(List<Tag> tags, List<RecipeAllergy> recipeAllergies, Recipe updatedRecipe) {
         return RecipeCreateResDto.builder()
                 .recipeImgs(Arrays.asList(updatedRecipe.getRecipeImgs().split(",")))
                 .name(updatedRecipe.getRecipeName())

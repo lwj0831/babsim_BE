@@ -21,7 +21,7 @@ public class CookedRecordService {
     private final RecipeRepository recipeRepository; //recipe 의존성 순환 참조 발생
 
     public List<CookedRecord> findTop10CookedRecords(){
-        return cookedRecordRepository.findTop10ByOrderByCookedCountDesc();
+        return cookedRecordRepository.findTop12ByOrderByCookedCountDesc();
     }
     @Transactional
     public CookedRecordResDto updateCookedRecord(Long recipeId){
