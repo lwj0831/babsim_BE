@@ -38,6 +38,7 @@ public class Recipe {
     @Column(length = 65535)
     private String recipeContents;
     private String timers;
+    private Long forkedRecipeId;
 
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
@@ -72,7 +73,7 @@ public class Recipe {
     private Category category;
 
     @Builder
-    public Recipe(Long id, String creatorId, String recipeImgs, String recipeName, String recipeDescription, String nutritionInfo, Difficulty difficulty, Integer cookingTime, String recipeDetailImgs, String ingredients, String recipeContents, String timers, List<MemberRecipe> memberRecipes, List<Tag> tags,Category category, List<RecipeReview> reviews, List<Likes> likes, List<RecipeAllergy> recipeAllergies, Nft nft, CookedRecord cookedRecord) {
+    public Recipe(Long id, String creatorId, String recipeImgs, String recipeName, String recipeDescription, String nutritionInfo, Difficulty difficulty, Integer cookingTime, String recipeDetailImgs, String ingredients, String recipeContents, String timers,Long forkedRecipeId, List<MemberRecipe> memberRecipes, List<Tag> tags,Category category, List<RecipeReview> reviews, List<Likes> likes, List<RecipeAllergy> recipeAllergies, Nft nft, CookedRecord cookedRecord) {
         this.id = id;
         this.creatorId = creatorId;
         this.recipeImgs = recipeImgs;
@@ -85,6 +86,7 @@ public class Recipe {
         this.ingredients = ingredients;
         this.recipeContents = recipeContents;
         this.timers = timers;
+        this.forkedRecipeId = forkedRecipeId;
         this.memberRecipes = memberRecipes;
         this.tags = tags;
         this.category = category;
