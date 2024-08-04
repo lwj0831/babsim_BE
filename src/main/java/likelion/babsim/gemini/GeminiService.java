@@ -1,5 +1,6 @@
 package likelion.babsim.gemini;
 
+import likelion.babsim.exception.GeminiResponseErrorException;
 import likelion.babsim.web.gemini.GeminiRequest;
 import likelion.babsim.web.gemini.GeminiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,6 @@ public class GeminiService {
                         .stream()
                         .findFirst()
                         .map(GeminiResponse.TextPart::getText))
-                .orElse(null);
+                .orElseThrow(() -> new GeminiResponseErrorException("No data found in Gemini response"));
     }
 }

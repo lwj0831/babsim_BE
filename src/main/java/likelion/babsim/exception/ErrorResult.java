@@ -1,5 +1,8 @@
 package likelion.babsim.exception;
 
+import lombok.Getter;
+
+@Getter
 public class ErrorResult {
     private String code;
     private String message;
