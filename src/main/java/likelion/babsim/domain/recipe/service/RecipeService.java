@@ -26,10 +26,7 @@ import likelion.babsim.domain.tag.Tag;
 import likelion.babsim.domain.tag.repository.TagRepository;
 import likelion.babsim.domain.tag.service.TagService;
 import likelion.babsim.gemini.GeminiService;
-import likelion.babsim.web.recipe.RecipeCreateReqDto;
-import likelion.babsim.web.recipe.RecipeCreateResDto;
-import likelion.babsim.web.recipe.RecipeDetailResDto;
-import likelion.babsim.web.recipe.RecipeInfoResDto;
+import likelion.babsim.web.recipe.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.PageRequest;
@@ -197,8 +194,7 @@ public class RecipeService {
             String timers = dto.getTimers().stream().map(String::valueOf).collect(Collectors.joining(","));
             Category category = categoryRepository.findById(dto.getCategoryId()).orElseThrow();
             //nutritionInfo
-            String nutritionResult = geminiService.getCompletion("When making food using"+dto.getIngredients()+
-                    "please tell me the calories per 100g of the main ingredients and the approximate calories consumed in one serving of that recipe using Korean");
+            String nutritionResult = getNutritionResult(dto);
             //recipe update
             existingRecipe.updateRecipeInfo(recipeImgs, recipeName, description, nutritionResult, difficulty, cookingTime, recipeDetailImgs, ingredients, recipeContents, timers, category);
 
@@ -228,10 +224,6 @@ public class RecipeService {
     }
 
     private RecipeCreateResDto generateRecipe(RecipeCreateReqDto dto, String originalCreatorId, String creatorId){
-        //nutritionInfo
-        String nutritionResult = geminiService.getCompletion("When making food using"+dto.getIngredients()+
-                "please tell me the calories per 100g of the main ingredients and the approximate calories consumed in one serving of that recipe using Korean");
-
         Recipe recipe = Recipe.builder()
                 .creatorId(originalCreatorId) //
                 .recipeImgs(String.join(",", dto.getRecipeImgs()))
@@ -244,7 +236,7 @@ public class RecipeService {
                 .recipeContents(String.join("/",dto.getRecipeContents()))
                 .timers(dto.getTimers().stream().map(String::valueOf).collect(Collectors.joining(",")))
                 .category(categoryRepository.findById(dto.getCategoryId()).orElseThrow())
-                .nutritionInfo(nutritionResult)
+                .nutritionInfo(getNutritionResult(dto))
                 .build();
         Recipe savedRecipe = recipeRepository.save(recipe);
 
@@ -283,6 +275,21 @@ public class RecipeService {
         return getRecipeCreateResDto(tags, recipeAllergies, updatedRecipe);
     }
 
+    private String getNutritionResult(RecipeCreateReqDto dto) {
+        /*return geminiService.getCompletion("When making food using" + dto.getIngredients() +
+                "please tell me the calories per 100g of the main ingredients and the approximate calories consumed in one serving of that recipe using Korean");
+        */return geminiService.getCompletion(dto.getName()+"의 한 끼의 재료로" + getIngredientsInfo(dto.getIngredients()) +
+                "이 사용될 때 한 끼당 사용되는 각 재료들의 100g당 칼로리와 대략적인 칼로리를 추정해서 알려줘");
+    }
+    private String getIngredientsInfo(List<RecipeCreateReqDto.IngredientDTO> ingredients){
+        StringBuilder result = new StringBuilder();
+        for (RecipeCreateReqDto.IngredientDTO ingredient : ingredients) {
+            result.append(ingredient.getName()).append(":").append(ingredient.getAmount()).append(",");
+        }
+        System.out.println(result);
+        return result.toString();
+    }
+
     private List<Tag> registerTagInfo(RecipeCreateReqDto dto, Recipe existingRecipe) {
         List<Tag> tags = dto.getTags().stream()
                 .map(tagStr -> new Tag(existingRecipe, tagStr))
@@ -292,9 +299,12 @@ public class RecipeService {
     }
 
     private List<RecipeAllergy> registerRecipeAllergies(RecipeCreateReqDto dto, Recipe savedRecipe) {
-        String allergyResult = geminiService.getCompletion("In recipe there are ingredients(" + dto.getIngredients() +
+        /*String allergyResult = geminiService.getCompletion("In recipe there are ingredients(" + dto.getIngredients() +
                 ")is used and there is official allergyList(" + Arrays.toString(AllergyType.values()) +
-                "), choose all allergies that can be caused by eating those ingredients using English");
+                "), choose all allergies that can be caused by eating those ingredients using English");*/
+        String allergyResult = geminiService.getCompletion(dto.getName()+"의 재료로"+getIngredientsInfo(dto.getIngredients())+
+                "이 사용되고 공식적인 알레르기 리스트로" + Arrays.toString(AllergyType.values()) +
+                "이 있을 때, 해당 알레르기 리스트에서 이 레시피가 유발할 수 있는 알레르기를 정확하게 골라주고 선택한 알레르기 영어단어로 나열해줘");
 
         List<RecipeAllergy> recipeAllergies = Arrays.stream(AllergyType.values())
                 .filter(allergyType -> allergyResult.contains(allergyType.toString()))
