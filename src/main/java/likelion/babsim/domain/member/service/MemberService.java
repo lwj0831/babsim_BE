@@ -2,6 +2,7 @@ package likelion.babsim.domain.member.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.EntityNotFoundException;
 import likelion.babsim.domain.allergy.MemberAllergy;
 import likelion.babsim.domain.allergy.repository.AllergyRepository;
 import likelion.babsim.domain.allergy.repository.MemberAllergyRepository;
@@ -80,7 +81,8 @@ public class MemberService {
             // Create a new MemberAllergy instance
             MemberAllergy memberAllergy = MemberAllergy.builder()
                     .member(member)
-                    .allergy(allergyRepository.findAllergyById(allergyId))
+                    .allergy(allergyRepository.findAllergyById(allergyId).
+                            orElseThrow(() -> new EntityNotFoundException("Allergy not found with id " + allergyId)))
                     .build();
             System.out.println(memberAllergy.getMember().getId());
             System.out.println(memberAllergy.getAllergy().getId());

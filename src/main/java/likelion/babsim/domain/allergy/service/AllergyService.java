@@ -1,6 +1,7 @@
 package likelion.babsim.domain.allergy.service;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.persistence.EntityNotFoundException;
 import likelion.babsim.domain.allergy.Allergy;
 import likelion.babsim.domain.allergy.repository.AllergyRepository;
 import likelion.babsim.domain.allergy.repository.MemberAllergyRepository;
@@ -31,7 +32,8 @@ public class AllergyService {
                 .toList();
     }
     public Allergy findAllergyByAllergyName(String allergyName){
-        return allergyRepository.findByAllergyName(allergyName);
+        return allergyRepository.findByAllergyName(allergyName)
+                .orElseThrow(() -> new EntityNotFoundException("Allergy not found with name " + allergyName));
     }
 
 }

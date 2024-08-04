@@ -1,5 +1,6 @@
 package likelion.babsim.domain.recipe.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import likelion.babsim.domain.allergy.AllergyType;
 import likelion.babsim.domain.allergy.RecipeAllergy;
 import likelion.babsim.domain.allergy.repository.RecipeAllergyRepository;
@@ -168,7 +169,7 @@ public class RecipeService {
                 .nftCreateStatus(recipe.getNft() != null)
                 .nftSaleStatus(recipe.getNft() != null && saleNftRepository.findByNft(recipe.getNft()).isPresent())
                 .nftOwnerId(recipe.getNft() != null ? nftRepository.findByRecipeId(recipeId)
-                        .orElseThrow(() -> new EmptyResultDataAccessException("No Nft found with recipeId: " + recipeId, 1)).getOwnerId() : null)
+                        .orElseThrow(() -> new EntityNotFoundException("Nft not found with recipeId " + recipeId)).getOwnerId() : null)
                 .editable(memberId!=null && memberRecipeRepository.existsByMemberIdAndRecipeId(memberId,recipeId))
                 .categoryName(categoryRepository.findById(recipe.getCategory().getId()).orElseThrow().getCategoryName())
                 .build();
@@ -299,7 +300,8 @@ public class RecipeService {
         List<String> keywords = Arrays.stream(dto.getName().split(" ")).toList();
         Keyword k;
         for (String keyword : keywords) {
-            if((k=keywordRepository.findByKeyword(keyword))==null){ //해당 키워드 처음
+            k = keywordRepository.findByKeyword(keyword).orElse(null);
+            if(k==null){ //해당 키워드 처음
                 k = Keyword.builder()
                         .count(0L)
                         .keyword(keyword)
