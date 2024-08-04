@@ -179,4 +179,15 @@ public class NftService {
                     .build();
         }).collect(Collectors.toList());
     }
+
+    public NftTransactionBeforeDto findNftTransactionBeforeInfo(Long recipeId,String memberId){
+        BigDecimal nftPrice = nftRepository.findByRecipeId(recipeId)
+                .orElseThrow(()->new EntityNotFoundException("nft is not found by recipeId"+recipeId)).getSaleNft().getPrice();
+        BigDecimal point = pointService.getPointByMemberId(memberId);
+        return NftTransactionBeforeDto.builder()
+                .nftPrice(nftPrice)
+                .point(point)
+                .available(nftPrice.compareTo(point)<0).build();
+
+    }
 }

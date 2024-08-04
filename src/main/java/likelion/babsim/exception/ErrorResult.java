@@ -1,11 +1,11 @@
 package likelion.babsim.exception;
 
 public class ErrorResult {
-    private String errorType;
-    private String errorInfo;
+    private String code;
+    private String message;
 
-    public ErrorResult(String errorType, String errorInfo) {
-        this.errorType = errorType;
-        this.errorInfo = errorInfo;
+    public ErrorResult(String code, String message) {
+        this.code = code;
+        this.message = message;
     }
 }
