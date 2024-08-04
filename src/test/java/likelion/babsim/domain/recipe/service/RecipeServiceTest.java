@@ -74,7 +74,6 @@ class RecipeServiceTest {
                     .recipeImgs("image" + i + ".jpg")
                     .cookingTime(i * 10)
                     .creatorId("1")
-                    .ownerId("1")
                     .category(category)
                     .build();
             entityManager.persist(recipe);
@@ -83,7 +82,6 @@ class RecipeServiceTest {
                     .recipeImgs("image" + i + ".jpg")
                     .cookingTime(0)
                     .creatorId("1")
-                    .ownerId("1")
                     .category(category2)
                     .build();
             entityManager.persist(recipe2);

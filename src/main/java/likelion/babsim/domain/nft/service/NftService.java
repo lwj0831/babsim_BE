@@ -45,7 +45,7 @@ public class NftService {
         if(memberId.equals(creatorId)){
             String to = memberRepository.findById(creatorId).orElseThrow().getNftAccountAddress();
             String tokenId = "0x"+Long.toHexString(recipeId);
-            String uri = recipe.getRecipeName(); //URI로 뭐 줄지 생각해봐야함
+            String uri = extractFirstId(recipe.getRecipeImgs()); //URI로 recipeImgs의 첫번째 id제공
             TokenCreateResDto tokenCreateResDto = klaytnApiService.createToken(to, tokenId, uri);
             System.out.println(tokenCreateResDto);
             if(tokenCreateResDto.getStatus().equals("Submitted")) {
@@ -63,6 +63,14 @@ public class NftService {
             }
         }
         throw new CreateNftException("member is not owner of recipe!");
+    }
+    private static String extractFirstId(String idList) {
+        String[] ids = idList.split(",");
+        if (ids.length > 0) {
+            return ids[0];
+        } else {
+            return "";
+        }
     }
 
     @Transactional
