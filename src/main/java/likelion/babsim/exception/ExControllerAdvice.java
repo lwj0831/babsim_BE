@@ -20,16 +20,30 @@ public class ExControllerAdvice {
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ErrorResult> noSuchElementExHandle(EntityNotFoundException e){
+    public ResponseEntity<ErrorResult> EntityNotFoundExHandle(EntityNotFoundException e){
         log.info("EntityNotFoundException occurs! : {}",e);
-        ErrorResult errorResult = new ErrorResult("EntityNotFoundException-EX",e.getMessage());
+        ErrorResult errorResult = new ErrorResult("EntityNotFound-EX",e.getMessage());
         return new ResponseEntity<>(errorResult, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(CreateNftException.class)
-    public ResponseEntity<ErrorResult> noSuchElementExHandle(CreateNftException e){
+    public ResponseEntity<ErrorResult> CreateNftExHandle(CreateNftException e){
         log.info("CreateNftException occurs! : {}",e);
-        ErrorResult errorResult = new ErrorResult("CreateNftException-EX",e.getMessage());
+        ErrorResult errorResult = new ErrorResult("CreateNftEx-EX",e.getMessage());
+        return new ResponseEntity<>(errorResult, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(DuplicateTokenIdException.class)
+    public ResponseEntity<ErrorResult> DuplicateTokenIdExHandle(DuplicateTokenIdException e){
+        log.info("DuplicateTokenIdException occurs! : {}",e);
+        ErrorResult errorResult = new ErrorResult("DuplicateTokenId-EX",e.getMessage());
+        return new ResponseEntity<>(errorResult, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ApproveTokenException.class)
+    public ResponseEntity<ErrorResult> ApproveTokenExHandle(ApproveTokenException e){
+        log.info("ApproveTokenException occurs! : {}",e);
+        ErrorResult errorResult = new ErrorResult("ApproveToken-EX",e.getMessage());
         return new ResponseEntity<>(errorResult, HttpStatus.BAD_REQUEST);
     }
 

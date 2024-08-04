@@ -59,7 +59,7 @@ public class PointService {
     @Transactional
     public void makePointTransactions(String buyerId, String sellerId, String pointContent, BigDecimal pointPrice) {
         BigDecimal currentBuyerPoint = getPointByMemberId(buyerId);
-        if(currentBuyerPoint.compareTo(pointPrice)>0)
+        if(currentBuyerPoint.compareTo(pointPrice)<0)
             throw new NotEnoughMoneyException("buyer has not enough money to buy!"); //언체크예외(RuntimeException)
         else {
             Point buyerPoint = Point.builder()

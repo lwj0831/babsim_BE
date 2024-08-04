@@ -3,6 +3,8 @@ package likelion.babsim.domain.nft.service;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
 import jakarta.annotation.PostConstruct;
+import likelion.babsim.exception.ApproveTokenException;
+import likelion.babsim.exception.DuplicateTokenIdException;
 import likelion.babsim.web.nft.kas.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -11,6 +13,7 @@ import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 
 import java.time.Duration;
@@ -75,6 +78,9 @@ public class KlaytnApiService {
                 .contentType(MediaType.APPLICATION_JSON) // Content-Type을 명시적으로 설정
                 .bodyValue(tokenCreateReqDto)//Content-Type: application/json 자동 설정
                 .retrieve()
+                .onStatus(status -> status.value() == 409,
+                        response -> response.bodyToMono(String.class)
+                                .flatMap(errorMessage -> Mono.error(new DuplicateTokenIdException(errorMessage))))
                 .bodyToMono(TokenCreateResDto.class)
                 .block();
 
@@ -88,6 +94,7 @@ public class KlaytnApiService {
                 .bodyToMono(TokenReadResDto.class)
                 .block();
     }
+    @Transactional
     public TokenApproveResDto approveToken(String ownerAddress, String toAddress, String tokenId){
         TokenApproveReqDto tokenApproveReqDto = new TokenApproveReqDto(ownerAddress,ownerAddress,toAddress);
         return webClient.post()
@@ -96,6 +103,9 @@ public class KlaytnApiService {
                 .header("Authorization", authorization)
                 .bodyValue(tokenApproveReqDto)
                 .retrieve()
+                .onStatus(status -> status.value() == 400,
+                        response -> response.bodyToMono(String.class)
+                                .flatMap(errorMessage -> Mono.error(new ApproveTokenException(errorMessage))))
                 .bodyToMono(TokenApproveResDto.class)
                 .block();
     }
