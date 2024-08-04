@@ -50,7 +50,7 @@ public class MemberService {
     private static final String TOKEN_REQ_URL = "https://kauth.kakao.com/oauth/token";
     private static final String USER_INFO_REQ_URL = "https://kapi.kakao.com/v2/user/me";
 
-    @Transactional(readOnly = false)
+    @Transactional
     public MemberResDTO createMember(MemberReqDTO memberRequestDTO) {
         String id = memberRequestDTO.getId();
         String name = memberRequestDTO.getName();
@@ -59,6 +59,7 @@ public class MemberService {
         Job job = Job.values()[memberRequestDTO.getJob()];
         LocalDateTime registerDate = LocalDateTime.now();
         AccountCreateResDto response = klaytnApiService.createAccount();
+        System.out.println(response);
         String address = response.getAddress();
 
         Member member = Member.dtoBuilder()

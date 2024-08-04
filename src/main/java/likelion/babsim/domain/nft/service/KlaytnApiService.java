@@ -1,12 +1,19 @@
 package likelion.babsim.domain.nft.service;
 
+import io.netty.handler.timeout.ReadTimeoutHandler;
+import io.netty.handler.timeout.WriteTimeoutHandler;
 import jakarta.annotation.PostConstruct;
 import likelion.babsim.web.nft.kas.*;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.netty.http.client.HttpClient;
+
+import java.time.Duration;
 
 @Service
 @Transactional(readOnly = true)
@@ -24,10 +31,24 @@ public class KlaytnApiService {
     }
     @Transactional
     public AccountCreateResDto createAccount() {
+        WebClient webClient = WebClient.builder()
+                .baseUrl("https://wallet-api.klaytnapi.com")
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .defaultHeader("x-chain-id", xChainId)
+                .defaultHeader("Authorization", authorization)
+                .clientConnector(new ReactorClientHttpConnector(
+                        HttpClient.create()
+                                .responseTimeout(Duration.ofSeconds(10)) // 타임아웃 설정
+                                .doOnConnected(conn -> conn
+                                        .addHandlerLast(new ReadTimeoutHandler(10)) // Read 타임아웃 설정
+                                        .addHandlerLast(new WriteTimeoutHandler(10)) // Write 타임아웃 설정
+                                )
+                ))
+                .build();
+
         return webClient.post()
-                .uri("wallet-api.klaytnapi.com/v2/account")
-                .header("x-chain-id", xChainId)
-                .header("Authorization", authorization)
+                .uri("/v2/account")
+                .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .bodyToMono(AccountCreateResDto.class)
                 .block();
