@@ -280,7 +280,7 @@ public class RecipeService {
         /*return geminiService.getCompletion("When making food using" + dto.getIngredients() +
                 "please tell me the calories per 100g of the main ingredients and the approximate calories consumed in one serving of that recipe using Korean");
         */return geminiService.getCompletion(dto.getName()+"의 한 끼의 재료로" + getIngredientsInfo(dto.getIngredients()) +
-                "이 사용될 때 한 끼당 사용되는 각 재료들의 100g당 칼로리와 대략적인 칼로리를 추정해서 알려줘");
+                "이 사용될 때 한 끼당 사용되는 각 재료들의 100g당 칼로리와 대략적인 칼로리를 추정해서 String 값으로 알려줘");
     }
     private String getIngredientsInfo(List<RecipeCreateReqDto.IngredientDTO> ingredients){
         StringBuilder result = new StringBuilder();
