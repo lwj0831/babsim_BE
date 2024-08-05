@@ -49,7 +49,7 @@ public class RecipeReviewService {
                     .comment(recipeReview.getComment())
                     .rating(recipeReview.getRating())
                     .registerDate(recipeReview.getRegisterDate())
-                    .forkRecipeId(recipeReview.getForkedRecipeId())
+                    .forkRecipeId(recipeReview.getForkRecipeId())
                     .build();
             result.add(reviewForm);
         }
@@ -63,7 +63,7 @@ public class RecipeReviewService {
                 .rating(reviewCreateReqDto.getRating())
                 .comment(reviewCreateReqDto.getComment())
                 .registerDate(LocalDateTime.now())
-                .forkedRecipeId(reviewCreateReqDto.getForkedRecipeId())
+                .forkRecipeId(reviewCreateReqDto.getForkRecipeId())
                 .build();
         recipeReviewRepository.save(recipeReview);
         pointService.givePointReward(memberId,"리뷰 작성", BigDecimal.valueOf(500));

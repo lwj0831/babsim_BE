@@ -177,7 +177,7 @@ VALUES
     ('다채로운', 47),
     ('환상적인맛', 48);
 
-INSERT INTO Recipe_Review (rating, comment, register_date, forked_recipe_id, recipe_id, member_id)
+INSERT INTO Recipe_Review (rating, comment, register_date, fork_recipe_id, recipe_id, member_id)
 VALUES
     (5, '정말 맛있어요! 친구들에게도 추천할게요.', '2024-01-20 10:00:00', 49, 1, '2'),
     (3, '조금 실망스러웠어요. 더 맛있는 요리를 기대했는데...', '2024-02-25 14:30:00', NULL, 1, '4'),
