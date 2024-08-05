@@ -62,16 +62,16 @@ public class RecipeController {
     }
 
     @PostMapping(produces = "application/json")
-    public RecipeCreateResDto createRecipe(@RequestBody RecipeCreateReqDto dto, @RequestParam String creatorId){
+    public RecipeCreateResDto createRecipe(@RequestBody RecipeCreateReqDto dto, @RequestParam("creatorId") String creatorId){
         return recipeService.createRecipe(dto,creatorId);
     }
     @PutMapping("/{recipeId}")
-    public RecipeCreateResDto editRecipe(@RequestBody RecipeCreateReqDto dto, @PathVariable Long recipeId){
+    public RecipeCreateResDto editRecipe(@RequestBody RecipeCreateReqDto dto, @PathVariable("recipeId") Long recipeId){
         return recipeService.editRecipe(dto,recipeId);
     }
 
     @PostMapping("/{recipeId}/fork")
-    public RecipeCreateResDto forkRecipe(@RequestBody RecipeCreateReqDto dto, @RequestParam String creatorId, @PathVariable Long recipeId){
+    public RecipeCreateResDto forkRecipe(@RequestBody RecipeCreateReqDto dto, @RequestParam("creatorId") String creatorId, @PathVariable("recipeId") Long recipeId){
         return recipeService.forkRecipe(dto,creatorId,recipeId);
     }
 

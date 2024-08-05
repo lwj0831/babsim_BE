@@ -16,19 +16,19 @@ public class NftController {
     private final NftService nftService;
 
     @PostMapping("/create")
-    public NftCreateResDto createNft(@RequestParam Long recipeId, @RequestParam String memberId){
+    public NftCreateResDto createNft(@RequestParam("recipeId") Long recipeId, @RequestParam("memberId") String memberId){
         return nftService.createNft(recipeId,memberId);
     }
     @PostMapping("/approve")
-    public NftApproveResDto approveNft(@RequestParam String memberId, @RequestParam Long recipeId){
+    public NftApproveResDto approveNft(@RequestParam("memberId") String memberId, @RequestParam("recipeId") Long recipeId){
         return nftService.approveNft(memberId,recipeId);
     }
     @PostMapping("/saleNft")
-    public SaleNftRegisterResDto registerSaleNft(@RequestParam Long recipeId, @RequestParam BigDecimal price){
+    public SaleNftRegisterResDto registerSaleNft(@RequestParam("recipeId") Long recipeId, @RequestParam("price") BigDecimal price){
         return nftService.registerNftSale(recipeId,price);
     }
     @DeleteMapping("/saleNft")
-    public SaleNftTerminateResDto terminateSaleNft(@RequestParam Long recipeId){
+    public SaleNftTerminateResDto terminateSaleNft(@RequestParam("recipeId") Long recipeId){
         return nftService.terminateNftSale(recipeId);
     }
     @GetMapping("/saleNft")
@@ -36,12 +36,12 @@ public class NftController {
         return nftService.findRecommendNfts();
     }
     @GetMapping
-    public List<NftInfoResDto> findOwnNfts(@RequestParam String memberId){
+    public List<NftInfoResDto> findOwnNfts(@RequestParam("memberId") String memberId){
         return nftService.findOwnNft(memberId);
     }
 
     @GetMapping("/transactionBeforeInfo")
-    public NftTransactionBeforeDto findNftTransactionBeforeInfo(@RequestParam Long recipeId, @RequestParam String memberId){
+    public NftTransactionBeforeDto findNftTransactionBeforeInfo(@RequestParam("recipeId") Long recipeId, @RequestParam("memberId") String memberId){
         return nftService.findNftTransactionBeforeInfo(recipeId,memberId);
     }
 
