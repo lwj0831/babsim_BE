@@ -16,11 +16,11 @@ public class ReviewController {
     private final RecipeReviewService recipeReviewService;
 
     @GetMapping("/{recipeId}")
-    public List<ReviewForm> getReviewsByRecipeId(@PathVariable Long recipeId){
+    public List<ReviewForm> getReviewsByRecipeId(@PathVariable("recipeId") Long recipeId){
         return recipeReviewService.findReviewsByRecipeId(recipeId);
     }
     @PostMapping
-    public Long writeReview(@RequestParam Long recipeId,@RequestParam String memberId, @RequestBody ReviewCreateReqDto reviewCreateReqDto){
+    public Long writeReview(@RequestParam("recipeId") Long recipeId,@RequestParam("memberId") String memberId, @RequestBody ReviewCreateReqDto reviewCreateReqDto){
         return recipeReviewService.writeReview(recipeId,memberId,reviewCreateReqDto);
     }
 }
