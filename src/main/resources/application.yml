@@ -44,7 +44,7 @@ klaytn:
 
   auth:
     x-chain-id: 1001
-    authorization: Basic S0FTS1FNTVlaV1lOTzJJUDlWNEVSQ1RaOjdEUHg3M0IzWFZsaS05NjRRTVZGV0Y0WjNCODctWm9IQk9fMmhTRkE=
+    authorization: ${KLAYTN_AUTHORIZATION_HEADER}
 
 
 
