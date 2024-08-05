@@ -1,9 +1,22 @@
 spring:
+  sql:
+    init:
+      mode: always
+  logging:
+    level:
+      org:
+        hibernate:
+          SQL: DEBUG
+          type:
+            descriptor:
+              sql:
+                BasicBinder: TRACE
+
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/jpasession?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    username: root
-    password: 1234
+    driver-class-name: ${DB_DRIVER}
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
 
   jpa:
     open-in-view: false
@@ -12,4 +25,26 @@ spring:
     hibernate:
       show_sql: true
       format_sql: true
-      ddl-auto: update
+      ddl-auto: create
+    defer-datasource-initialization: true
+
+gemini:
+  baseurl: https://generativelanguage.googleapis.com
+
+googleai:
+   api:
+    key: ${GEMINI_API_KEY}
+
+klaytn:
+  api:
+    base-url: https://wallet-api.klaytnapi.com/v2
+    account-endpoint: /account
+    contract-endpoint: /contract/babsim/token
+    contract-address-or-alias: babsim
+
+  auth:
+    x-chain-id: 1001
+    authorization: ${KLAYTN_AUTHORIZATION_HEADER}
+
+
+
