@@ -5,6 +5,7 @@ import likelion.babsim.domain.allergy.MemberAllergy;
 import likelion.babsim.domain.cart.Cart;
 import likelion.babsim.domain.likes.Likes;
 import likelion.babsim.domain.order.Orders;
+import likelion.babsim.domain.point.Point;
 import likelion.babsim.domain.recipe.MemberRecipe;
 import likelion.babsim.domain.recipe.Recipe;
 import likelion.babsim.domain.review.ProductReview;
@@ -31,8 +32,8 @@ public class Member {
     private String address;
     @Enumerated(EnumType.STRING)
     private Membership membership;
-    private Long point;
     private LocalDateTime registerDate;
+    private String nftAccountAddress;
 
     @OneToMany(mappedBy = "member")
     @ToString.Exclude
@@ -57,6 +58,10 @@ public class Member {
 
     @OneToMany(mappedBy = "member")
     @ToString.Exclude
+    private List<Point> points;
+
+    @OneToMany(mappedBy = "member")
+    @ToString.Exclude
     private List<ProductReview> productReviews;
 
     @OneToOne(mappedBy = "member", cascade = CascadeType.ALL)
@@ -64,13 +69,14 @@ public class Member {
     private Cart cart;
 
     @Builder(builderMethodName = "dtoBuilder")
-    public Member(String id, String name, String memberImg, String email, Job job, LocalDateTime registerDate) {
+    public Member(String id, String name, String memberImg, String email, Job job, LocalDateTime registerDate, String nftAccountAddress) {
         this.id = id;
         this.name = name;
         this.memberImg = memberImg;
         this.email = email;
         this.job = job;
         this.registerDate = registerDate;
+        this.nftAccountAddress = nftAccountAddress;
     }
 
     @Builder

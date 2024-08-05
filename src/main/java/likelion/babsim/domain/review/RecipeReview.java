@@ -23,7 +23,7 @@ public class RecipeReview {
     private String comment;
     private LocalDateTime registerDate;
 
-    private Long forkedRecipeId;
+    private Long forkRecipeId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recipe_id")
@@ -34,11 +34,11 @@ public class RecipeReview {
     private Member member;
 
     @Builder
-    public RecipeReview(Integer rating, String comment, LocalDateTime registerDate, Long forkedRecipeId, Recipe recipe, Member member) {
+    public RecipeReview(Integer rating, String comment, LocalDateTime registerDate, Long forkRecipeId, Recipe recipe, Member member) {
         this.rating = rating;
         this.comment = comment;
         this.registerDate = registerDate;
-        this.forkedRecipeId = forkedRecipeId;
+        this.forkRecipeId = forkRecipeId;
         this.recipe = recipe;
         this.member = member;
     }

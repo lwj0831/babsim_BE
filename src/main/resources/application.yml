@@ -2,6 +2,15 @@ spring:
   sql:
     init:
       mode: always
+  logging:
+    level:
+      org:
+        hibernate:
+          SQL: DEBUG
+          type:
+            descriptor:
+              sql:
+                BasicBinder: TRACE
 
   datasource:
     driver-class-name: ${DB_DRIVER}
@@ -25,4 +34,17 @@ gemini:
 googleai:
    api:
     key: ${GEMINI_API_KEY}
+
+klaytn:
+  api:
+    base-url: https://wallet-api.klaytnapi.com/v2
+    account-endpoint: /account
+    contract-endpoint: /contract/babsim/token
+    contract-address-or-alias: babsim
+
+  auth:
+    x-chain-id: 1001
+    authorization: ${KLAYTN_AUTHORIZATION_HEADER}
+
+
 

@@ -1,5 +1,6 @@
 package likelion.babsim.domain.likes.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import likelion.babsim.domain.likes.Likes;
 import likelion.babsim.domain.likes.repository.LikesRepository;
 import likelion.babsim.domain.member.Member;
@@ -46,7 +47,8 @@ public class LikesService {
                     .build();
         }
         else {
-            Likes likes = likesRepository.findByMemberIdAndRecipeId(memberId, recipeId);
+            Likes likes = likesRepository.findByMemberIdAndRecipeId(memberId, recipeId)
+                    .orElseThrow(() -> new EntityNotFoundException("likes not found with memberId, recipeId(" + memberId + recipeId+")"));;
             likesRepository.delete(likes);
             return LikesUpdateResDto.builder()
                     .likesId(likes.getId())

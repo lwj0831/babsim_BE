@@ -24,8 +24,8 @@ public class RecipeController {
     }
 
     @GetMapping("/week")
-    public List<RecipeInfoResDto> getTop10RecipesByCookedCount(){
-        return recipeService.findTop10RecipesByCookedCount();
+    public List<RecipeInfoResDto> getWeeklyBestRecipesByCookedCount(){
+        return recipeService.findWeeklyBestRecipesByCookedCount();
     }
 
     @GetMapping("/recommend")
@@ -42,9 +42,9 @@ public class RecipeController {
     public List<RecipeInfoResDto> getForkedRecipesByMemberId(@RequestParam("memberId") String memberId){
         return recipeService.findForkedRecipesByMemberId(memberId);
     }
-    @GetMapping("/forked/{recipeId}")
-    public List<RecipeInfoResDto> getSpecificForkedRecipesByMemberIdAndRecipeId(@RequestParam("memberId") String memberId,@PathVariable Long recipeId){
-        return recipeService.findSpecificForkedRecipesByMemberIdAndRecipeId(memberId,recipeId);
+    @GetMapping("/forked/{forkedRecipeId}")
+    public List<RecipeInfoResDto> getSpecificForkedRecipesByMemberIdAndForkedRecipeId(@RequestParam("memberId") String memberId,@PathVariable("forkedRecipeId") Long forkedRecipeId){
+        return recipeService.findSpecificForkedRecipesByMemberIdAndForkedRecipeId(memberId,forkedRecipeId);
     }
 
     @GetMapping("/own")
@@ -66,8 +66,13 @@ public class RecipeController {
         return recipeService.createRecipe(dto,creatorId);
     }
     @PutMapping("/{recipeId}")
-    public RecipeCreateResDto editRecipe(@RequestBody RecipeCreateReqDto dto, @RequestParam String creatorId, @PathVariable Long recipeId){
-        return recipeService.editRecipe(dto,creatorId,recipeId);
+    public RecipeCreateResDto editRecipe(@RequestBody RecipeCreateReqDto dto, @PathVariable Long recipeId){
+        return recipeService.editRecipe(dto,recipeId);
+    }
+
+    @PostMapping("/{recipeId}/fork")
+    public RecipeCreateResDto forkRecipe(@RequestBody RecipeCreateReqDto dto, @RequestParam String creatorId, @PathVariable Long recipeId){
+        return recipeService.forkRecipe(dto,creatorId,recipeId);
     }
 
 }

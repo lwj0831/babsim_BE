@@ -74,7 +74,6 @@ class RecipeServiceTest {
                     .recipeImgs("image" + i + ".jpg")
                     .cookingTime(i * 10)
                     .creatorId("1")
-                    .ownerId("1")
                     .category(category)
                     .build();
             entityManager.persist(recipe);
@@ -83,7 +82,6 @@ class RecipeServiceTest {
                     .recipeImgs("image" + i + ".jpg")
                     .cookingTime(0)
                     .creatorId("1")
-                    .ownerId("1")
                     .category(category2)
                     .build();
             entityManager.persist(recipe2);
@@ -185,8 +183,8 @@ class RecipeServiceTest {
     @Test
     @Transactional
     @DirtiesContext
-    void testFindTop10RecipesByCookedCount() {
-        List<RecipeInfoResDto> result = recipeService.findTop10RecipesByCookedCount();
+    void testFindTop12RecipesByCookedCount() {
+        List<RecipeInfoResDto> result = recipeService.findWeeklyBestRecipesByCookedCount();
 
         assertNotNull(result);
         assertEquals(10, result.size()); // Verify we get 10 results

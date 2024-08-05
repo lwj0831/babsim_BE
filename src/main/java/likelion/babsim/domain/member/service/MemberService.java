@@ -2,14 +2,21 @@ package likelion.babsim.domain.member.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.EntityNotFoundException;
 import likelion.babsim.domain.allergy.MemberAllergy;
 import likelion.babsim.domain.allergy.repository.AllergyRepository;
 import likelion.babsim.domain.allergy.repository.MemberAllergyRepository;
 import likelion.babsim.domain.member.Job;
 import likelion.babsim.domain.member.Member;
 import likelion.babsim.domain.member.repository.MemberRepository;
+import likelion.babsim.domain.point.Point;
+import likelion.babsim.domain.point.PointType;
+import likelion.babsim.domain.point.repository.PointRepository;
+import likelion.babsim.domain.point.service.PointService;
+import likelion.babsim.domain.nft.service.KlaytnApiService;
 import likelion.babsim.web.member.MemberReqDTO;
 import likelion.babsim.web.member.MemberResDTO;
+import likelion.babsim.web.nft.kas.AccountCreateResDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -18,6 +25,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,6 +40,8 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final MemberAllergyRepository memberAllergyRepository;
     private final AllergyRepository allergyRepository;
+    private final PointService pointService;
+    private final KlaytnApiService klaytnApiService;
 
     private static final String REST_API_KEY = "f0b7ac898da3a5b19640f297fd76d1be";
     private static final String REDIRECT_URI = "http://localhost:5173/login";
@@ -41,7 +51,7 @@ public class MemberService {
     private static final String TOKEN_REQ_URL = "https://kauth.kakao.com/oauth/token";
     private static final String USER_INFO_REQ_URL = "https://kapi.kakao.com/v2/user/me";
 
-    @Transactional(readOnly = false)
+    @Transactional
     public MemberResDTO createMember(MemberReqDTO memberRequestDTO) {
         String id = memberRequestDTO.getId();
         String name = memberRequestDTO.getName();
@@ -49,6 +59,9 @@ public class MemberService {
         String email = memberRequestDTO.getEmail();
         Job job = Job.values()[memberRequestDTO.getJob()];
         LocalDateTime registerDate = LocalDateTime.now();
+        AccountCreateResDto response = klaytnApiService.createAccount();
+        System.out.println(response);
+        String address = response.getAddress();
 
         Member member = Member.dtoBuilder()
                 .id(id)
@@ -57,6 +70,7 @@ public class MemberService {
                 .email(email)
                 .job(job)
                 .registerDate(registerDate)
+                .nftAccountAddress(address)
                 .build();
 
         memberRepository.save(member);
@@ -67,7 +81,8 @@ public class MemberService {
             // Create a new MemberAllergy instance
             MemberAllergy memberAllergy = MemberAllergy.builder()
                     .member(member)
-                    .allergy(allergyRepository.findAllergyById(allergyId).orElseThrow())
+                    .allergy(allergyRepository.findAllergyById(allergyId).
+                            orElseThrow(() -> new EntityNotFoundException("Allergy not found with id " + allergyId)))
                     .build();
             System.out.println(memberAllergy.getMember().getId());
             System.out.println(memberAllergy.getAllergy().getId());
@@ -76,6 +91,8 @@ public class MemberService {
         }
         member.setMemberAllergies(memberAllergies);
 
+        pointService.givePointReward(member.getId(),"신규회원",BigDecimal.valueOf(1000));
+
         return MemberResDTO.builder()
                 .id(member.getId())
                 .name(member.getName())
@@ -83,6 +100,7 @@ public class MemberService {
                 .email(member.getEmail())
                 .job(member.getJob().ordinal())
                 .allergies(allergyIds)
+                .point(pointService.getPointByMemberId(member.getId()))
                 .build();
     }
 
@@ -100,6 +118,7 @@ public class MemberService {
                 .email(member.getEmail())
                 .job(member.getJob().ordinal())
                 .allergies(allergyIds)
+                .point(pointService.getPointByMemberId(member.getId()))
                 .build();
     }
 

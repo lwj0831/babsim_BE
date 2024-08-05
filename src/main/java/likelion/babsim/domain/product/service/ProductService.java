@@ -34,7 +34,7 @@ public class ProductService {
     }
 
     public List<ProductInfoResDTO> getMarketProductHot() {
-        List<Product> products = getRandomProducts(30);
+        List<Product> products = getRandomProducts(10);
         return getProductInfoResDTOS(products);
     }
 

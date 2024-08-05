@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MemberRecipeRepository extends JpaRepository<MemberRecipe,Long> {
+    boolean existsByMemberIdAndRecipeId(String memberId, Long recipeId);
 }
