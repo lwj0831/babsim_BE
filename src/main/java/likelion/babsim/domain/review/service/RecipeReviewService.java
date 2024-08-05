@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,11 +27,16 @@ public class RecipeReviewService {
     private final PointService pointService;
 
     public Double findRatingByRecipeId(Long recipeId){
-        return recipeReviewRepository.findAllByRecipeId(recipeId).stream()
+        return roundToTwoDecimalPlaces(recipeReviewRepository.findAllByRecipeId(recipeId).stream()
                 .map(RecipeReview::getRating)
                 .mapToDouble(r -> r)
                 .average()
-                .orElse(0.0);
+                .orElse(0.00));
+    }
+    private static double roundToTwoDecimalPlaces(double value) {
+        BigDecimal bd = new BigDecimal(Double.toString(value));
+        bd = bd.setScale(2, RoundingMode.HALF_UP);
+        return bd.doubleValue();
     }
     public List<ReviewForm> findReviewsByRecipeId(Long recipeId){
         List<RecipeReview> recipeReviews = recipeReviewRepository.findAllByRecipeId(recipeId);
