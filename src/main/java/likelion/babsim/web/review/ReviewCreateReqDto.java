@@ -7,12 +7,12 @@ import lombok.Getter;
 public class ReviewCreateReqDto {
     private Integer rating;
     private String comment;
-    private Long forkedRecipeId;
+    private Long forkRecipeId;
 
     @Builder
-    public ReviewCreateReqDto(Integer rating, String comment, Long forkedRecipeId) {
+    public ReviewCreateReqDto(Integer rating, String comment, Long forkRecipeId) {
         this.rating = rating;
         this.comment = comment;
-        this.forkedRecipeId = forkedRecipeId;
+        this.forkRecipeId = forkRecipeId;
     }
 }

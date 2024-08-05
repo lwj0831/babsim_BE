@@ -69,7 +69,7 @@ class RecipeReviewServiceTest {
                 .registerDate(LocalDateTime.now())
                 .recipe(recipe)
                 .member(member)
-                .forkedRecipeId(1L)
+                .forkRecipeId(1L)
                 .build();
         entityManager.persist(recipeReview);
         RecipeReview recipeReview2 = RecipeReview.builder()
@@ -78,7 +78,7 @@ class RecipeReviewServiceTest {
                 .registerDate(LocalDateTime.now())
                 .recipe(recipe)
                 .member(member2)
-                .forkedRecipeId(2L)
+                .forkRecipeId(2L)
                 .build();
         entityManager.persist(recipeReview2);
     }
@@ -96,13 +96,13 @@ class RecipeReviewServiceTest {
     void writeReviews() {
         ReviewCreateReqDto reviewCreateReqDto = ReviewCreateReqDto.builder()
                 .comment("Perfect!!")
-                .forkedRecipeId(2L)
+                .forkRecipeId(2L)
                 .rating(5)
                 .build();
         Long l = recipeReviewService.writeReview(1L, "2", reviewCreateReqDto);
         RecipeReview recipeReview = recipeReviewRepository.findById(l).orElseThrow();
         Assertions.assertThat(recipeReview.getRating()).isEqualTo(5);
         Assertions.assertThat(recipeReview.getComment()).isEqualTo("Perfect!!");
-        Assertions.assertThat(recipeReview.getForkedRecipeId()).isEqualTo(2L);
+        Assertions.assertThat(recipeReview.getForkRecipeId()).isEqualTo(2L);
     }
 }
