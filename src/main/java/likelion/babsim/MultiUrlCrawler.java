@@ -81,7 +81,7 @@ public class MultiUrlCrawler {
                 "https://m.10000recipe.com/recipe/6594403",//
                 "https://m.10000recipe.com/recipe/6860598",
                 "https://m.10000recipe.com/recipe/6847733",
-                "https://m.10000recipe.com/recipe/6847230",
+                "https://m.10000recipe.com/recipe/6863912", //고구마 쿠키
                 "https://m.10000recipe.com/recipe/6622543",
                 "https://m.10000recipe.com/recipe/1607382",//베이킹
                 "https://m.10000recipe.com/recipe/6830560",//
