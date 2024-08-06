@@ -7,7 +7,7 @@
 
 - 개발 기간 : 24.07.10 ~ 24.08.06
 - 배포 URL : [**babsim-59d06.web.app**](https://babsim-59d06.web.app/)
-- 프론트엔드 GitHub : https://github.com/jhssong/babsim_FE
+- 프론트엔드 GitHub : https://github.com/jhssong/babsim-FE
 - 로그인 후 사용해야 모든 기능 사용 가능
 
 ## 🍱 프로젝트 소개
