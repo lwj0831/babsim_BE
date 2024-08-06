@@ -13,7 +13,7 @@ public class CookedRecordController {
     private final CookedRecordService cookedRecordService;
 
     @PutMapping
-    public CookedRecordResDto updateCookedRecord(@RequestParam Long recipeId){
+    public CookedRecordResDto updateCookedRecord(@RequestParam("recipeId") Long recipeId){
         return cookedRecordService.updateCookedRecord(recipeId);
     }
 

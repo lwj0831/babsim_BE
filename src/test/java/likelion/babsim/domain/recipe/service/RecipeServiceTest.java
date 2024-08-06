@@ -184,7 +184,7 @@ class RecipeServiceTest {
     @Transactional
     @DirtiesContext
     void testFindTop12RecipesByCookedCount() {
-        List<RecipeInfoResDto> result = recipeService.findTop12RecipesByCookedCount();
+        List<RecipeInfoResDto> result = recipeService.findWeeklyBestRecipesByCookedCount();
 
         assertNotNull(result);
         assertEquals(10, result.size()); // Verify we get 10 results
