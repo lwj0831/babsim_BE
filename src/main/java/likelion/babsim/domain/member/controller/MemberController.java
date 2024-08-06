@@ -12,11 +12,11 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/members")
-@CrossOrigin(origins = {"http://localhost:5173"})
+@CrossOrigin(origins = {"https://babsim-59d06.web.app"})
 public class MemberController {
     private final MemberService memberService;
     private static final String REST_API_KEY = "f0b7ac898da3a5b19640f297fd76d1be";
-    private static final String REDIRECT_URI = "http://localhost:5173/login";
+    private static final String REDIRECT_URI = "https://babsim-59d06.web.app/login";
     private static final String CODE_REQ_URL_1 = "https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=";
     private static final String CODE_REQ_URL_2 = "&redirect_uri=";
 

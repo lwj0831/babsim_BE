@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/cookedRecord")
-@CrossOrigin(origins = {"http://localhost:5173"})
+@CrossOrigin(origins = {"https://babsim-59d06.web.app"})
 public class CookedRecordController {
     private final CookedRecordService cookedRecordService;
 

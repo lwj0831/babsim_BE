@@ -1,14 +1,14 @@
 use babsim;
 
-INSERT INTO Member (member_id, name, email, job, address, membership, register_date, member_img, nft_account_address)
+INSERT INTO member (member_id, name, email, job, address, membership, register_date, member_img, nft_account_address)
 VALUES
-    ('1', '이원준', 'wjl0831@gmail.com', 'STUDENT', '대구광역시', 'NORMAL', '2023-01-15 10:00:00', 'https://avatars.githubusercontent.com/u/151692917?s=400&v=4',"0x16B982dC232c701b6f4564621006D511dda32FC1"),
-    ('2', '조재용', 'jaedragon2002@gmail.com', 'STUDENT', '인천광역시', 'PREMIUM', '2023-06-12 11:10:00', 'https://avatars.githubusercontent.com/u/66457807?v=4',"0x3Ab9Fad598C9184Fb3839f06B0C9dD128891beCa"),
-    ('3', '송재훈', 'jhssong02@gmail.com', 'STUDENT', '대구광역시', 'NORMAL', '2023-06-12 11:10:00', 'https://avatars.githubusercontent.com/u/66457807?v=4',"0x8F82C589DAbCbA5a32966ef8d76317E467fD3A2e"),
-    ('4', '임준혁', 'imjh0417@gmail.com', 'STUDENT', '울산광역시', 'PREMIUM', '2024-07-24 20:30:00', 'https://avatars.githubusercontent.com/u/139840247?v=4',"0x1ddC2f0A3066a53266D164B9298ddf2a8C4D3d74"),
-    ('5', '김민수', 'minsoo@naver.com', 'WORKER', '서울특별시', 'NORMAL', '2024-06-23 10:20:11', 'https://avatars.githubusercontent.com/u/151692917?s=400&v=4',"0x5bC4Ea640552c89e1754367CD0dcF802c1aFD4a5");
+    ('1', '이원준', 'wjl0831@gmail.com', 'STUDENT', '대구광역시', 'NORMAL', '2023-01-15 10:00:00', 'https://avatars.githubusercontent.com/u/151692917?s=400&v=4','0x16B982dC232c701b6f4564621006D511dda32FC1'),
+    ('2', '조재용', 'jaedragon2002@gmail.com', 'STUDENT', '인천광역시', 'PREMIUM', '2023-06-12 11:10:00', 'https://avatars.githubusercontent.com/u/66457807?v=4','0x3Ab9Fad598C9184Fb3839f06B0C9dD128891beCa'),
+    ('3', '송재훈', 'jhssong02@gmail.com', 'STUDENT', '대구광역시', 'NORMAL', '2023-06-12 11:10:00', 'https://avatars.githubusercontent.com/u/66457807?v=4','0x8F82C589DAbCbA5a32966ef8d76317E467fD3A2e'),
+    ('4', '임준혁', 'imjh0417@gmail.com', 'STUDENT', '울산광역시', 'PREMIUM', '2024-07-24 20:30:00', 'https://avatars.githubusercontent.com/u/139840247?v=4','0x1ddC2f0A3066a53266D164B9298ddf2a8C4D3d74'),
+    ('5', '김민수', 'minsoo@naver.com', 'WORKER', '서울특별시', 'NORMAL', '2024-06-23 10:20:11', 'https://avatars.githubusercontent.com/u/151692917?s=400&v=4','0x5bC4Ea640552c89e1754367CD0dcF802c1aFD4a5');
 
-INSERT INTO Point (point_id, member_id, point_content, point_price, point_type, transaction_date)
+INSERT INTO point (point_id, member_id, point_content, point_price, point_type, transaction_date)
 VALUES
     (1, 1, '신규회원', 1000, 'REWARD', '2024-01-01 13:00:00'),
     (2, 2, '신규회원', 1000, 'REWARD', '2024-01-02 14:00:00'),
@@ -16,7 +16,7 @@ VALUES
     (4, 4, '신규회원', 1000, 'REWARD', '2024-01-04 16:00:00'),
     (5, 5, '신규회원', 1000, 'REWARD', '2024-01-05 17:00:00');
 
-INSERT INTO Category (category_id, category_name)
+INSERT INTO category (category_id, category_name)
 VALUES
     (1,'Main Courses'),
     (2,'Simple'),
@@ -27,7 +27,7 @@ VALUES
     (7,'Oven'),
     (8,'Keto');
 
-INSERT INTO Recipe (nutrition_info, recipe_id, creator_id, recipe_imgs, recipe_name, recipe_description, difficulty, cooking_time, recipe_detail_imgs, ingredients, recipe_contents, timers, category_id,forked_recipe_id)
+INSERT INTO recipe (nutrition_info, recipe_id, creator_id, recipe_imgs, recipe_name, recipe_description, difficulty, cooking_time, recipe_detail_imgs, ingredients, recipe_contents, timers, category_id,forked_recipe_id)
 VALUES
     ('메밀면: 130kcal (22g) 어린잎채소: 15kcal (250g) 달걀: 143kcal (3개) 빨간 파프리카: 37kcal (115g) 올리브오일: 884kcal (3큰술) 간장: 71kcal (2.5큰술) 올리고당: 240kcal (3큰술) 다진마늘: 5kcal (1/2큰술) 레몬즙: 18kcal (1/2큰술)  **대략적인 칼로리:** 1523kcal', 1, '1','b0d7e10e-a01e-40e5-8455-a009bf53c23f', '가볍게 한끼 메밀샐러드', '각종 야채 위에 메밀면을 올려 맛있게 비벼서 드셔보세요  다이어트 중인 분들도 맛있게 먹을 수 있는 메밀샐러드로 가볍고 맛있는 한끼', 'EASY', 900,'7b705802-628b-4158-b2d6-91fbad1e2477,d6e49d83-0c21-4368-a8c5-f60f99082e32,e1cec1cd-525b-479c-b79b-8af60e98deaf,83d374e5-28c9-4fa8-84a2-330da3fb716d,68bb9e7b-c464-438a-bf0d-ebe2587b6a31,83e6d90d-ed89-467c-bc6e-f0e86bb395ce,c6bbb495-d05b-4b83-9010-447172c4395e', '메밀면 1인분,어린잎채소 1줌,달걀 3개,빨간파프리카 1/2개,올리브오일 3숟가락,간장 2.5숟가락,올리고당 3숟가락,다진마늘 1/2숟가락,레몬즙 1/2숟가락', '끓는 물에 메밀면을 4분간 삶는다/코팅한 팬에 달걀을 넣고 달걀지단을 부친다./파프리카는 먹기 좋은 크기로 썬다./지단을 돌돌 말아 채 썬다./메밀 면이 다 삶아지면 흐르는 물에 여러 번 헹궈 물기를 제거한다./드레싱 재료를 넣고 섞는다./접시에 채소, 메밀면, 지단, 파프리카를 얹어 소스와 곁들여 완성한다.', '150,10,120,160,90,180,140',  1,null),
     ('- 오징어 (1마리, 100g당 약 80kcal): 160kcal - 양배추 (1/4통, 100g당 약 25kcal): 50kcal - 당근 (1/2개, 100g당 약 35kcal): 35kcal - 양파 (1개, 100g당 약 40kcal): 40kcal - 풋고추 (2개, 100g당 약 20kcal): 8kcal - 파 (2뿌리, 100g당 약 30kcal): 18kcal - 식용유 (3큰술, 100g당 약 780kcal): 234kcal - 설탕 (1큰술, 100g당 약 385kcal): 38.5kcal - 마늘 (1큰술, 100g당 약 149kcal): 14.9kcal - 고추장 (1큰술, 100g당 약 157kcal): 15.7kcal - 간장 (5큰술, 100g당 약 104kcal): 52kcal - 고춧가루 (3큰술, 100g당 약 335kcal): 100.5kcal - 물 (1/2컵, 100g당 약 0kcal): 0kcal - 참기름 (1큰술, 100g당 약 884kcal): 88.4kcal - 통깨 (적당량, 100g당 약 563kcal): 정보 부족  **대략적인 칼로리:** 954kcal', 2, '1','8f8e30d1-e999-4254-845f-96c9414aaa99', '오징어 볶음, 향과 맛이 일품! 백종원 오징어 볶음', '백종원님의 레시피중에 간혹 감탄이 나오는 레시피가 있는데 바로 오징어볶음입니다. 살짝 불향까지 나는것이 아주 일품이네요. 쉬운 레시피로 따라하기도 쉽습니다. 오늘 메뉴로 해 보세요~', 'EASY', 1200,'60b38ff3-88fd-44b1-9eb4-46e9dba8d808,c5c1c938-8aeb-4977-8a59-1fdd98eb371f,616a05db-c626-4a69-85e0-3c61f24b63bf,a9f0cd3a-dfd6-4e23-a303-134f8bd411df,094a8294-7cf8-449a-a06e-4e88914a28a3,7f8a10a5-3bb6-4129-ad5d-69c31145394c,70e8c78b-5de0-420e-a27c-54cf6457cbba,3d44aa1c-157e-41da-ae97-21badccac010', '오징어 2마리,양배추 1/4통,당근 1/2개,양파 1개,풋고추 2개,파 2뿌리,식용유 3큰술,설탕 1큰술,마늘 1큰술,고추장 1큰술,간장 5큰술,고춧가루 3큰술,물 1/2컵,참기름 1큰술,통깨 적당량', '양배추, 당근, 양파, 파(준비량의 반)는 길쭉하고 굵게, 고추도 어슷큼직하게 썹니다. 오징어도 깨끗하게 손질해서 먹기좋은 크기로 썹니다. /팬에 식용유 3큰술과 송송썬 파를 넣은 후 불을 올려 볶아요. 파기름이 충분히 나오게, 노르스름해질때까지 볶습니다./파가 노르스름하게 볶아지면 오징어를 넣고 볶다가 설탕 1큰술을 넣어 볶습니다./마늘 1큰술 고추장 1큰술을 넣어고 볶습니다. 볶는 시간은 최소로 하세요, 마늘넣고 팬들어가며 섞어주는식으로 볶고, 고추장 넣고도 마찬가지로요./간장 5큰술, 고춧가루 3큰술을 넣고 볶습니다. 너무 뻑뻑한 느낌이 들면 물 반컵을 넣고 볶습니다./이제 준비한 채소를 볶던 팬에 전부 넣습니다./잘 섞어가며 채소의 숨이 죽지않게 단시간으로 볶다가 불에서 내리기 직전 참기름을 촤악~ 둘러주고 끝!!/그릇이나 달군 팬에 먹음직스럽게 담고 통깨를 솔솔 뿌려 상에 냅니다. 완성!입니다. 맛있게 드세요~', '50,120,90,80,160,60,140,30',  1,null),
@@ -126,7 +126,7 @@ VALUES
     ('재료당 100g당 칼로리 | 한 끼 대략적인 칼로리 -------------- | ------------------------ 달걀 | 143칼로리 | 715칼로리 (5개) 당근 | 41칼로리 | 17칼로리 (약간) 비트 | 43칼로리 | 18칼로리 (약간) 오이 | 16칼로리 | 6칼로리 (약간) 김 | 350칼로리 | 490칼로리 (1장) 소금 | 15칼로리 | 3칼로리 (약간) 맛술 | 6kcal | 1kcal (약간) 식용유 | 900칼로리 | 120칼로리 (약간)',95, '1','9e285fc3-02e9-4631-a489-520ee6f9a15c', '특별한 키토김밥 밥없어도 맛있는 계란김밥', '밥 없어도 맛있는  계란김밥 입니다', 'EASY', 1200,'2ceb24d3-3ab1-491a-87cc-120f37da4054,6da22f63-bbb1-43f9-ad39-55676f9363e9,b24c6457-905c-4dc8-921e-b191943913ef,d9bfdbdc-89a9-4bf5-8388-ec51bbf3a64a,725630c3-8076-4fe9-8aed-7ba2b8471a66', '달걀 5개,당근 약간,비트 약간,오이 약간,김 1장,소금 약간,맛술 약간,식용유 약간', '달걀은 잘 풀어/한 김 식히고/당근, 비트는 채썰고/김 펼치고/당근, 오이, 비트올리고', '110,90,80,120,10', 8,47),
     ('**재료 100g당 칼로리:** * 소금: 0 kcal * 에리스리톨: 0 kcal * 물: 0 kcal * 메주가루: 331 kcal * 증류식초주: 231 kcal * 고운고춧가루: 388 kcal  **한 끼당 대략적인 칼로리:** * 소금: 0 kcal * 에리스리톨: 0 kcal * 물: 0 kcal * 메주가루: 33 kcal * 증류식초주: 69 kcal * 고운고춧가루: 39 kcal  **한 끼당 총 칼로리: 약 141 kcal**',96, '1','37e29986-63e7-4f52-a882-8fb5c7b50a08', '초간단 탄수화물 없는 양념만들기 키토고추장(노밀가루!)', '0칼로리소스를 많이 찾는 사람들이 많다. 시중에 파는 고추장도 밀가루가 섞인 것에는 탄수화물이 있다. 건강한 재료로 간단하게 키토고추장을 만들 수 있다.', 'EASY', 600,'d7bc3469-8e7d-4504-998f-a5d7f64bfd04,6316ac9a-d224-40b9-9e0d-2e4f80f49f67,a6caf1a1-3314-4a76-8a35-9c562906f53d,99fb8f19-bc9b-4072-9f7b-e52d8d927bfe,f210817d-2767-435b-af34-5c9ed0f32c25', '소금 15g,에리스리톨 40g,물 130ml,메주가루 10g,증류식소주 3큰술,고운고춧가루 100g', '소금 150g 에리스리톨(설탕 대체재) 40g단맛이 없는 증류식 소주(대장부) 또는 화이트 와인 3큰술을 넣고 잘 섞어준다./물(생수) 130ml, 메줏가루 10g 넣어 가루가 녹을 때까지 저어준다./고운 고춧가루 100g을 넣어주면 완성이다./처음에는 묽은듯하지만 다 섞고 나면 시판 고추장처럼 되직해진다./방부제 없이, 설탕 없이, 밀가루 없이 만드는 고추장이 완성된다.', '50,80,170,130,110', 8,48);
 
-INSERT INTO Tag (tag_name, recipe_id)
+INSERT INTO tag (tag_name, recipe_id)
 VALUES
     ('달콤', 1),
     ('짭짤', 2),
@@ -177,7 +177,7 @@ VALUES
     ('다채로운', 47),
     ('환상적인맛', 48);
 
-INSERT INTO Recipe_Review (rating, comment, register_date, fork_recipe_id, recipe_id, member_id)
+INSERT INTO recipe_review (rating, comment, register_date, fork_recipe_id, recipe_id, member_id)
 VALUES
     (5, '정말 맛있어요! 친구들에게도 추천할게요.', '2024-01-20 10:00:00', 49, 1, '2'),
     (3, '조금 실망스러웠어요. 더 맛있는 요리를 기대했는데...', '2024-02-25 14:30:00', NULL, 1, '4'),
@@ -248,7 +248,7 @@ VALUES
     (3, '평범했어요. 기대했던 만큼은 아니었어요.', '2025-01-20 13:45:00', NULL, 47, '1'),
     (4, '아이들과 함께 만들기 좋았어요. 맛도 괜찮아요.', '2025-02-10 15:00:00', 96, 48, '1');
 
-INSERT INTO Allergy (allergy_id,allergy_name)
+INSERT INTO allergy (allergy_id,allergy_name)
 VALUES
     (1,'알류'),
     (2,'우유'),
@@ -270,7 +270,7 @@ VALUES
     (18,'쇠고기'),
     (19,'아황산류');
 
-INSERT INTO Recipe_allergy (recipe_id, allergy_id)
+INSERT INTO recipe_allergy (recipe_id, allergy_id)
 VALUES
     (1, 1),
     (1, 3),
@@ -391,7 +391,7 @@ VALUES
     ('계란', 25),
     ('햄버거', 10);
 
-INSERT INTO Likes (member_id, recipe_id)
+INSERT INTO likes (member_id, recipe_id)
 VALUES
     ('1', 1),
     ('2', 2),
@@ -409,7 +409,7 @@ VALUES
     ('4', 14),
     ('5', 15);
 
-INSERT INTO Member_recipe (member_id, recipe_id)
+INSERT INTO member_recipe (member_id, recipe_id)
 VALUES
     ('1', 1),
     ('1', 2),
@@ -508,7 +508,7 @@ VALUES
     ('1', 95),
     ('1', 96);
 
-INSERT INTO Member_allergy (member_id, allergy_id)
+INSERT INTO member_allergy (member_id, allergy_id)
 VALUES
     ('1', 1),
     ('1', 2),
@@ -529,7 +529,7 @@ VALUES
     ('5', 17),
     ('5', 18);
 
-INSERT INTO Cooked_record (cooked_count, recipe_id)
+INSERT INTO cooked_record (cooked_count, recipe_id)
 VALUES
     (102, 1),
     (512, 2),
@@ -582,7 +582,7 @@ VALUES
     (58,49),
     (1942,50);
 
-INSERT INTO Product (product_id, product_img, price, product_name)
+INSERT INTO product (product_id, product_img, price, product_name)
 VALUES
     (1, 'https://image.ohou.se/i/bucketplace-v2-development/uploads/productions/images/168255885561162734.jpg?gif=1&w=640&h=640&c=c&webp=1', 14900, '올스텐 폰잔테 조리도구 세트 + 거치대 포함'),
     (2, 'https://image.ohou.se/i/bucketplace-v2-development/uploads/productions/168014050317526595.jpg?gif=1&w=640&h=640&c=c&webp=1', 64900, '실리콘 모던 조리도구 6종세트 4colors (+거치대 포함)'),
@@ -605,7 +605,7 @@ VALUES
     (19, 'https://prs.ohou.se/apne2/any/uploads/productions/v1-254954389991424.jpg?gif=1&w=640&h=640&c=c&webp=1', 118900, '매직핸즈 인덕션 미네랄리아 딜라이트 프라이팬 멀티 6p세트'),
     (20, 'https://image.ohou.se/i/bucketplace-v2-development/uploads/productions/168309141052243626.jpg?gif=1&w=640&h=640&c=c&webp=1', 16900, '버터컬러출시! 어스 IH 인덕션 전골냄비 20cm');
 
-INSERT INTO Orders (order_id, member_id)
+INSERT INTO orders (order_id, member_id)
 VALUES
     (1, 1),
     (2, 1),
@@ -628,7 +628,7 @@ VALUES
     (19, 5),
     (20, 5);
 
-INSERT INTO Order_Product (order_product_id, order_amount, order_id, product_id)
+INSERT INTO order_product (order_product_id, order_amount, order_id, product_id)
 VALUES
     (1, 1, 1, 1),
     (2, 1, 2, 2),
@@ -651,7 +651,7 @@ VALUES
     (19, 1, 19, 19),
     (20, 1, 20, 20);
 
-INSERT INTO Product_Review (product_review_id, member_id, order_product_id, rating)
+INSERT INTO product_review (product_review_id, member_id, order_product_id, rating)
 VALUES
     (1, 1, 1, 5),
     (2, 1, 2, 4),
