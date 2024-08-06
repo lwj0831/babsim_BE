@@ -9,7 +9,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/keywords")
-@CrossOrigin(origins = {"http://localhost:5173"})
+@CrossOrigin(origins = {"https://babsim-59d06.web.app"})
 public class KeywordController {
     private final KeywordService keywordService;
 
