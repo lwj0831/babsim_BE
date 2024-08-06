@@ -26,16 +26,16 @@ public class Recipe {
     private String recipeImgs;
     private String recipeName;
     private String recipeDescription;
-    @Column(length = 65535)
+    @Column(length = 60000)
     private String nutritionInfo;
     @Enumerated(EnumType.STRING)
     private Difficulty difficulty;
     private Integer cookingTime;
-    @Column(length = 65535)
+    @Column(length = 60000)
     private String recipeDetailImgs;
-    @Column(length = 65535)
+    @Column(length = 60000)
     private String ingredients;
-    @Column(length = 65535)
+    @Column(length = 60000)
     private String recipeContents;
     private String timers;
     private Long forkedRecipeId;
